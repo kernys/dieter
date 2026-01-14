@@ -100,7 +100,7 @@ class _CameraScreenState extends ConsumerState<CameraScreen> {
                           ),
                           const SizedBox(width: 8),
                           const Text(
-                            'Cal AI',
+                            'Dieter AI',
                             style: TextStyle(
                               color: Colors.white,
                               fontSize: 18,

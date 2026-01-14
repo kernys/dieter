@@ -80,7 +80,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                       ),
                       const SizedBox(width: 8),
                       const Text(
-                        'Cal AI',
+                        'Dieter AI',
                         style: TextStyle(
                           fontSize: 32,
                           fontWeight: FontWeight.bold,

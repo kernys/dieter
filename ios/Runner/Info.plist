@@ -46,10 +46,10 @@
 	<key>UIApplicationSupportsIndirectInputEvents</key>
 	<true/>
 	<key>NSCameraUsageDescription</key>
-	<string>Cal AI needs camera access to scan and analyze your food for nutritional information.</string>
+	<string>Dieter AI needs camera access to scan and analyze your food for nutritional information.</string>
 	<key>NSPhotoLibraryUsageDescription</key>
-	<string>Cal AI needs photo library access to let you select food photos for analysis.</string>
+	<string>Dieter AI needs photo library access to let you select food photos for analysis.</string>
 	<key>NSMicrophoneUsageDescription</key>
-	<string>Cal AI may need microphone access for video recording.</string>
+	<string>Dieter AI may need microphone access for video recording.</string>
 </dict>
 </plist>

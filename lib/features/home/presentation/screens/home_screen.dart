@@ -39,7 +39,7 @@ class HomeScreen extends ConsumerWidget {
                         ),
                         const SizedBox(width: 8),
                         const Text(
-                          'Cal AI',
+                          'Dieter AI',
                           style: TextStyle(
                             fontSize: 22,
                             fontWeight: FontWeight.bold,
