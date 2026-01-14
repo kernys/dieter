@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../../../../core/constants/app_colors.dart';
-import '../../../../services/supabase_service.dart';
+import '../providers/auth_provider.dart';
 
 class LoginScreen extends ConsumerStatefulWidget {
   const LoginScreen({super.key});
@@ -31,9 +31,9 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
     setState(() => _isLoading = true);
 
     try {
-      await SupabaseService.signIn(
-        email: _emailController.text.trim(),
-        password: _passwordController.text,
+      await ref.read(authStateProvider.notifier).login(
+        _emailController.text.trim(),
+        _passwordController.text,
       );
 
       if (mounted) {
@@ -53,6 +53,11 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
         setState(() => _isLoading = false);
       }
     }
+  }
+
+  void _skipLogin() {
+    ref.read(authStateProvider.notifier).setGuestMode();
+    context.go('/home');
   }
 
   @override
@@ -251,7 +256,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                 // Skip Login (for demo)
                 Center(
                   child: TextButton(
-                    onPressed: () => context.go('/home'),
+                    onPressed: _skipLogin,
                     child: const Text(
                       'Skip for now',
                       style: TextStyle(color: AppColors.textTertiary),

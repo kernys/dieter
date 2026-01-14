@@ -11,6 +11,9 @@ class AppConstants {
   static const int defaultCarbsGoal = 275;
   static const int defaultFatGoal = 70;
 
+  // API Configuration
+  static const String apiBaseUrl = 'http://localhost:3000/api';
+
   // API Keys (Replace with your actual keys)
   static const String supabaseUrl = 'YOUR_SUPABASE_URL';
   static const String supabaseAnonKey = 'YOUR_SUPABASE_ANON_KEY';

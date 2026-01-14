@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../../../../core/constants/app_colors.dart';
+import '../../../../core/constants/app_constants.dart';
 import '../../../../shared/widgets/circular_progress_indicator_widget.dart';
 import '../../../../shared/widgets/food_entry_card.dart';
 import '../providers/home_provider.dart';
@@ -15,8 +16,32 @@ class HomeScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final selectedDate = ref.watch(selectedDateProvider);
     final dailySummaryAsync = ref.watch(dailySummaryProvider(selectedDate));
-    final userGoals = ref.watch(userGoalsProvider);
-    final streak = ref.watch(streakProvider);
+    final userGoalsAsync = ref.watch(userGoalsProvider);
+    final streakAsync = ref.watch(streakProvider);
+
+    // Get goals with defaults
+    final userGoals = userGoalsAsync.when(
+      data: (goals) => goals,
+      loading: () => UserGoals(
+        calorieGoal: AppConstants.defaultCalorieGoal,
+        proteinGoal: AppConstants.defaultProteinGoal,
+        carbsGoal: AppConstants.defaultCarbsGoal,
+        fatGoal: AppConstants.defaultFatGoal,
+      ),
+      error: (_, __) => UserGoals(
+        calorieGoal: AppConstants.defaultCalorieGoal,
+        proteinGoal: AppConstants.defaultProteinGoal,
+        carbsGoal: AppConstants.defaultCarbsGoal,
+        fatGoal: AppConstants.defaultFatGoal,
+      ),
+    );
+
+    // Get streak with default
+    final streak = streakAsync.when(
+      data: (s) => s,
+      loading: () => 0,
+      error: (_, __) => 0,
+    );
 
     return Scaffold(
       backgroundColor: AppColors.background,

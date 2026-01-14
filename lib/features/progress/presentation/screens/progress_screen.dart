@@ -12,10 +12,24 @@ class ProgressScreen extends ConsumerWidget {
     final currentWeight = ref.watch(currentWeightProvider);
     final goalWeight = ref.watch(goalWeightProvider);
     final progressPercentage = ref.watch(progressPercentageProvider);
-    final streakData = ref.watch(streakDataProvider);
+    final streakDataAsync = ref.watch(streakDataProvider);
     final timeRange = ref.watch(timeRangeProvider);
     final weightLogsAsync = ref.watch(weightLogsProvider);
-    final dailyAverage = ref.watch(dailyAverageCaloriesProvider);
+    final dailyAverageAsync = ref.watch(dailyAverageCaloriesProvider);
+
+    // Get streak data with defaults
+    final streakData = streakDataAsync.when(
+      data: (data) => data,
+      loading: () => StreakData(currentStreak: 0, weekData: List.filled(7, false)),
+      error: (_, __) => StreakData(currentStreak: 0, weekData: List.filled(7, false)),
+    );
+
+    // Get daily average with defaults
+    final dailyAverage = dailyAverageAsync.when(
+      data: (data) => data,
+      loading: () => DailyAverageData(calories: 0, changePercentage: 0, isIncrease: false),
+      error: (_, __) => DailyAverageData(calories: 0, changePercentage: 0, isIncrease: false),
+    );
 
     return Scaffold(
       backgroundColor: AppColors.background,

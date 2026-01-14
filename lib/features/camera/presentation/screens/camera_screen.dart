@@ -4,7 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:camera/camera.dart';
 import 'package:go_router/go_router.dart';
 import 'package:image_picker/image_picker.dart';
-import '../../../../services/gemini_service.dart';
+import '../../../../services/api_service.dart';
 import '../providers/camera_provider.dart';
 
 class CameraScreen extends ConsumerStatefulWidget {
@@ -335,8 +335,8 @@ class _CameraScreenState extends ConsumerState<CameraScreen> {
     ref.read(capturedImageProvider.notifier).state = imageBytes;
 
     try {
-      final geminiService = ref.read(geminiServiceProvider);
-      final result = await geminiService.analyzeFood(imageBytes);
+      final apiService = ref.read(apiServiceProvider);
+      final result = await apiService.analyzeFood(imageBytes);
 
       ref.read(analysisResultProvider.notifier).state = result;
       ref.read(analysisStateProvider.notifier).state = AnalysisState.success;

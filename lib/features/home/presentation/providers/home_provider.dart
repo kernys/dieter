@@ -1,96 +1,158 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../../shared/models/food_entry_model.dart';
 import '../../../../core/constants/app_constants.dart';
+import '../../../../services/api_service.dart';
+import '../../../auth/presentation/providers/auth_provider.dart';
 
 // Selected date provider
 final selectedDateProvider = StateProvider<DateTime>((ref) {
   return DateTime.now();
 });
 
-// Daily summary provider
+// Daily summary provider - fetches from real API
 final dailySummaryProvider = FutureProvider.family<DailySummaryModel, DateTime>((ref, date) async {
-  // TODO: Fetch from Supabase
-  // For now, return mock data
-  await Future.delayed(const Duration(milliseconds: 500));
+  final apiService = ref.watch(apiServiceProvider);
+  final authState = ref.watch(authStateProvider);
 
-  return DailySummaryModel(
-    id: 'summary-1',
-    userId: 'user-1',
-    date: date,
-    totalCalories: 1250,
-    totalProtein: 75,
-    totalCarbs: 138,
-    totalFat: 35,
-    entries: [
-      FoodEntryModel(
-        id: 'entry-1',
-        userId: 'user-1',
-        name: 'Grilled Salmon',
-        calories: 550,
-        protein: 35,
-        carbs: 40,
-        fat: 28,
-        imageUrl: null,
-        ingredients: [
-          const IngredientModel(name: 'Salmon', calories: 400, amount: '200g'),
-          const IngredientModel(name: 'Olive Oil', calories: 100, amount: '1 tbsp'),
-          const IngredientModel(name: 'Vegetables', calories: 50, amount: '1 cup'),
-        ],
-        loggedAt: DateTime.now().subtract(const Duration(hours: 5)),
-      ),
-      FoodEntryModel(
-        id: 'entry-2',
-        userId: 'user-1',
-        name: 'Caesar Salad',
-        calories: 330,
-        protein: 8,
-        carbs: 20,
-        fat: 18,
-        imageUrl: null,
-        ingredients: [
-          const IngredientModel(name: 'Lettuce', calories: 20, amount: '1.5 cups'),
-          const IngredientModel(name: 'Croutons', calories: 100, amount: '0.5 cup'),
-          const IngredientModel(name: 'Parmesan', calories: 80, amount: '2 tbsp'),
-          const IngredientModel(name: 'Caesar Dressing', calories: 130, amount: '2 tbsp'),
-        ],
-        loggedAt: DateTime.now().subtract(const Duration(hours: 2)),
-      ),
-      FoodEntryModel(
-        id: 'entry-3',
-        userId: 'user-1',
-        name: 'Morning Oatmeal',
-        calories: 370,
-        protein: 12,
-        carbs: 58,
-        fat: 8,
-        imageUrl: null,
-        ingredients: [
-          const IngredientModel(name: 'Oats', calories: 150, amount: '1 cup'),
-          const IngredientModel(name: 'Banana', calories: 100, amount: '1 medium'),
-          const IngredientModel(name: 'Honey', calories: 60, amount: '1 tbsp'),
-          const IngredientModel(name: 'Almonds', calories: 60, amount: '10 pieces'),
-        ],
-        loggedAt: DateTime.now().subtract(const Duration(hours: 8)),
-      ),
-    ],
-  );
+  // Get user ID from auth state
+  final userId = authState.userId;
+  if (userId == null) {
+    // Return empty summary if not authenticated
+    return DailySummaryModel(
+      id: 'empty',
+      userId: '',
+      date: date,
+      totalCalories: 0,
+      totalProtein: 0,
+      totalCarbs: 0,
+      totalFat: 0,
+      entries: [],
+    );
+  }
+
+  try {
+    final response = await apiService.getFoodEntries(userId, date);
+
+    return DailySummaryModel(
+      id: 'summary-${date.toIso8601String()}',
+      userId: userId,
+      date: date,
+      totalCalories: response.summary.totalCalories,
+      totalProtein: response.summary.totalProtein,
+      totalCarbs: response.summary.totalCarbs,
+      totalFat: response.summary.totalFat,
+      entries: response.entries,
+    );
+  } catch (e) {
+    // Return empty summary on error
+    return DailySummaryModel(
+      id: 'empty',
+      userId: userId,
+      date: date,
+      totalCalories: 0,
+      totalProtein: 0,
+      totalCarbs: 0,
+      totalFat: 0,
+      entries: [],
+    );
+  }
 });
 
-// User goals provider
-final userGoalsProvider = Provider<UserGoals>((ref) {
-  // TODO: Fetch from user settings
-  return UserGoals(
-    calorieGoal: AppConstants.defaultCalorieGoal,
-    proteinGoal: AppConstants.defaultProteinGoal,
-    carbsGoal: AppConstants.defaultCarbsGoal,
-    fatGoal: AppConstants.defaultFatGoal,
-  );
+// User goals provider - fetches from user settings
+final userGoalsProvider = FutureProvider<UserGoals>((ref) async {
+  final apiService = ref.watch(apiServiceProvider);
+  final authState = ref.watch(authStateProvider);
+
+  final userId = authState.userId;
+  if (userId == null) {
+    return UserGoals(
+      calorieGoal: AppConstants.defaultCalorieGoal,
+      proteinGoal: AppConstants.defaultProteinGoal,
+      carbsGoal: AppConstants.defaultCarbsGoal,
+      fatGoal: AppConstants.defaultFatGoal,
+    );
+  }
+
+  try {
+    final user = await apiService.getUser(userId);
+    return UserGoals(
+      calorieGoal: user.dailyCalorieGoal,
+      proteinGoal: user.dailyProteinGoal,
+      carbsGoal: user.dailyCarbsGoal,
+      fatGoal: user.dailyFatGoal,
+    );
+  } catch (e) {
+    return UserGoals(
+      calorieGoal: AppConstants.defaultCalorieGoal,
+      proteinGoal: AppConstants.defaultProteinGoal,
+      carbsGoal: AppConstants.defaultCarbsGoal,
+      fatGoal: AppConstants.defaultFatGoal,
+    );
+  }
 });
 
-// Streak provider
-final streakProvider = Provider<int>((ref) {
-  // TODO: Calculate from actual data
-  return 15;
+// Streak provider - fetches from API
+final streakProvider = FutureProvider<int>((ref) async {
+  final apiService = ref.watch(apiServiceProvider);
+  final authState = ref.watch(authStateProvider);
+
+  final userId = authState.userId;
+  if (userId == null) {
+    return 0;
+  }
+
+  try {
+    final response = await apiService.getStreak(userId);
+    return response.currentStreak;
+  } catch (e) {
+    return 0;
+  }
+});
+
+// Add food entry action
+final addFoodEntryProvider = FutureProvider.family<FoodEntryModel?, AddFoodEntryParams>((ref, params) async {
+  final apiService = ref.watch(apiServiceProvider);
+  final authState = ref.watch(authStateProvider);
+
+  final userId = authState.userId;
+  if (userId == null) {
+    throw Exception('User not authenticated');
+  }
+
+  try {
+    final entry = await apiService.createFoodEntry(
+      userId: userId,
+      name: params.name,
+      calories: params.calories,
+      protein: params.protein,
+      carbs: params.carbs,
+      fat: params.fat,
+      imageUrl: params.imageUrl,
+      ingredients: params.ingredients,
+      servings: params.servings,
+    );
+
+    // Invalidate the daily summary to refresh
+    ref.invalidate(dailySummaryProvider);
+
+    return entry;
+  } catch (e) {
+    rethrow;
+  }
+});
+
+// Delete food entry action
+final deleteFoodEntryProvider = FutureProvider.family<void, String>((ref, entryId) async {
+  final apiService = ref.watch(apiServiceProvider);
+
+  try {
+    await apiService.deleteFoodEntry(entryId);
+
+    // Invalidate the daily summary to refresh
+    ref.invalidate(dailySummaryProvider);
+  } catch (e) {
+    rethrow;
+  }
 });
 
 class UserGoals {
@@ -104,5 +166,27 @@ class UserGoals {
     required this.proteinGoal,
     required this.carbsGoal,
     required this.fatGoal,
+  });
+}
+
+class AddFoodEntryParams {
+  final String name;
+  final int calories;
+  final double protein;
+  final double carbs;
+  final double fat;
+  final String? imageUrl;
+  final List<Map<String, dynamic>>? ingredients;
+  final int servings;
+
+  AddFoodEntryParams({
+    required this.name,
+    required this.calories,
+    required this.protein,
+    required this.carbs,
+    required this.fat,
+    this.imageUrl,
+    this.ingredients,
+    this.servings = 1,
   });
 }

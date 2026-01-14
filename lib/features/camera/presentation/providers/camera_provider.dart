@@ -1,7 +1,7 @@
 import 'dart:typed_data';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:camera/camera.dart';
-import '../../../../services/gemini_service.dart';
+import '../../../../services/api_service.dart';
 
 // Camera controller provider
 final cameraControllerProvider = StateNotifierProvider<CameraControllerNotifier, AsyncValue<CameraController?>>((ref) {
@@ -87,7 +87,7 @@ final analysisStateProvider = StateProvider<AnalysisState>((ref) {
   return AnalysisState.idle;
 });
 
-// Analysis result provider
+// Analysis result provider - now uses API response type
 final analysisResultProvider = StateProvider<FoodAnalysisResult?>((ref) {
   return null;
 });
@@ -102,4 +102,33 @@ enum ScanMode { food, barcode, label }
 
 final scanModeProvider = StateProvider<ScanMode>((ref) {
   return ScanMode.food;
+});
+
+// Food analyzer notifier - handles the analysis process
+class FoodAnalyzerNotifier extends StateNotifier<AsyncValue<FoodAnalysisResult?>> {
+  final ApiService _apiService;
+
+  FoodAnalyzerNotifier(this._apiService) : super(const AsyncValue.data(null));
+
+  Future<FoodAnalysisResult?> analyzeFood(Uint8List imageBytes) async {
+    state = const AsyncValue.loading();
+
+    try {
+      final result = await _apiService.analyzeFood(imageBytes);
+      state = AsyncValue.data(result);
+      return result;
+    } catch (e, stack) {
+      state = AsyncValue.error(e, stack);
+      return null;
+    }
+  }
+
+  void reset() {
+    state = const AsyncValue.data(null);
+  }
+}
+
+final foodAnalyzerProvider = StateNotifierProvider<FoodAnalyzerNotifier, AsyncValue<FoodAnalysisResult?>>((ref) {
+  final apiService = ref.watch(apiServiceProvider);
+  return FoodAnalyzerNotifier(apiService);
 });
