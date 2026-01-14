@@ -1,0 +1,295 @@
+import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
+import '../../../../core/constants/app_colors.dart';
+import '../../../../shared/widgets/circular_progress_indicator_widget.dart';
+import '../../../../shared/widgets/food_entry_card.dart';
+import '../providers/home_provider.dart';
+import '../widgets/week_calendar.dart';
+import '../widgets/macro_card.dart';
+
+class HomeScreen extends ConsumerWidget {
+  const HomeScreen({super.key});
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final selectedDate = ref.watch(selectedDateProvider);
+    final dailySummaryAsync = ref.watch(dailySummaryProvider(selectedDate));
+    final userGoals = ref.watch(userGoalsProvider);
+    final streak = ref.watch(streakProvider);
+
+    return Scaffold(
+      backgroundColor: AppColors.background,
+      body: SafeArea(
+        child: CustomScrollView(
+          slivers: [
+            // App Bar
+            SliverToBoxAdapter(
+              child: Padding(
+                padding: const EdgeInsets.all(16),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Row(
+                      children: [
+                        Icon(
+                          Icons.apple,
+                          size: 28,
+                          color: AppColors.primary,
+                        ),
+                        const SizedBox(width: 8),
+                        const Text(
+                          'Cal AI',
+                          style: TextStyle(
+                            fontSize: 22,
+                            fontWeight: FontWeight.bold,
+                            color: AppColors.textPrimary,
+                          ),
+                        ),
+                      ],
+                    ),
+                    Container(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 12,
+                        vertical: 6,
+                      ),
+                      decoration: BoxDecoration(
+                        color: AppColors.streak.withValues(alpha: 0.1),
+                        borderRadius: BorderRadius.circular(16),
+                      ),
+                      child: Row(
+                        children: [
+                          Icon(
+                            Icons.local_fire_department,
+                            size: 18,
+                            color: AppColors.streak,
+                          ),
+                          const SizedBox(width: 4),
+                          Text(
+                            '$streak',
+                            style: TextStyle(
+                              fontSize: 14,
+                              fontWeight: FontWeight.bold,
+                              color: AppColors.streak,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+
+            // Week Calendar
+            SliverToBoxAdapter(
+              child: WeekCalendar(
+                selectedDate: selectedDate,
+                onDateSelected: (date) {
+                  ref.read(selectedDateProvider.notifier).state = date;
+                },
+              ),
+            ),
+
+            // Main Content
+            SliverToBoxAdapter(
+              child: dailySummaryAsync.when(
+                data: (summary) => Padding(
+                  padding: const EdgeInsets.all(16),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      // Calories Card
+                      Container(
+                        padding: const EdgeInsets.all(20),
+                        decoration: BoxDecoration(
+                          color: AppColors.card,
+                          borderRadius: BorderRadius.circular(20),
+                          border: Border.all(color: AppColors.border),
+                          boxShadow: [
+                            BoxShadow(
+                              color: AppColors.shadow,
+                              blurRadius: 10,
+                              offset: const Offset(0, 4),
+                            ),
+                          ],
+                        ),
+                        child: Row(
+                          children: [
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Row(
+                                    crossAxisAlignment: CrossAxisAlignment.end,
+                                    children: [
+                                      Text(
+                                        '${summary.totalCalories}',
+                                        style: const TextStyle(
+                                          fontSize: 48,
+                                          fontWeight: FontWeight.bold,
+                                          color: AppColors.textPrimary,
+                                          height: 1,
+                                        ),
+                                      ),
+                                      Text(
+                                        '/${userGoals.calorieGoal}',
+                                        style: const TextStyle(
+                                          fontSize: 20,
+                                          color: AppColors.textSecondary,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                  const SizedBox(height: 4),
+                                  const Text(
+                                    'Calories eaten',
+                                    style: TextStyle(
+                                      fontSize: 14,
+                                      color: AppColors.textSecondary,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                            CircularProgressIndicatorWidget(
+                              progress: summary.totalCalories / userGoals.calorieGoal,
+                              size: 80,
+                              strokeWidth: 8,
+                              progressColor: AppColors.primary,
+                              child: Icon(
+                                Icons.local_fire_department,
+                                color: AppColors.primary,
+                                size: 28,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      const SizedBox(height: 16),
+
+                      // Macro Cards
+                      Row(
+                        children: [
+                          Expanded(
+                            child: MacroCard(
+                              label: 'Protein eaten',
+                              current: summary.totalProtein.toInt(),
+                              goal: userGoals.proteinGoal,
+                              color: AppColors.protein,
+                              icon: Icons.egg_outlined,
+                            ),
+                          ),
+                          const SizedBox(width: 12),
+                          Expanded(
+                            child: MacroCard(
+                              label: 'Carbs eaten',
+                              current: summary.totalCarbs.toInt(),
+                              goal: userGoals.carbsGoal,
+                              color: AppColors.carbs,
+                              icon: Icons.grass,
+                            ),
+                          ),
+                          const SizedBox(width: 12),
+                          Expanded(
+                            child: MacroCard(
+                              label: 'Fat eaten',
+                              current: summary.totalFat.toInt(),
+                              goal: userGoals.fatGoal,
+                              color: AppColors.fat,
+                              icon: Icons.water_drop_outlined,
+                            ),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 24),
+
+                      // Recently uploaded
+                      const Text(
+                        'Recently uploaded',
+                        style: TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.w600,
+                          color: AppColors.textPrimary,
+                        ),
+                      ),
+                      const SizedBox(height: 12),
+
+                      // Food Entries
+                      if (summary.entries.isEmpty)
+                        Container(
+                          padding: const EdgeInsets.all(32),
+                          decoration: BoxDecoration(
+                            color: AppColors.surface,
+                            borderRadius: BorderRadius.circular(16),
+                          ),
+                          child: Column(
+                            children: [
+                              Icon(
+                                Icons.camera_alt_outlined,
+                                size: 48,
+                                color: AppColors.textTertiary,
+                              ),
+                              const SizedBox(height: 12),
+                              const Text(
+                                'No meals logged yet',
+                                style: TextStyle(
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.w600,
+                                  color: AppColors.textSecondary,
+                                ),
+                              ),
+                              const SizedBox(height: 4),
+                              const Text(
+                                'Tap + to add your first meal',
+                                style: TextStyle(
+                                  fontSize: 14,
+                                  color: AppColors.textTertiary,
+                                ),
+                              ),
+                            ],
+                          ),
+                        )
+                      else
+                        ...summary.entries.map((entry) => Padding(
+                          padding: const EdgeInsets.only(bottom: 12),
+                          child: FoodEntryCard(
+                            entry: entry,
+                            onTap: () {
+                              context.push('/food/${entry.id}', extra: {
+                                'entry': entry,
+                              });
+                            },
+                          ),
+                        )),
+                    ],
+                  ),
+                ),
+                loading: () => const Center(
+                  child: Padding(
+                    padding: EdgeInsets.all(32),
+                    child: CircularProgressIndicator(),
+                  ),
+                ),
+                error: (error, stack) => Center(
+                  child: Padding(
+                    padding: const EdgeInsets.all(32),
+                    child: Text(
+                      'Error loading data: $error',
+                      style: const TextStyle(color: AppColors.error),
+                    ),
+                  ),
+                ),
+              ),
+            ),
+
+            // Bottom padding
+            const SliverToBoxAdapter(
+              child: SizedBox(height: 100),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
