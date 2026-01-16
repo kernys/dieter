@@ -740,6 +740,42 @@ abstract class AppLocalizations {
   /// **'Are you sure you want to sign out?'**
   String get signOutConfirmMessage;
 
+  /// No description provided for @share.
+  ///
+  /// In en, this message translates to:
+  /// **'Share'**
+  String get share;
+
+  /// No description provided for @delete.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete'**
+  String get delete;
+
+  /// No description provided for @deleteEntry.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete Entry'**
+  String get deleteEntry;
+
+  /// No description provided for @deleteEntryConfirm.
+  ///
+  /// In en, this message translates to:
+  /// **'Are you sure you want to delete this food entry?'**
+  String get deleteEntryConfirm;
+
+  /// No description provided for @sharedFromDieterAI.
+  ///
+  /// In en, this message translates to:
+  /// **'Shared from Dieter AI 🍎'**
+  String get sharedFromDieterAI;
+
+  /// No description provided for @entryDeleted.
+  ///
+  /// In en, this message translates to:
+  /// **'Entry deleted'**
+  String get entryDeleted;
+
   /// No description provided for @cameraNotAvailable.
   ///
   /// In en, this message translates to:

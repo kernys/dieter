@@ -125,6 +125,13 @@
   "signOutConfirmTitle": "로그아웃",
   "signOutConfirmMessage": "정말 로그아웃하시겠습니까?",
 
+  "share": "공유",
+  "delete": "삭제",
+  "deleteEntry": "항목 삭제",
+  "deleteEntryConfirm": "이 음식 기록을 삭제하시겠습니까?",
+  "sharedFromDieterAI": "Dieter AI에서 공유됨 🍎",
+  "entryDeleted": "항목이 삭제되었습니다",
+
   "cameraNotAvailable": "카메라를 사용할 수 없습니다",
   "cameraError": "카메라 오류: {error}",
   "pickFromGallery": "갤러리에서 선택",

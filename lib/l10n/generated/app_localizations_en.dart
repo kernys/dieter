@@ -343,6 +343,25 @@ class AppLocalizationsEn extends AppLocalizations {
   String get signOutConfirmMessage => 'Are you sure you want to sign out?';
 
   @override
+  String get share => 'Share';
+
+  @override
+  String get delete => 'Delete';
+
+  @override
+  String get deleteEntry => 'Delete Entry';
+
+  @override
+  String get deleteEntryConfirm =>
+      'Are you sure you want to delete this food entry?';
+
+  @override
+  String get sharedFromDieterAI => 'Shared from Dieter AI 🍎';
+
+  @override
+  String get entryDeleted => 'Entry deleted';
+
+  @override
   String get cameraNotAvailable => 'Camera not available';
 
   @override

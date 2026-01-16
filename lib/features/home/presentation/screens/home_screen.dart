@@ -6,6 +6,7 @@ import '../../../../core/constants/app_constants.dart';
 import '../../../../shared/widgets/circular_progress_indicator_widget.dart';
 import '../../../../shared/widgets/food_entry_card.dart';
 import '../../../../l10n/generated/app_localizations.dart';
+import '../../../../services/api_service.dart';
 import '../providers/home_provider.dart';
 import '../widgets/week_calendar.dart';
 import '../widgets/macro_card.dart';
@@ -286,6 +287,23 @@ class HomeScreen extends ConsumerWidget {
                               context.push('/food/${entry.id}', extra: {
                                 'entry': entry,
                               });
+                            },
+                            onDelete: () async {
+                              try {
+                                await ref.read(apiServiceProvider).deleteFoodEntry(entry.id);
+                                ref.invalidate(dailySummaryProvider);
+                                if (context.mounted) {
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                    SnackBar(content: Text(l10n.entryDeleted)),
+                                  );
+                                }
+                              } catch (e) {
+                                if (context.mounted) {
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                    SnackBar(content: Text('Delete failed: $e')),
+                                  );
+                                }
+                              }
                             },
                           ),
                         )),

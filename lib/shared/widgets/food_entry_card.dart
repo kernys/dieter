@@ -1,19 +1,23 @@
 import 'package:flutter/material.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:intl/intl.dart';
+import 'package:share_plus/share_plus.dart';
 import '../../core/constants/app_colors.dart';
+import '../../l10n/generated/app_localizations.dart';
 import '../models/food_entry_model.dart';
 
 class FoodEntryCard extends StatelessWidget {
   final FoodEntryModel entry;
   final VoidCallback? onTap;
   final VoidCallback? onDelete;
+  final VoidCallback? onShare;
 
   const FoodEntryCard({
     super.key,
     required this.entry,
     this.onTap,
     this.onDelete,
+    this.onShare,
   });
 
   @override
@@ -136,7 +140,7 @@ class FoodEntryCard extends StatelessWidget {
               ),
             ),
 
-            // Time
+            // Time and Menu
             Column(
               crossAxisAlignment: CrossAxisAlignment.end,
               children: [
@@ -147,21 +151,106 @@ class FoodEntryCard extends StatelessWidget {
                     color: AppColors.textSecondary,
                   ),
                 ),
-                if (onDelete != null) ...[
-                  const SizedBox(height: 8),
-                  GestureDetector(
-                    onTap: onDelete,
-                    child: const Icon(
-                      Icons.delete_outline,
-                      size: 20,
-                      color: AppColors.textTertiary,
-                    ),
-                  ),
-                ],
+                const SizedBox(height: 4),
+                _buildMoreMenu(context),
               ],
             ),
           ],
         ),
+      ),
+    );
+  }
+
+  Widget _buildMoreMenu(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+
+    return PopupMenuButton<String>(
+      icon: const Icon(
+        Icons.more_vert,
+        size: 20,
+        color: AppColors.textTertiary,
+      ),
+      padding: EdgeInsets.zero,
+      constraints: const BoxConstraints(),
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(12),
+      ),
+      onSelected: (value) {
+        switch (value) {
+          case 'share':
+            _shareEntry(context);
+            break;
+          case 'delete':
+            _confirmDelete(context, l10n);
+            break;
+        }
+      },
+      itemBuilder: (context) => [
+        PopupMenuItem(
+          value: 'share',
+          child: Row(
+            children: [
+              const Icon(Icons.share_outlined, size: 20),
+              const SizedBox(width: 12),
+              Text(l10n.share),
+            ],
+          ),
+        ),
+        if (onDelete != null)
+          PopupMenuItem(
+            value: 'delete',
+            child: Row(
+              children: [
+                const Icon(Icons.delete_outline, size: 20, color: AppColors.error),
+                const SizedBox(width: 12),
+                Text(l10n.delete, style: const TextStyle(color: AppColors.error)),
+              ],
+            ),
+          ),
+      ],
+    );
+  }
+
+  void _shareEntry(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+
+    final shareText = '''
+${entry.name}
+
+🔥 ${entry.calories} ${l10n.cal}
+🥚 ${l10n.protein}: ${entry.protein.toStringAsFixed(1)}g
+🌾 ${l10n.carbohydrates}: ${entry.carbs.toStringAsFixed(1)}g
+💧 ${l10n.fat}: ${entry.fat.toStringAsFixed(1)}g
+
+${l10n.sharedFromDieterAI}
+''';
+
+    Share.share(shareText.trim());
+    onShare?.call();
+  }
+
+  void _confirmDelete(BuildContext context, AppLocalizations l10n) {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: Text(l10n.deleteEntry),
+        content: Text(l10n.deleteEntryConfirm),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: Text(l10n.cancel),
+          ),
+          ElevatedButton(
+            onPressed: () {
+              Navigator.pop(context);
+              onDelete?.call();
+            },
+            style: ElevatedButton.styleFrom(
+              backgroundColor: AppColors.error,
+            ),
+            child: Text(l10n.delete),
+          ),
+        ],
       ),
     );
   }

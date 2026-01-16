@@ -340,6 +340,24 @@ class AppLocalizationsKo extends AppLocalizations {
   String get signOutConfirmMessage => '정말 로그아웃하시겠습니까?';
 
   @override
+  String get share => '공유';
+
+  @override
+  String get delete => '삭제';
+
+  @override
+  String get deleteEntry => '항목 삭제';
+
+  @override
+  String get deleteEntryConfirm => '이 음식 기록을 삭제하시겠습니까?';
+
+  @override
+  String get sharedFromDieterAI => 'Dieter AI에서 공유됨 🍎';
+
+  @override
+  String get entryDeleted => '항목이 삭제되었습니다';
+
+  @override
   String get cameraNotAvailable => '카메라를 사용할 수 없습니다';
 
   @override
