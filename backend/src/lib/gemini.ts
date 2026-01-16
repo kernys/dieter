@@ -1,6 +1,5 @@
-import { GoogleGenerativeAI } from '@google/generative-ai';
-
-const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY!);
+const OPENROUTER_API_URL = 'https://openrouter.ai/api/v1/chat/completions';
+const OPENROUTER_API_KEY = process.env.OPENROUTER_API_KEY!;
 
 export interface FoodAnalysisResult {
   name: string;
@@ -21,8 +20,6 @@ export interface IngredientAnalysis {
 }
 
 export async function analyzeFood(imageBase64: string): Promise<FoodAnalysisResult> {
-  const model = genAI.getGenerativeModel({ model: 'gemini-1.5-flash' });
-
   const prompt = `
 Analyze this food image and provide nutritional information.
 
@@ -54,18 +51,48 @@ Important:
 `;
 
   try {
-    const result = await model.generateContent([
-      prompt,
-      {
-        inlineData: {
-          mimeType: 'image/jpeg',
-          data: imageBase64,
-        },
+    const response = await fetch(OPENROUTER_API_URL, {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${OPENROUTER_API_KEY}`,
+        'Content-Type': 'application/json',
+        'HTTP-Referer': process.env.OPENROUTER_HTTP_REFERER || '',
+        'X-Title': 'Dieter AI',
       },
-    ]);
+      body: JSON.stringify({
+        model: 'google/gemini-1.5-flash',
+        messages: [
+          {
+            role: 'user',
+            content: [
+              {
+                type: 'text',
+                text: prompt,
+              },
+              {
+                type: 'image_url',
+                image_url: {
+                  url: `data:image/jpeg;base64,${imageBase64}`,
+                },
+              },
+            ],
+          },
+        ],
+      }),
+    });
 
-    const response = await result.response;
-    let text = response.text();
+    if (!response.ok) {
+      const errorText = await response.text();
+      console.error('OpenRouter API error:', response.status, errorText);
+      throw new Error(`OpenRouter API error: ${response.status}`);
+    }
+
+    const data = await response.json();
+    let text = data.choices[0]?.message?.content || '';
+
+    if (!text) {
+      throw new Error('No response content from OpenRouter');
+    }
 
     // Clean up the response
     text = text.trim();

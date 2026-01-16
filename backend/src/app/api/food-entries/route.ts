@@ -1,7 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { supabase } from '@/lib/supabase';
 import { z } from 'zod';
-import { v4 as uuidv4 } from 'uuid';
+import { getRepository } from '@/lib/database';
+import { FoodEntryEntity, type FoodEntry } from '@/entities';
+import { Between } from 'typeorm';
 
 const createFoodEntrySchema = z.object({
   user_id: z.string().uuid(),
@@ -35,11 +36,9 @@ export async function GET(request: NextRequest) {
       );
     }
 
-    let query = supabase
-      .from('food_entries')
-      .select('*')
-      .eq('user_id', userId)
-      .order('logged_at', { ascending: false });
+    const foodEntryRepo = await getRepository<FoodEntry>(FoodEntryEntity);
+
+    let whereClause: object = { user_id: userId };
 
     if (date) {
       const startOfDay = new Date(date);
@@ -47,28 +46,24 @@ export async function GET(request: NextRequest) {
       const endOfDay = new Date(date);
       endOfDay.setHours(23, 59, 59, 999);
 
-      query = query
-        .gte('logged_at', startOfDay.toISOString())
-        .lte('logged_at', endOfDay.toISOString());
+      whereClause = {
+        user_id: userId,
+        logged_at: Between(startOfDay, endOfDay),
+      };
     }
 
-    const { data, error } = await query;
+    const entries = await foodEntryRepo.find({
+      where: whereClause,
+      order: { logged_at: 'DESC' },
+    });
 
-    if (error) {
-      return NextResponse.json(
-        { error: error.message },
-        { status: 400 }
-      );
-    }
-
-    // Calculate daily summary
-    const totalCalories = data.reduce((sum, entry) => sum + entry.calories * entry.servings, 0);
-    const totalProtein = data.reduce((sum, entry) => sum + entry.protein * entry.servings, 0);
-    const totalCarbs = data.reduce((sum, entry) => sum + entry.carbs * entry.servings, 0);
-    const totalFat = data.reduce((sum, entry) => sum + entry.fat * entry.servings, 0);
+    const totalCalories = entries.reduce((sum, entry) => sum + Number(entry.calories) * Number(entry.servings), 0);
+    const totalProtein = entries.reduce((sum, entry) => sum + Number(entry.protein) * Number(entry.servings), 0);
+    const totalCarbs = entries.reduce((sum, entry) => sum + Number(entry.carbs) * Number(entry.servings), 0);
+    const totalFat = entries.reduce((sum, entry) => sum + Number(entry.fat) * Number(entry.servings), 0);
 
     return NextResponse.json({
-      entries: data,
+      entries,
       summary: {
         totalCalories,
         totalProtein,
@@ -90,28 +85,27 @@ export async function POST(request: NextRequest) {
     const body = await request.json();
     const validatedData = createFoodEntrySchema.parse(body);
 
-    const { data, error } = await supabase
-      .from('food_entries')
-      .insert({
-        id: uuidv4(),
-        ...validatedData,
-        logged_at: new Date().toISOString(),
-      })
-      .select()
-      .single();
+    const foodEntryRepo = await getRepository<FoodEntry>(FoodEntryEntity);
 
-    if (error) {
-      return NextResponse.json(
-        { error: error.message },
-        { status: 400 }
-      );
-    }
+    const entry = foodEntryRepo.create({
+      user_id: validatedData.user_id,
+      name: validatedData.name,
+      calories: validatedData.calories,
+      protein: validatedData.protein,
+      carbs: validatedData.carbs,
+      fat: validatedData.fat,
+      image_url: validatedData.image_url || null,
+      ingredients: validatedData.ingredients || null,
+      servings: validatedData.servings,
+    });
 
-    return NextResponse.json(data, { status: 201 });
+    await foodEntryRepo.save(entry);
+
+    return NextResponse.json(entry, { status: 201 });
   } catch (error) {
     if (error instanceof z.ZodError) {
       return NextResponse.json(
-        { error: 'Invalid request data', details: error.errors },
+        { error: 'Invalid request data', details: error.issues },
         { status: 400 }
       );
     }

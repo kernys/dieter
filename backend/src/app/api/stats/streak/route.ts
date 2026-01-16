@@ -1,5 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { supabase } from '@/lib/supabase';
+import { getRepository } from '@/lib/database';
+import { FoodEntryEntity, type FoodEntry } from '@/entities';
+import { MoreThanOrEqual } from 'typeorm';
 
 export async function GET(request: NextRequest) {
   try {
@@ -13,25 +15,19 @@ export async function GET(request: NextRequest) {
       );
     }
 
-    // Get food entries for the last 365 days
     const startDate = new Date();
     startDate.setDate(startDate.getDate() - 365);
 
-    const { data: entries, error } = await supabase
-      .from('food_entries')
-      .select('logged_at')
-      .eq('user_id', userId)
-      .gte('logged_at', startDate.toISOString())
-      .order('logged_at', { ascending: false });
+    const foodEntryRepo = await getRepository<FoodEntry>(FoodEntryEntity);
+    const entries = await foodEntryRepo.find({
+      where: {
+        user_id: userId,
+        logged_at: MoreThanOrEqual(startDate),
+      },
+      select: ['logged_at'],
+      order: { logged_at: 'DESC' },
+    });
 
-    if (error) {
-      return NextResponse.json(
-        { error: error.message },
-        { status: 400 }
-      );
-    }
-
-    // Calculate streak
     const loggedDates = new Set(
       entries.map(entry => {
         const date = new Date(entry.logged_at);
@@ -41,11 +37,9 @@ export async function GET(request: NextRequest) {
 
     let currentStreak = 0;
     let maxStreak = 0;
-    let tempStreak = 0;
     const today = new Date();
     today.setHours(0, 0, 0, 0);
 
-    // Calculate current streak (consecutive days from today going backwards)
     for (let i = 0; i < 365; i++) {
       const checkDate = new Date(today);
       checkDate.setDate(checkDate.getDate() - i);
@@ -54,17 +48,15 @@ export async function GET(request: NextRequest) {
       if (loggedDates.has(dateKey)) {
         currentStreak++;
       } else if (i === 0) {
-        // If no entry today, check if yesterday had entry
         continue;
       } else {
         break;
       }
     }
 
-    // Calculate week data (S M T W T F S)
     const weekData: boolean[] = [];
     const startOfWeek = new Date(today);
-    startOfWeek.setDate(today.getDate() - today.getDay()); // Start from Sunday
+    startOfWeek.setDate(today.getDate() - today.getDay());
 
     for (let i = 0; i < 7; i++) {
       const checkDate = new Date(startOfWeek);
@@ -73,8 +65,8 @@ export async function GET(request: NextRequest) {
       weekData.push(loggedDates.has(dateKey));
     }
 
-    // Calculate max streak
     const sortedDates = Array.from(loggedDates).sort();
+    let tempStreak = 0;
     for (const dateStr of sortedDates) {
       tempStreak++;
       maxStreak = Math.max(maxStreak, tempStreak);

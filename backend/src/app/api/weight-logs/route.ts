@@ -1,7 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { supabase } from '@/lib/supabase';
 import { z } from 'zod';
-import { v4 as uuidv4 } from 'uuid';
+import { getRepository } from '@/lib/database';
+import { WeightLogEntity, UserEntity, type WeightLog, type User } from '@/entities';
+import { MoreThanOrEqual } from 'typeorm';
 
 const createWeightLogSchema = z.object({
   user_id: z.string().uuid(),
@@ -14,7 +15,7 @@ export async function GET(request: NextRequest) {
     const { searchParams } = new URL(request.url);
     const userId = searchParams.get('user_id');
     const limit = parseInt(searchParams.get('limit') || '100');
-    const range = searchParams.get('range'); // 90d, 6m, 1y, all
+    const range = searchParams.get('range');
 
     if (!userId) {
       return NextResponse.json(
@@ -23,14 +24,10 @@ export async function GET(request: NextRequest) {
       );
     }
 
-    let query = supabase
-      .from('weight_logs')
-      .select('*')
-      .eq('user_id', userId)
-      .order('logged_at', { ascending: false })
-      .limit(limit);
+    const weightLogRepo = await getRepository<WeightLog>(WeightLogEntity);
 
-    // Apply date range filter
+    let whereClause: object = { user_id: userId };
+
     if (range && range !== 'all') {
       const now = new Date();
       let startDate: Date;
@@ -49,30 +46,29 @@ export async function GET(request: NextRequest) {
           startDate = new Date(0);
       }
 
-      query = query.gte('logged_at', startDate.toISOString());
+      whereClause = {
+        user_id: userId,
+        logged_at: MoreThanOrEqual(startDate),
+      };
     }
 
-    const { data, error } = await query;
+    const logs = await weightLogRepo.find({
+      where: whereClause,
+      order: { logged_at: 'DESC' },
+      take: limit,
+    });
 
-    if (error) {
-      return NextResponse.json(
-        { error: error.message },
-        { status: 400 }
-      );
-    }
-
-    // Calculate stats
-    const weights = data.map(log => log.weight);
+    const weights = logs.map(log => Number(log.weight));
     const currentWeight = weights[0] || 0;
     const startWeight = weights[weights.length - 1] || currentWeight;
-    const minWeight = Math.min(...weights);
-    const maxWeight = Math.max(...weights);
+    const minWeight = weights.length > 0 ? Math.min(...weights) : 0;
+    const maxWeight = weights.length > 0 ? Math.max(...weights) : 0;
     const avgWeight = weights.length > 0
       ? weights.reduce((a, b) => a + b, 0) / weights.length
       : 0;
 
     return NextResponse.json({
-      logs: data,
+      logs,
       stats: {
         currentWeight,
         startWeight,
@@ -80,7 +76,7 @@ export async function GET(request: NextRequest) {
         maxWeight,
         avgWeight,
         totalChange: currentWeight - startWeight,
-        totalEntries: data.length,
+        totalEntries: logs.length,
       },
     });
   } catch (error) {
@@ -97,34 +93,27 @@ export async function POST(request: NextRequest) {
     const body = await request.json();
     const validatedData = createWeightLogSchema.parse(body);
 
-    const { data, error } = await supabase
-      .from('weight_logs')
-      .insert({
-        id: uuidv4(),
-        ...validatedData,
-        logged_at: new Date().toISOString(),
-      })
-      .select()
-      .single();
+    const weightLogRepo = await getRepository<WeightLog>(WeightLogEntity);
+    const userRepo = await getRepository<User>(UserEntity);
 
-    if (error) {
-      return NextResponse.json(
-        { error: error.message },
-        { status: 400 }
-      );
-    }
+    const log = weightLogRepo.create({
+      user_id: validatedData.user_id,
+      weight: validatedData.weight,
+      note: validatedData.note || null,
+    });
 
-    // Update user's current weight
-    await supabase
-      .from('users')
-      .update({ current_weight: validatedData.weight })
-      .eq('id', validatedData.user_id);
+    await weightLogRepo.save(log);
 
-    return NextResponse.json(data, { status: 201 });
+    await userRepo.update(
+      { id: validatedData.user_id },
+      { current_weight: validatedData.weight }
+    );
+
+    return NextResponse.json(log, { status: 201 });
   } catch (error) {
     if (error instanceof z.ZodError) {
       return NextResponse.json(
-        { error: 'Invalid request data', details: error.errors },
+        { error: 'Invalid request data', details: error.issues },
         { status: 400 }
       );
     }

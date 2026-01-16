@@ -12,7 +12,7 @@ class AppConstants {
   static const int defaultFatGoal = 70;
 
   // API Configuration
-  static const String apiBaseUrl = 'http://localhost:3000/api';
+  static const String apiBaseUrl = 'https://dieter-api.vercel.app/api';
 
   // API Keys (Replace with your actual keys)
   static const String supabaseUrl = 'YOUR_SUPABASE_URL';

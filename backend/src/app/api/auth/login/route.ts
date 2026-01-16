@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { supabase } from '@/lib/supabase';
 import { z } from 'zod';
+import { getRepository } from '@/lib/database';
+import { comparePassword, generateToken } from '@/lib/auth';
+import { UserEntity, type User } from '@/entities';
 
 const loginSchema = z.object({
   email: z.string().email(),
@@ -12,41 +14,48 @@ export async function POST(request: NextRequest) {
     const body = await request.json();
     const { email, password } = loginSchema.parse(body);
 
-    const { data, error } = await supabase.auth.signInWithPassword({
-      email,
-      password,
-    });
+    const userRepo = await getRepository<User>(UserEntity);
+    const user = await userRepo.findOne({ where: { email } });
 
-    if (error) {
+    if (!user) {
       return NextResponse.json(
-        { error: error.message },
+        { error: 'Invalid email or password' },
         { status: 401 }
       );
     }
 
-    // Get user profile
-    const { data: profile } = await supabase
-      .from('users')
-      .select('*')
-      .eq('id', data.user.id)
-      .single();
+    const isValidPassword = await comparePassword(password, user.password);
+    if (!isValidPassword) {
+      return NextResponse.json(
+        { error: 'Invalid email or password' },
+        { status: 401 }
+      );
+    }
+
+    const token = generateToken(user.id, user.email);
 
     return NextResponse.json({
       user: {
-        id: data.user.id,
-        email: data.user.email,
-        ...profile,
+        id: user.id,
+        email: user.email,
+        name: user.name,
+        avatar_url: user.avatar_url,
+        daily_calorie_goal: user.daily_calorie_goal,
+        daily_protein_goal: user.daily_protein_goal,
+        daily_carbs_goal: user.daily_carbs_goal,
+        daily_fat_goal: user.daily_fat_goal,
+        current_weight: user.current_weight,
+        goal_weight: user.goal_weight,
       },
       session: {
-        accessToken: data.session.access_token,
-        refreshToken: data.session.refresh_token,
-        expiresAt: data.session.expires_at,
+        accessToken: token,
+        expiresAt: Math.floor(Date.now() / 1000) + 7 * 24 * 60 * 60,
       },
     });
   } catch (error) {
     if (error instanceof z.ZodError) {
       return NextResponse.json(
-        { error: 'Invalid request data', details: error.errors },
+        { error: 'Invalid request data', details: error.issues },
         { status: 400 }
       );
     }

@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { supabase } from '@/lib/supabase';
 import { z } from 'zod';
+import { getRepository } from '@/lib/database';
+import { FoodEntryEntity, type FoodEntry } from '@/entities';
 
 const updateFoodEntrySchema = z.object({
   name: z.string().optional(),
@@ -26,20 +27,17 @@ export async function GET(
   try {
     const { id } = await params;
 
-    const { data, error } = await supabase
-      .from('food_entries')
-      .select('*')
-      .eq('id', id)
-      .single();
+    const foodEntryRepo = await getRepository<FoodEntry>(FoodEntryEntity);
+    const entry = await foodEntryRepo.findOne({ where: { id } });
 
-    if (error) {
+    if (!entry) {
       return NextResponse.json(
         { error: 'Food entry not found' },
         { status: 404 }
       );
     }
 
-    return NextResponse.json(data);
+    return NextResponse.json(entry);
   } catch (error) {
     console.error('Get food entry error:', error);
     return NextResponse.json(
@@ -58,25 +56,24 @@ export async function PATCH(
     const body = await request.json();
     const updates = updateFoodEntrySchema.parse(body);
 
-    const { data, error } = await supabase
-      .from('food_entries')
-      .update(updates)
-      .eq('id', id)
-      .select()
-      .single();
+    const foodEntryRepo = await getRepository<FoodEntry>(FoodEntryEntity);
+    const entry = await foodEntryRepo.findOne({ where: { id } });
 
-    if (error) {
+    if (!entry) {
       return NextResponse.json(
-        { error: error.message },
-        { status: 400 }
+        { error: 'Food entry not found' },
+        { status: 404 }
       );
     }
 
-    return NextResponse.json(data);
+    Object.assign(entry, updates);
+    await foodEntryRepo.save(entry);
+
+    return NextResponse.json(entry);
   } catch (error) {
     if (error instanceof z.ZodError) {
       return NextResponse.json(
-        { error: 'Invalid request data', details: error.errors },
+        { error: 'Invalid request data', details: error.issues },
         { status: 400 }
       );
     }
@@ -95,15 +92,13 @@ export async function DELETE(
   try {
     const { id } = await params;
 
-    const { error } = await supabase
-      .from('food_entries')
-      .delete()
-      .eq('id', id);
+    const foodEntryRepo = await getRepository<FoodEntry>(FoodEntryEntity);
+    const result = await foodEntryRepo.delete({ id });
 
-    if (error) {
+    if (result.affected === 0) {
       return NextResponse.json(
-        { error: error.message },
-        { status: 400 }
+        { error: 'Food entry not found' },
+        { status: 404 }
       );
     }
 
