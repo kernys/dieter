@@ -110,11 +110,11 @@ class FoodAnalyzerNotifier extends StateNotifier<AsyncValue<FoodAnalysisResult?>
 
   FoodAnalyzerNotifier(this._apiService) : super(const AsyncValue.data(null));
 
-  Future<FoodAnalysisResult?> analyzeFood(Uint8List imageBytes) async {
+  Future<FoodAnalysisResult?> analyzeFood(Uint8List imageBytes, {String? locale}) async {
     state = const AsyncValue.loading();
 
     try {
-      final result = await _apiService.analyzeFood(imageBytes);
+      final result = await _apiService.analyzeFood(imageBytes, locale: locale);
       state = AsyncValue.data(result);
       return result;
     } catch (e, stack) {

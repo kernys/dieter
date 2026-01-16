@@ -339,7 +339,8 @@ class _CameraScreenState extends ConsumerState<CameraScreen> {
 
     try {
       final apiService = ref.read(apiServiceProvider);
-      final result = await apiService.analyzeFood(imageBytes);
+      final locale = Localizations.localeOf(context).languageCode;
+      final result = await apiService.analyzeFood(imageBytes, locale: locale);
 
       ref.read(analysisResultProvider.notifier).state = result;
       ref.read(analysisStateProvider.notifier).state = AnalysisState.success;
