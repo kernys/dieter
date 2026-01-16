@@ -147,13 +147,16 @@ class ApiService {
     }
   }
 
-  Future<FoodAnalysisResult> analyzeFood(Uint8List imageBytes) async {
+  Future<FoodAnalysisResult> analyzeFood(Uint8List imageBytes, {String? locale}) async {
     final base64Image = base64Encode(imageBytes);
 
     final response = await http.post(
       Uri.parse('$baseUrl/food-entries/analyze'),
       headers: _headers,
-      body: jsonEncode({'image': base64Image}),
+      body: jsonEncode({
+        'image': base64Image,
+        if (locale != null) 'locale': locale,
+      }),
     );
 
     if (response.statusCode == 200) {

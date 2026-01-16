@@ -1,6 +1,19 @@
 const OPENROUTER_API_URL = 'https://openrouter.ai/api/v1/chat/completions';
 const OPENROUTER_API_KEY = process.env.OPENROUTER_API_KEY!;
 
+function getLanguageInstruction(locale: string): string {
+  const languageMap: Record<string, string> = {
+    'ko': 'Respond with food names and ingredient names in Korean (한국어).',
+    'ja': 'Respond with food names and ingredient names in Japanese (日本語).',
+    'zh': 'Respond with food names and ingredient names in Chinese (中文).',
+    'es': 'Respond with food names and ingredient names in Spanish (Español).',
+    'fr': 'Respond with food names and ingredient names in French (Français).',
+    'de': 'Respond with food names and ingredient names in German (Deutsch).',
+  };
+
+  return languageMap[locale] || '';
+}
+
 export interface FoodAnalysisResult {
   name: string;
   calories: number;
@@ -19,9 +32,12 @@ export interface IngredientAnalysis {
   fat: number | null;
 }
 
-export async function analyzeFood(imageBase64: string): Promise<FoodAnalysisResult> {
+export async function analyzeFood(imageBase64: string, locale: string = 'en'): Promise<FoodAnalysisResult> {
+  const languageInstruction = getLanguageInstruction(locale);
+
   const prompt = `
 Analyze this food image and provide nutritional information.
+${languageInstruction}
 
 Please respond in the following JSON format only, without any markdown formatting or code blocks:
 {
