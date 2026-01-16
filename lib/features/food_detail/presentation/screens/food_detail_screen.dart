@@ -611,8 +611,8 @@ class _FoodDetailScreenState extends ConsumerState<FoodDetailScreen> {
 
     try {
       final userId = ref.read(currentUserIdProvider);
-      if (userId == null) {
-        throw Exception('User not authenticated');
+      if (userId == null || userId == 'guest-user') {
+        throw Exception('Please login to save food entries');
       }
 
       final apiService = ref.read(apiServiceProvider);

@@ -113,26 +113,40 @@ class ApiService {
     List<Map<String, dynamic>>? ingredients,
     int servings = 1,
   }) async {
+    final requestBody = {
+      'user_id': userId,
+      'name': name,
+      'calories': calories,
+      'protein': protein,
+      'carbs': carbs,
+      'fat': fat,
+      'image_url': imageUrl,
+      'ingredients': ingredients,
+      'servings': servings,
+    };
+
+    // Debug log
+    print('=== createFoodEntry request ===');
+    print('userId: $userId');
+    print('body: ${jsonEncode(requestBody)}');
+
     final response = await http.post(
       Uri.parse('$baseUrl/food-entries'),
       headers: _headers,
-      body: jsonEncode({
-        'user_id': userId,
-        'name': name,
-        'calories': calories,
-        'protein': protein,
-        'carbs': carbs,
-        'fat': fat,
-        'image_url': imageUrl,
-        'ingredients': ingredients,
-        'servings': servings,
-      }),
+      body: jsonEncode(requestBody),
     );
 
     if (response.statusCode == 201) {
       return FoodEntryModel.fromJson(jsonDecode(response.body));
     } else {
-      throw ApiException(response.statusCode, 'Failed to create food entry');
+      print('=== createFoodEntry error ===');
+      print('status: ${response.statusCode}');
+      print('response: ${response.body}');
+
+      final errorBody = jsonDecode(response.body);
+      final errorMessage = errorBody['error'] ?? 'Failed to create food entry';
+      final details = errorBody['details'];
+      throw ApiException(response.statusCode, details != null ? '$errorMessage: $details' : errorMessage);
     }
   }
 

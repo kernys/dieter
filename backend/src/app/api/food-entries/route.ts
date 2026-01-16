@@ -11,7 +11,7 @@ const createFoodEntrySchema = z.object({
   protein: z.number(),
   carbs: z.number(),
   fat: z.number(),
-  image_url: z.string().optional(),
+  image_url: z.string().nullish(),
   ingredients: z.array(z.object({
     name: z.string(),
     amount: z.string().nullable(),
@@ -19,7 +19,7 @@ const createFoodEntrySchema = z.object({
     protein: z.number().nullable(),
     carbs: z.number().nullable(),
     fat: z.number().nullable(),
-  })).optional(),
+  })).nullish(),
   servings: z.number().default(1),
 });
 
