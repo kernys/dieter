@@ -65,6 +65,10 @@
   "enterYourWeight": "Enter your weight",
   "enterGoalWeight": "Enter your goal weight",
   "lbs": "lbs",
+  "kg": "kg",
+  "weightKg": "Weight (kg)",
+  "goalKg": "Goal {weight} kg",
+  "@goalKg": { "placeholders": { "weight": { "type": "int" } } },
 
   "back": "Back",
   "continue_": "Continue",

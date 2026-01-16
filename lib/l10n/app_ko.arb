@@ -62,6 +62,9 @@
   "enterYourWeight": "체중을 입력하세요",
   "enterGoalWeight": "목표 체중을 입력하세요",
   "lbs": "lb",
+  "kg": "kg",
+  "weightKg": "체중 (kg)",
+  "goalKg": "목표 {weight} kg",
 
   "back": "뒤로",
   "continue_": "계속",

@@ -3,14 +3,28 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:fl_chart/fl_chart.dart';
 import '../../../../core/constants/app_colors.dart';
 import '../../../../l10n/generated/app_localizations.dart';
+import '../../../profile/presentation/providers/settings_provider.dart';
 import '../providers/progress_provider.dart';
 
 class ProgressScreen extends ConsumerWidget {
   const ProgressScreen({super.key});
 
+  // Helper to convert weight based on unit system
+  double _convertWeight(double weightInLbs, UnitSystem unitSystem) {
+    if (unitSystem == UnitSystem.metric) {
+      return weightInLbs * 0.453592;
+    }
+    return weightInLbs;
+  }
+
+  String _getWeightUnit(UnitSystem unitSystem, AppLocalizations l10n) {
+    return unitSystem == UnitSystem.metric ? l10n.kg : l10n.lbs;
+  }
+
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final l10n = AppLocalizations.of(context)!;
+    final settings = ref.watch(settingsProvider);
     final currentWeight = ref.watch(currentWeightProvider);
     final goalWeight = ref.watch(goalWeightProvider);
     final progressPercentage = ref.watch(progressPercentageProvider);
@@ -18,6 +32,11 @@ class ProgressScreen extends ConsumerWidget {
     final timeRange = ref.watch(timeRangeProvider);
     final weightLogsAsync = ref.watch(weightLogsProvider);
     final dailyAverageAsync = ref.watch(dailyAverageCaloriesProvider);
+
+    // Convert weights based on unit system
+    final displayWeight = _convertWeight(currentWeight, settings.unitSystem);
+    final displayGoalWeight = _convertWeight(goalWeight, settings.unitSystem);
+    final weightUnit = _getWeightUnit(settings.unitSystem, l10n);
 
     // Get streak data with defaults
     final streakData = streakDataAsync.when(
@@ -34,7 +53,7 @@ class ProgressScreen extends ConsumerWidget {
     );
 
     return Scaffold(
-      backgroundColor: AppColors.background,
+      backgroundColor: context.backgroundColor,
       body: SafeArea(
         child: CustomScrollView(
           slivers: [
@@ -83,25 +102,27 @@ class ProgressScreen extends ConsumerWidget {
                               crossAxisAlignment: CrossAxisAlignment.end,
                               children: [
                                 Text(
-                                  currentWeight.toStringAsFixed(1),
-                                  style: const TextStyle(
+                                  displayWeight.toStringAsFixed(1),
+                                  style: TextStyle(
                                     fontSize: 28,
                                     fontWeight: FontWeight.bold,
-                                    color: AppColors.textPrimary,
+                                    color: context.textPrimaryColor,
                                   ),
                                 ),
                                 Text(
-                                  ' ${l10n.lbs}',
-                                  style: const TextStyle(
+                                  ' $weightUnit',
+                                  style: TextStyle(
                                     fontSize: 14,
-                                    color: AppColors.textSecondary,
+                                    color: context.textSecondaryColor,
                                   ),
                                 ),
                               ],
                             ),
                             const SizedBox(height: 4),
                             Text(
-                              l10n.goal(goalWeight.toInt()),
+                              settings.unitSystem == UnitSystem.metric
+                                  ? l10n.goalKg(displayGoalWeight.toInt())
+                                  : l10n.goal(goalWeight.toInt()),
                               style: const TextStyle(
                                 fontSize: 12,
                                 color: AppColors.textTertiary,
@@ -283,7 +304,7 @@ class ProgressScreen extends ConsumerWidget {
                       SizedBox(
                         height: 200,
                         child: weightLogsAsync.when(
-                          data: (logs) => _buildChart(logs, ref, l10n),
+                          data: (logs) => _buildChart(logs, ref, l10n, settings, weightUnit),
                           loading: () => const Center(
                             child: CircularProgressIndicator(),
                           ),
@@ -466,7 +487,7 @@ class ProgressScreen extends ConsumerWidget {
     );
   }
 
-  Widget _buildChart(List<dynamic> logs, WidgetRef ref, AppLocalizations l10n) {
+  Widget _buildChart(List<dynamic> logs, WidgetRef ref, AppLocalizations l10n, AppSettings settings, String weightUnit) {
     if (logs.isEmpty) {
       return Center(child: Text(l10n.noWeightData));
     }
@@ -565,8 +586,11 @@ class ProgressScreen extends ConsumerWidget {
           touchTooltipData: LineTouchTooltipData(
             getTooltipItems: (touchedSpots) {
               return touchedSpots.map((spot) {
+                final displayY = settings.unitSystem == UnitSystem.metric
+                    ? spot.y * 0.453592
+                    : spot.y;
                 return LineTooltipItem(
-                  '${spot.y.toStringAsFixed(1)} lbs',
+                  '${displayY.toStringAsFixed(1)} $weightUnit',
                   const TextStyle(
                     color: Colors.white,
                     fontWeight: FontWeight.bold,
@@ -584,6 +608,8 @@ class ProgressScreen extends ConsumerWidget {
 
   void _showLogWeightDialog(BuildContext context, WidgetRef ref, AppLocalizations l10n) {
     final controller = TextEditingController();
+    final settings = ref.read(settingsProvider);
+    final isMetric = settings.unitSystem == UnitSystem.metric;
 
     showDialog(
       context: context,
@@ -593,7 +619,7 @@ class ProgressScreen extends ConsumerWidget {
           controller: controller,
           keyboardType: const TextInputType.numberWithOptions(decimal: true),
           decoration: InputDecoration(
-            labelText: l10n.weightLbs,
+            labelText: isMetric ? l10n.weightKg : l10n.weightLbs,
             hintText: l10n.enterYourWeight,
           ),
           autofocus: true,
@@ -605,11 +631,13 @@ class ProgressScreen extends ConsumerWidget {
           ),
           ElevatedButton(
             onPressed: () async {
-              final weight = double.tryParse(controller.text);
-              if (weight != null && weight > 0) {
+              final inputWeight = double.tryParse(controller.text);
+              if (inputWeight != null && inputWeight > 0) {
+                // Convert to lbs if input is in kg (API stores in lbs)
+                final weightInLbs = isMetric ? inputWeight / 0.453592 : inputWeight;
                 try {
                   await ref.read(
-                    addWeightLogProvider(AddWeightLogParams(weight: weight)).future,
+                    addWeightLogProvider(AddWeightLogParams(weight: weightInLbs)).future,
                   );
 
                   if (dialogContext.mounted) {

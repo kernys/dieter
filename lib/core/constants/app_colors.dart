@@ -39,4 +39,28 @@ class AppColors {
 
   // Shadow
   static const Color shadow = Color(0x1A000000);
+
+  // Dark mode colors
+  static const Color backgroundDark = Color(0xFF121212);
+  static const Color surfaceDark = Color(0xFF1E1E1E);
+  static const Color cardDark = Color(0xFF1E1E1E);
+  static const Color textPrimaryDark = Color(0xFFFFFFFF);
+  static const Color textSecondaryDark = Color(0xFFB3B3B3);
+  static const Color textTertiaryDark = Color(0xFF808080);
+  static const Color borderDark = Color(0xFF2C2C2C);
+  static const Color dividerDark = Color(0xFF2C2C2C);
+}
+
+// Theme-aware color extension
+extension ThemeColors on BuildContext {
+  bool get isDark => Theme.of(this).brightness == Brightness.dark;
+
+  Color get backgroundColor => isDark ? AppColors.backgroundDark : AppColors.background;
+  Color get surfaceColor => isDark ? AppColors.surfaceDark : AppColors.surface;
+  Color get cardColor => isDark ? AppColors.cardDark : AppColors.card;
+  Color get textPrimaryColor => isDark ? AppColors.textPrimaryDark : AppColors.textPrimary;
+  Color get textSecondaryColor => isDark ? AppColors.textSecondaryDark : AppColors.textSecondary;
+  Color get textTertiaryColor => isDark ? AppColors.textTertiaryDark : AppColors.textTertiary;
+  Color get borderColor => isDark ? AppColors.borderDark : AppColors.border;
+  Color get dividerColor => isDark ? AppColors.dividerDark : AppColors.divider;
 }

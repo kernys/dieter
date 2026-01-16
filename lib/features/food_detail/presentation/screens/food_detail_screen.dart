@@ -3,9 +3,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
+import 'package:cached_network_image/cached_network_image.dart';
+import 'package:share_plus/share_plus.dart';
 import '../../../../core/constants/app_colors.dart';
 import '../../../../services/api_service.dart';
 import '../../../../l10n/generated/app_localizations.dart';
+import '../../../../shared/models/food_entry_model.dart';
 import '../../../auth/presentation/providers/auth_provider.dart';
 import '../../../home/presentation/providers/home_provider.dart';
 
@@ -31,18 +34,48 @@ class _FoodDetailScreenState extends ConsumerState<FoodDetailScreen> {
   late TextEditingController _fatController;
   int _servings = 1;
   Uint8List? _imageBytes;
+  String? _imageUrl;
   FoodAnalysisResult? _result;
+  FoodEntryModel? _existingEntry;
   List<IngredientAnalysis> _ingredients = [];
   bool _isLoading = false;
+  bool _isViewMode = false;
+  DateTime? _loggedAt;
 
   @override
   void initState() {
     super.initState();
 
-    // Initialize with analysis result if available
+    // Check if viewing existing entry
     if (widget.analysisResult != null) {
-      _result = widget.analysisResult!['analysisResult'] as FoodAnalysisResult?;
-      _imageBytes = widget.analysisResult!['imageBytes'] as Uint8List?;
+      if (widget.analysisResult!.containsKey('entry')) {
+        // Viewing existing entry
+        _existingEntry = widget.analysisResult!['entry'] as FoodEntryModel?;
+        _isViewMode = true;
+        if (_existingEntry != null) {
+          _imageUrl = _existingEntry!.imageUrl;
+          _loggedAt = _existingEntry!.loggedAt;
+          _servings = _existingEntry!.servings;
+          _nameController = TextEditingController(text: _existingEntry!.name);
+          _caloriesController = TextEditingController(text: (_existingEntry!.calories ~/ _existingEntry!.servings).toString());
+          _proteinController = TextEditingController(text: (_existingEntry!.protein / _existingEntry!.servings).toStringAsFixed(1));
+          _carbsController = TextEditingController(text: (_existingEntry!.carbs / _existingEntry!.servings).toStringAsFixed(1));
+          _fatController = TextEditingController(text: (_existingEntry!.fat / _existingEntry!.servings).toStringAsFixed(1));
+          _ingredients = _existingEntry!.ingredients.map((i) => IngredientAnalysis(
+            name: i.name,
+            amount: i.amount,
+            calories: i.calories,
+            protein: i.protein,
+            carbs: i.carbs,
+            fat: i.fat,
+          )).toList();
+          return;
+        }
+      } else {
+        // Creating new entry from analysis
+        _result = widget.analysisResult!['analysisResult'] as FoodAnalysisResult?;
+        _imageBytes = widget.analysisResult!['imageBytes'] as Uint8List?;
+      }
     }
 
     _nameController = TextEditingController(text: _result?.name ?? '');
@@ -88,7 +121,7 @@ class _FoodDetailScreenState extends ConsumerState<FoodDetailScreen> {
     final l10n = AppLocalizations.of(context)!;
 
     return Scaffold(
-      backgroundColor: AppColors.background,
+      backgroundColor: context.backgroundColor,
       body: Column(
         children: [
           // Image Header
@@ -98,18 +131,7 @@ class _FoodDetailScreenState extends ConsumerState<FoodDetailScreen> {
                 height: 300,
                 width: double.infinity,
                 color: Colors.grey[200],
-                child: _imageBytes != null
-                    ? Image.memory(
-                        _imageBytes!,
-                        fit: BoxFit.cover,
-                      )
-                    : const Center(
-                        child: Icon(
-                          Icons.fastfood,
-                          size: 64,
-                          color: Colors.grey,
-                        ),
-                      ),
+                child: _buildImageWidget(),
               ),
               // Gradient overlay
               Positioned(
@@ -153,13 +175,15 @@ class _FoodDetailScreenState extends ConsumerState<FoodDetailScreen> {
                         children: [
                           _HeaderButton(
                             icon: Icons.ios_share,
-                            onPressed: () {},
+                            onPressed: () => _shareEntry(l10n),
                           ),
-                          const SizedBox(width: 8),
-                          _HeaderButton(
-                            icon: Icons.more_horiz,
-                            onPressed: () {},
-                          ),
+                          if (_isViewMode) ...[
+                            const SizedBox(width: 8),
+                            _HeaderButton(
+                              icon: Icons.delete_outline,
+                              onPressed: () => _confirmDelete(l10n),
+                            ),
+                          ],
                         ],
                       ),
                     ],
@@ -183,7 +207,7 @@ class _FoodDetailScreenState extends ConsumerState<FoodDetailScreen> {
                         const Icon(Icons.bookmark_border, size: 18),
                         const SizedBox(width: 8),
                         Text(
-                          DateFormat('h:mm a').format(DateTime.now()),
+                          DateFormat('h:mm a').format((_loggedAt ?? DateTime.now()).toLocal()),
                           style: const TextStyle(
                             fontSize: 14,
                             color: AppColors.textSecondary,
@@ -448,17 +472,23 @@ class _FoodDetailScreenState extends ConsumerState<FoodDetailScreen> {
               top: false,
               child: Row(
                 children: [
-                  Expanded(
-                    child: OutlinedButton.icon(
-                      onPressed: () => _showFixResultsDialog(l10n),
-                      icon: const Icon(Icons.add),
-                      label: Text(l10n.fixResults),
+                  if (!_isViewMode) ...[
+                    Expanded(
+                      child: OutlinedButton.icon(
+                        onPressed: () => _showFixResultsDialog(l10n),
+                        icon: const Icon(Icons.add),
+                        label: Text(l10n.fixResults),
+                      ),
                     ),
-                  ),
-                  const SizedBox(width: 12),
+                    const SizedBox(width: 12),
+                  ],
                   Expanded(
                     child: ElevatedButton(
-                      onPressed: _isLoading ? null : () => _saveFoodEntry(l10n),
+                      onPressed: _isLoading
+                          ? null
+                          : _isViewMode
+                              ? () => context.pop()
+                              : () => _saveFoodEntry(l10n),
                       child: _isLoading
                           ? const SizedBox(
                               width: 20,
@@ -468,7 +498,7 @@ class _FoodDetailScreenState extends ConsumerState<FoodDetailScreen> {
                                 color: Colors.white,
                               ),
                             )
-                          : Text(l10n.done),
+                          : Text(_isViewMode ? l10n.back : l10n.done),
                     ),
                   ),
                 ],
@@ -604,6 +634,107 @@ class _FoodDetailScreenState extends ConsumerState<FoodDetailScreen> {
         ],
       ),
     );
+  }
+
+  Widget _buildImageWidget() {
+    if (_imageBytes != null) {
+      return Image.memory(
+        _imageBytes!,
+        fit: BoxFit.cover,
+      );
+    } else if (_imageUrl != null && _imageUrl!.isNotEmpty) {
+      return CachedNetworkImage(
+        imageUrl: _imageUrl!,
+        fit: BoxFit.cover,
+        placeholder: (context, url) => const Center(
+          child: CircularProgressIndicator(),
+        ),
+        errorWidget: (context, url, error) => const Center(
+          child: Icon(
+            Icons.fastfood,
+            size: 64,
+            color: Colors.grey,
+          ),
+        ),
+      );
+    } else {
+      return const Center(
+        child: Icon(
+          Icons.fastfood,
+          size: 64,
+          color: Colors.grey,
+        ),
+      );
+    }
+  }
+
+  void _shareEntry(AppLocalizations l10n) {
+    final shareText = '''
+${_nameController.text}
+
+🔥 $_totalCalories ${l10n.cal}
+🥚 ${l10n.protein}: ${_totalProtein.toStringAsFixed(1)}g
+🌾 ${l10n.carbohydrates}: ${_totalCarbs.toStringAsFixed(1)}g
+💧 ${l10n.fat}: ${_totalFat.toStringAsFixed(1)}g
+
+${l10n.sharedFromDieterAI}
+''';
+
+    Share.share(shareText.trim());
+  }
+
+  void _confirmDelete(AppLocalizations l10n) {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: Text(l10n.deleteEntry),
+        content: Text(l10n.deleteEntryConfirm),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: Text(l10n.cancel),
+          ),
+          ElevatedButton(
+            onPressed: () async {
+              Navigator.pop(context);
+              await _deleteEntry(l10n);
+            },
+            style: ElevatedButton.styleFrom(
+              backgroundColor: AppColors.error,
+            ),
+            child: Text(l10n.delete),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Future<void> _deleteEntry(AppLocalizations l10n) async {
+    if (_existingEntry == null) return;
+
+    setState(() => _isLoading = true);
+
+    try {
+      await ref.read(apiServiceProvider).deleteFoodEntry(_existingEntry!.id);
+      ref.invalidate(dailySummaryProvider);
+
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(l10n.entryDeleted)),
+        );
+        context.go('/home');
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Delete failed: $e')),
+        );
+      }
+    } finally {
+      if (mounted) {
+        setState(() => _isLoading = false);
+      }
+    }
   }
 
   Future<void> _saveFoodEntry(AppLocalizations l10n) async {

@@ -168,6 +168,17 @@ class AppLocalizationsEn extends AppLocalizations {
   String get lbs => 'lbs';
 
   @override
+  String get kg => 'kg';
+
+  @override
+  String get weightKg => 'Weight (kg)';
+
+  @override
+  String goalKg(int weight) {
+    return 'Goal $weight kg';
+  }
+
+  @override
   String get back => 'Back';
 
   @override

@@ -145,7 +145,7 @@ class FoodEntryCard extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.end,
               children: [
                 Text(
-                  DateFormat('h:mma').format(entry.loggedAt).toLowerCase(),
+                  DateFormat('h:mma').format(entry.loggedAt.toLocal()).toLowerCase(),
                   style: const TextStyle(
                     fontSize: 12,
                     color: AppColors.textSecondary,

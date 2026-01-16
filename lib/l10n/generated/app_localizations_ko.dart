@@ -166,6 +166,17 @@ class AppLocalizationsKo extends AppLocalizations {
   String get lbs => 'lb';
 
   @override
+  String get kg => 'kg';
+
+  @override
+  String get weightKg => '체중 (kg)';
+
+  @override
+  String goalKg(int weight) {
+    return '목표 $weight kg';
+  }
+
+  @override
   String get back => '뒤로';
 
   @override

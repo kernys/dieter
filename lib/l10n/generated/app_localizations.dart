@@ -404,6 +404,24 @@ abstract class AppLocalizations {
   /// **'lbs'**
   String get lbs;
 
+  /// No description provided for @kg.
+  ///
+  /// In en, this message translates to:
+  /// **'kg'**
+  String get kg;
+
+  /// No description provided for @weightKg.
+  ///
+  /// In en, this message translates to:
+  /// **'Weight (kg)'**
+  String get weightKg;
+
+  /// No description provided for @goalKg.
+  ///
+  /// In en, this message translates to:
+  /// **'Goal {weight} kg'**
+  String goalKg(int weight);
+
   /// No description provided for @back.
   ///
   /// In en, this message translates to:
