@@ -62,8 +62,23 @@ export async function GET(request: NextRequest) {
     const totalCarbs = entries.reduce((sum, entry) => sum + Number(entry.carbs) * Number(entry.servings), 0);
     const totalFat = entries.reduce((sum, entry) => sum + Number(entry.fat) * Number(entry.servings), 0);
 
+    // Map to camelCase for frontend compatibility
+    const mappedEntries = entries.map(entry => ({
+      id: entry.id,
+      userId: entry.user_id,
+      name: entry.name,
+      calories: entry.calories,
+      protein: entry.protein,
+      carbs: entry.carbs,
+      fat: entry.fat,
+      imageUrl: entry.image_url,
+      ingredients: entry.ingredients,
+      servings: entry.servings,
+      loggedAt: entry.logged_at,
+    }));
+
     return NextResponse.json({
-      entries,
+      entries: mappedEntries,
       summary: {
         totalCalories,
         totalProtein,
@@ -101,7 +116,20 @@ export async function POST(request: NextRequest) {
 
     await foodEntryRepo.save(entry);
 
-    return NextResponse.json(entry, { status: 201 });
+    // Return camelCase for frontend compatibility
+    return NextResponse.json({
+      id: entry.id,
+      userId: entry.user_id,
+      name: entry.name,
+      calories: entry.calories,
+      protein: entry.protein,
+      carbs: entry.carbs,
+      fat: entry.fat,
+      imageUrl: entry.image_url,
+      ingredients: entry.ingredients,
+      servings: entry.servings,
+      loggedAt: entry.logged_at,
+    }, { status: 201 });
   } catch (error) {
     if (error instanceof z.ZodError) {
       return NextResponse.json(
