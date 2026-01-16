@@ -8,12 +8,24 @@ final cameraControllerProvider = StateNotifierProvider<CameraControllerNotifier,
   return CameraControllerNotifier();
 });
 
+// Zoom level provider
+final zoomLevelProvider = StateProvider<double>((ref) => 1.0);
+final minZoomLevelProvider = StateProvider<double>((ref) => 1.0);
+final maxZoomLevelProvider = StateProvider<double>((ref) => 1.0);
+
 class CameraControllerNotifier extends StateNotifier<AsyncValue<CameraController?>> {
   CameraControllerNotifier() : super(const AsyncValue.loading()) {
     _initCamera();
   }
 
   CameraController? _controller;
+  double _minZoom = 1.0;
+  double _maxZoom = 1.0;
+  double _currentZoom = 1.0;
+
+  double get minZoom => _minZoom;
+  double get maxZoom => _maxZoom;
+  double get currentZoom => _currentZoom;
 
   Future<void> _initCamera() async {
     try {
@@ -30,10 +42,41 @@ class CameraControllerNotifier extends StateNotifier<AsyncValue<CameraController
       );
 
       await _controller!.initialize();
+
+      // Get zoom levels
+      _minZoom = await _controller!.getMinZoomLevel();
+      _maxZoom = await _controller!.getMaxZoomLevel();
+      _currentZoom = _minZoom;
+
       state = AsyncValue.data(_controller);
     } catch (e, stack) {
       state = AsyncValue.error(e, stack);
     }
+  }
+
+  Future<void> setZoomLevel(double zoom) async {
+    if (_controller == null || !_controller!.value.isInitialized) return;
+
+    // Clamp zoom value between min and max
+    final clampedZoom = zoom.clamp(_minZoom, _maxZoom);
+
+    try {
+      await _controller!.setZoomLevel(clampedZoom);
+      _currentZoom = clampedZoom;
+      state = AsyncValue.data(_controller);
+    } catch (e) {
+      // Ignore zoom errors
+    }
+  }
+
+  Future<void> zoomIn() async {
+    final newZoom = (_currentZoom + 0.5).clamp(_minZoom, _maxZoom);
+    await setZoomLevel(newZoom);
+  }
+
+  Future<void> zoomOut() async {
+    final newZoom = (_currentZoom - 0.5).clamp(_minZoom, _maxZoom);
+    await setZoomLevel(newZoom);
   }
 
   Future<Uint8List?> takePicture() async {

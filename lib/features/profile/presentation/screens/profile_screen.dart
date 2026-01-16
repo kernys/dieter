@@ -6,6 +6,7 @@ import '../../../../core/constants/app_constants.dart';
 import '../../../../l10n/generated/app_localizations.dart';
 import '../../../auth/presentation/providers/auth_provider.dart';
 import '../../../home/presentation/providers/home_provider.dart';
+import '../providers/settings_provider.dart';
 
 class ProfileScreen extends ConsumerWidget {
   const ProfileScreen({super.key});
@@ -16,6 +17,7 @@ class ProfileScreen extends ConsumerWidget {
     final authState = ref.watch(authStateProvider);
     final user = authState.user;
     final userGoalsAsync = ref.watch(userGoalsProvider);
+    final settings = ref.watch(settingsProvider);
 
     return Scaffold(
       backgroundColor: AppColors.background,
@@ -220,35 +222,43 @@ class ProfileScreen extends ConsumerWidget {
                     _SettingsTile(
                       icon: Icons.notifications_outlined,
                       label: l10n.notifications,
-                      onTap: () {},
+                      onTap: () {
+                        // TODO: Implement notifications settings
+                      },
                     ),
                     _SettingsTile(
                       icon: Icons.language,
                       label: l10n.language,
-                      trailing: l10n.english,
-                      onTap: () {},
+                      trailing: settings.locale == 'ko' ? l10n.korean : l10n.english,
+                      onTap: () => _showLanguageDialog(context, ref, l10n, settings),
                     ),
                     _SettingsTile(
                       icon: Icons.straighten,
                       label: l10n.units,
-                      trailing: l10n.imperial,
-                      onTap: () {},
+                      trailing: settings.unitSystem == UnitSystem.metric ? l10n.metric : l10n.imperial,
+                      onTap: () => _showUnitsDialog(context, ref, l10n, settings),
                     ),
                     _SettingsTile(
                       icon: Icons.dark_mode_outlined,
                       label: l10n.darkMode,
-                      trailing: l10n.off,
-                      onTap: () {},
+                      trailing: settings.darkMode ? l10n.on : l10n.off,
+                      onTap: () {
+                        ref.read(settingsProvider.notifier).setDarkMode(!settings.darkMode);
+                      },
                     ),
                     _SettingsTile(
                       icon: Icons.security_outlined,
                       label: l10n.privacy,
-                      onTap: () {},
+                      onTap: () {
+                        // TODO: Implement privacy settings
+                      },
                     ),
                     _SettingsTile(
                       icon: Icons.help_outline,
                       label: l10n.helpAndSupport,
-                      onTap: () {},
+                      onTap: () {
+                        // TODO: Implement help & support
+                      },
                     ),
                   ],
                 ),
@@ -474,6 +484,92 @@ class ProfileScreen extends ConsumerWidget {
               }
             },
             child: Text(l10n.save),
+          ),
+        ],
+      ),
+    );
+  }
+
+  void _showLanguageDialog(BuildContext context, WidgetRef ref, AppLocalizations l10n, AppSettings settings) {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: Text(l10n.language),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            RadioListTile<String>(
+              title: Text(l10n.english),
+              value: 'en',
+              groupValue: settings.locale,
+              onChanged: (value) {
+                if (value != null) {
+                  ref.read(settingsProvider.notifier).setLocale(value);
+                  Navigator.pop(context);
+                }
+              },
+            ),
+            RadioListTile<String>(
+              title: Text(l10n.korean),
+              value: 'ko',
+              groupValue: settings.locale,
+              onChanged: (value) {
+                if (value != null) {
+                  ref.read(settingsProvider.notifier).setLocale(value);
+                  Navigator.pop(context);
+                }
+              },
+            ),
+          ],
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: Text(l10n.cancel),
+          ),
+        ],
+      ),
+    );
+  }
+
+  void _showUnitsDialog(BuildContext context, WidgetRef ref, AppLocalizations l10n, AppSettings settings) {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: Text(l10n.units),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            RadioListTile<UnitSystem>(
+              title: Text(l10n.imperial),
+              subtitle: const Text('lbs, ft'),
+              value: UnitSystem.imperial,
+              groupValue: settings.unitSystem,
+              onChanged: (value) {
+                if (value != null) {
+                  ref.read(settingsProvider.notifier).setUnitSystem(value);
+                  Navigator.pop(context);
+                }
+              },
+            ),
+            RadioListTile<UnitSystem>(
+              title: Text(l10n.metric),
+              subtitle: const Text('kg, cm'),
+              value: UnitSystem.metric,
+              groupValue: settings.unitSystem,
+              onChanged: (value) {
+                if (value != null) {
+                  ref.read(settingsProvider.notifier).setUnitSystem(value);
+                  Navigator.pop(context);
+                }
+              },
+            ),
+          ],
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: Text(l10n.cancel),
           ),
         ],
       ),

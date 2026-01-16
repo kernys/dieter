@@ -617,6 +617,17 @@ class _FoodDetailScreenState extends ConsumerState<FoodDetailScreen> {
 
       final apiService = ref.read(apiServiceProvider);
 
+      // Upload image if available
+      String? imageUrl;
+      if (_imageBytes != null) {
+        try {
+          imageUrl = await apiService.uploadImage(_imageBytes!);
+        } catch (e) {
+          // Continue without image if upload fails
+          debugPrint('Image upload failed: $e');
+        }
+      }
+
       // Convert ingredients to the expected format
       final ingredientsData = _ingredients.map((ingredient) => {
         'name': ingredient.name,
@@ -634,6 +645,7 @@ class _FoodDetailScreenState extends ConsumerState<FoodDetailScreen> {
         protein: _totalProtein,
         carbs: _totalCarbs,
         fat: _totalFat,
+        imageUrl: imageUrl,
         ingredients: ingredientsData,
         servings: _servings,
       );

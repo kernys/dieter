@@ -169,6 +169,32 @@ class ApiService {
     }
   }
 
+  // Image Upload API
+  Future<String> uploadImage(Uint8List imageBytes) async {
+    final request = http.MultipartRequest(
+      'POST',
+      Uri.parse('$baseUrl/upload'),
+    );
+
+    request.files.add(
+      http.MultipartFile.fromBytes(
+        'file',
+        imageBytes,
+        filename: 'food_image.jpg',
+      ),
+    );
+
+    final streamedResponse = await request.send();
+    final response = await http.Response.fromStream(streamedResponse);
+
+    if (response.statusCode == 200) {
+      final data = jsonDecode(response.body);
+      return data['url'] as String;
+    } else {
+      throw ApiException(response.statusCode, 'Failed to upload image');
+    }
+  }
+
   // Weight Log APIs
   Future<WeightLogsResponse> getWeightLogs(String userId, {String range = '6m'}) async {
     final response = await http.get(

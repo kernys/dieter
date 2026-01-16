@@ -17,6 +17,8 @@ class CameraScreen extends ConsumerStatefulWidget {
 
 class _CameraScreenState extends ConsumerState<CameraScreen> {
   final ImagePicker _picker = ImagePicker();
+  double _baseZoom = 1.0;
+  double _currentZoom = 1.0;
 
   @override
   Widget build(BuildContext context) {
@@ -40,13 +42,29 @@ class _CameraScreenState extends ConsumerState<CameraScreen> {
                   ),
                 );
               }
-              return SizedBox.expand(
-                child: FittedBox(
-                  fit: BoxFit.cover,
-                  child: SizedBox(
-                    width: controller.value.previewSize?.height ?? 0,
-                    height: controller.value.previewSize?.width ?? 0,
-                    child: CameraPreview(controller),
+              return GestureDetector(
+                onScaleStart: (details) {
+                  _baseZoom = _currentZoom;
+                },
+                onScaleUpdate: (details) {
+                  final cameraNotifier = ref.read(cameraControllerProvider.notifier);
+                  final newZoom = (_baseZoom * details.scale).clamp(
+                    cameraNotifier.minZoom,
+                    cameraNotifier.maxZoom,
+                  );
+                  setState(() {
+                    _currentZoom = newZoom;
+                  });
+                  cameraNotifier.setZoomLevel(newZoom);
+                },
+                child: SizedBox.expand(
+                  child: FittedBox(
+                    fit: BoxFit.cover,
+                    child: SizedBox(
+                      width: controller.value.previewSize?.height ?? 0,
+                      height: controller.value.previewSize?.width ?? 0,
+                      child: CameraPreview(controller),
+                    ),
                   ),
                 ),
               );
@@ -163,38 +181,7 @@ class _CameraScreenState extends ConsumerState<CameraScreen> {
                 const SizedBox(height: 24),
 
                 // Zoom Indicator
-                Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-                  decoration: BoxDecoration(
-                    color: Colors.black38,
-                    borderRadius: BorderRadius.circular(16),
-                  ),
-                  child: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Text(
-                        l10n.zoomHalf,
-                        style: const TextStyle(color: Colors.white54, fontSize: 12),
-                      ),
-                      const SizedBox(width: 8),
-                      Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-                        decoration: BoxDecoration(
-                          color: Colors.white24,
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                        child: Text(
-                          l10n.zoomOne,
-                          style: const TextStyle(
-                            color: Colors.white,
-                            fontSize: 12,
-                            fontWeight: FontWeight.w600,
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
+                _buildZoomControls(ref),
                 const SizedBox(height: 32),
 
                 // Bottom Controls
@@ -360,6 +347,87 @@ class _CameraScreenState extends ConsumerState<CameraScreen> {
         );
       }
     }
+  }
+
+  Widget _buildZoomControls(WidgetRef ref) {
+    final cameraNotifier = ref.read(cameraControllerProvider.notifier);
+    final minZoom = cameraNotifier.minZoom;
+    final maxZoom = cameraNotifier.maxZoom;
+
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+      decoration: BoxDecoration(
+        color: Colors.black38,
+        borderRadius: BorderRadius.circular(16),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          // Zoom out button
+          GestureDetector(
+            onTap: () {
+              final newZoom = (_currentZoom - 0.5).clamp(minZoom, maxZoom);
+              setState(() => _currentZoom = newZoom);
+              cameraNotifier.setZoomLevel(newZoom);
+            },
+            child: _buildZoomButton(
+              label: '.5x',
+              isSelected: _currentZoom < 1.5,
+            ),
+          ),
+          const SizedBox(width: 8),
+          // 1x button
+          GestureDetector(
+            onTap: () {
+              final newZoom = 1.0.clamp(minZoom, maxZoom);
+              setState(() => _currentZoom = newZoom);
+              cameraNotifier.setZoomLevel(newZoom);
+            },
+            child: _buildZoomButton(
+              label: '1x',
+              isSelected: _currentZoom >= 1.0 && _currentZoom < 2.0,
+            ),
+          ),
+          const SizedBox(width: 8),
+          // 2x button
+          GestureDetector(
+            onTap: () {
+              if (maxZoom >= 2.0) {
+                setState(() => _currentZoom = 2.0);
+                cameraNotifier.setZoomLevel(2.0);
+              }
+            },
+            child: _buildZoomButton(
+              label: '2x',
+              isSelected: _currentZoom >= 2.0,
+              enabled: maxZoom >= 2.0,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildZoomButton({
+    required String label,
+    required bool isSelected,
+    bool enabled = true,
+  }) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+      decoration: BoxDecoration(
+        color: isSelected ? Colors.white24 : Colors.transparent,
+        borderRadius: BorderRadius.circular(12),
+      ),
+      child: Text(
+        label,
+        style: TextStyle(
+          color: enabled ? (isSelected ? Colors.white : Colors.white54) : Colors.white24,
+          fontSize: 12,
+          fontWeight: isSelected ? FontWeight.w600 : FontWeight.normal,
+        ),
+      ),
+    );
   }
 
   void _showHelpDialog(AppLocalizations l10n) {
