@@ -1,7 +1,7 @@
 {
   "@@locale": "ko",
 
-  "appTitle": "다이어터 AI",
+  "appTitle": "다이어트 AI",
 
   "welcomeBack": "다시 오셨군요",
   "signInToContinue": "영양 추적을 계속하려면 로그인하세요",
@@ -129,7 +129,7 @@
   "delete": "삭제",
   "deleteEntry": "항목 삭제",
   "deleteEntryConfirm": "이 음식 기록을 삭제하시겠습니까?",
-  "sharedFromDieterAI": "Dieter AI에서 공유됨 🍎",
+  "sharedFromDieterAI": "Diet AI에서 공유됨 🍎",
   "entryDeleted": "항목이 삭제되었습니다",
 
   "cameraNotAvailable": "카메라를 사용할 수 없습니다",

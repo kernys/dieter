@@ -9,7 +9,7 @@ class AppLocalizationsKo extends AppLocalizations {
   AppLocalizationsKo([String locale = 'ko']) : super(locale);
 
   @override
-  String get appTitle => '다이어터 AI';
+  String get appTitle => '다이어트 AI';
 
   @override
   String get welcomeBack => '다시 오셨군요';
@@ -352,7 +352,7 @@ class AppLocalizationsKo extends AppLocalizations {
   String get deleteEntryConfirm => '이 음식 기록을 삭제하시겠습니까?';
 
   @override
-  String get sharedFromDieterAI => 'Dieter AI에서 공유됨 🍎';
+  String get sharedFromDieterAI => 'Diet AI에서 공유됨 🍎';
 
   @override
   String get entryDeleted => '항목이 삭제되었습니다';

@@ -9,7 +9,7 @@ class AppLocalizationsEn extends AppLocalizations {
   AppLocalizationsEn([String locale = 'en']) : super(locale);
 
   @override
-  String get appTitle => 'Dieter AI';
+  String get appTitle => 'Diet AI';
 
   @override
   String get welcomeBack => 'Welcome back';
@@ -356,7 +356,7 @@ class AppLocalizationsEn extends AppLocalizations {
       'Are you sure you want to delete this food entry?';
 
   @override
-  String get sharedFromDieterAI => 'Shared from Dieter AI 🍎';
+  String get sharedFromDieterAI => 'Shared from Diet AI 🍎';
 
   @override
   String get entryDeleted => 'Entry deleted';

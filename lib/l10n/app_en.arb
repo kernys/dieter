@@ -1,7 +1,7 @@
 {
   "@@locale": "en",
 
-  "appTitle": "Dieter AI",
+  "appTitle": "Diet AI",
   "@appTitle": { "description": "App title" },
 
   "welcomeBack": "Welcome back",
@@ -135,7 +135,7 @@
   "delete": "Delete",
   "deleteEntry": "Delete Entry",
   "deleteEntryConfirm": "Are you sure you want to delete this food entry?",
-  "sharedFromDieterAI": "Shared from Dieter AI 🍎",
+  "sharedFromDieterAI": "Shared from Diet AI 🍎",
   "entryDeleted": "Entry deleted",
 
   "cameraNotAvailable": "Camera not available",

@@ -101,7 +101,7 @@ abstract class AppLocalizations {
   /// App title
   ///
   /// In en, this message translates to:
-  /// **'Dieter AI'**
+  /// **'Diet AI'**
   String get appTitle;
 
   /// No description provided for @welcomeBack.
@@ -767,7 +767,7 @@ abstract class AppLocalizations {
   /// No description provided for @sharedFromDieterAI.
   ///
   /// In en, this message translates to:
-  /// **'Shared from Dieter AI 🍎'**
+  /// **'Shared from Diet AI 🍎'**
   String get sharedFromDieterAI;
 
   /// No description provided for @entryDeleted.
