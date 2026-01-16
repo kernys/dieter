@@ -5,6 +5,7 @@ import '../../../../core/constants/app_colors.dart';
 import '../../../../core/constants/app_constants.dart';
 import '../../../../shared/widgets/circular_progress_indicator_widget.dart';
 import '../../../../shared/widgets/food_entry_card.dart';
+import '../../../../l10n/generated/app_localizations.dart';
 import '../providers/home_provider.dart';
 import '../widgets/week_calendar.dart';
 import '../widgets/macro_card.dart';
@@ -14,6 +15,7 @@ class HomeScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final l10n = AppLocalizations.of(context)!;
     final selectedDate = ref.watch(selectedDateProvider);
     final dailySummaryAsync = ref.watch(dailySummaryProvider(selectedDate));
     final userGoalsAsync = ref.watch(userGoalsProvider);
@@ -63,9 +65,9 @@ class HomeScreen extends ConsumerWidget {
                           color: AppColors.primary,
                         ),
                         const SizedBox(width: 8),
-                        const Text(
-                          'Dieter AI',
-                          style: TextStyle(
+                        Text(
+                          l10n.appTitle,
+                          style: const TextStyle(
                             fontSize: 22,
                             fontWeight: FontWeight.bold,
                             color: AppColors.textPrimary,
@@ -167,9 +169,9 @@ class HomeScreen extends ConsumerWidget {
                                     ],
                                   ),
                                   const SizedBox(height: 4),
-                                  const Text(
-                                    'Calories eaten',
-                                    style: TextStyle(
+                                  Text(
+                                    l10n.caloriesEaten,
+                                    style: const TextStyle(
                                       fontSize: 14,
                                       color: AppColors.textSecondary,
                                     ),
@@ -198,7 +200,7 @@ class HomeScreen extends ConsumerWidget {
                         children: [
                           Expanded(
                             child: MacroCard(
-                              label: 'Protein eaten',
+                              label: l10n.proteinEaten,
                               current: summary.totalProtein.toInt(),
                               goal: userGoals.proteinGoal,
                               color: AppColors.protein,
@@ -208,7 +210,7 @@ class HomeScreen extends ConsumerWidget {
                           const SizedBox(width: 12),
                           Expanded(
                             child: MacroCard(
-                              label: 'Carbs eaten',
+                              label: l10n.carbsEaten,
                               current: summary.totalCarbs.toInt(),
                               goal: userGoals.carbsGoal,
                               color: AppColors.carbs,
@@ -218,7 +220,7 @@ class HomeScreen extends ConsumerWidget {
                           const SizedBox(width: 12),
                           Expanded(
                             child: MacroCard(
-                              label: 'Fat eaten',
+                              label: l10n.fatEaten,
                               current: summary.totalFat.toInt(),
                               goal: userGoals.fatGoal,
                               color: AppColors.fat,
@@ -230,9 +232,9 @@ class HomeScreen extends ConsumerWidget {
                       const SizedBox(height: 24),
 
                       // Recently uploaded
-                      const Text(
-                        'Recently uploaded',
-                        style: TextStyle(
+                      Text(
+                        l10n.recentlyUploaded,
+                        style: const TextStyle(
                           fontSize: 18,
                           fontWeight: FontWeight.w600,
                           color: AppColors.textPrimary,
@@ -256,18 +258,18 @@ class HomeScreen extends ConsumerWidget {
                                 color: AppColors.textTertiary,
                               ),
                               const SizedBox(height: 12),
-                              const Text(
-                                'No meals logged yet',
-                                style: TextStyle(
+                              Text(
+                                l10n.noMealsLoggedYet,
+                                style: const TextStyle(
                                   fontSize: 16,
                                   fontWeight: FontWeight.w600,
                                   color: AppColors.textSecondary,
                                 ),
                               ),
                               const SizedBox(height: 4),
-                              const Text(
-                                'Tap + to add your first meal',
-                                style: TextStyle(
+                              Text(
+                                l10n.tapToAddFirstMeal,
+                                style: const TextStyle(
                                   fontSize: 14,
                                   color: AppColors.textTertiary,
                                 ),
@@ -300,7 +302,7 @@ class HomeScreen extends ConsumerWidget {
                   child: Padding(
                     padding: const EdgeInsets.all(32),
                     child: Text(
-                      'Error loading data: $error',
+                      l10n.errorLoadingData(error.toString()),
                       style: const TextStyle(color: AppColors.error),
                     ),
                   ),

@@ -3,12 +3,15 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/constants/app_constants.dart';
+import '../../../../l10n/generated/app_localizations.dart';
 
 class ProfileScreen extends ConsumerWidget {
   const ProfileScreen({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final l10n = AppLocalizations.of(context)!;
+
     return Scaffold(
       backgroundColor: AppColors.background,
       body: SafeArea(
@@ -21,9 +24,9 @@ class ProfileScreen extends ConsumerWidget {
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    const Text(
-                      'Profile',
-                      style: TextStyle(
+                    Text(
+                      l10n.profile,
+                      style: const TextStyle(
                         fontSize: 28,
                         fontWeight: FontWeight.bold,
                         color: AppColors.textPrimary,
@@ -74,18 +77,18 @@ class ProfileScreen extends ConsumerWidget {
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            const Text(
-                              'John Doe',
-                              style: TextStyle(
+                            Text(
+                              l10n.defaultUserName,
+                              style: const TextStyle(
                                 fontSize: 20,
                                 fontWeight: FontWeight.w600,
                                 color: AppColors.textPrimary,
                               ),
                             ),
                             const SizedBox(height: 4),
-                            const Text(
-                              'john.doe@example.com',
-                              style: TextStyle(
+                            Text(
+                              l10n.defaultUserEmail,
+                              style: const TextStyle(
                                 fontSize: 14,
                                 color: AppColors.textSecondary,
                               ),
@@ -97,7 +100,7 @@ class ProfileScreen extends ConsumerWidget {
                         onPressed: () {
                           // TODO: Edit profile
                         },
-                        child: const Text('Edit'),
+                        child: Text(l10n.edit),
                       ),
                     ],
                   ),
@@ -111,9 +114,9 @@ class ProfileScreen extends ConsumerWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const Text(
-                      'Daily Goals',
-                      style: TextStyle(
+                    Text(
+                      l10n.dailyGoals,
+                      style: const TextStyle(
                         fontSize: 18,
                         fontWeight: FontWeight.w600,
                         color: AppColors.textPrimary,
@@ -122,25 +125,25 @@ class ProfileScreen extends ConsumerWidget {
                     const SizedBox(height: 12),
                     _GoalTile(
                       icon: Icons.local_fire_department,
-                      label: 'Calories',
-                      value: '${AppConstants.defaultCalorieGoal} cal',
+                      label: l10n.calories,
+                      value: '${AppConstants.defaultCalorieGoal} ${l10n.cal}',
                       color: AppColors.calories,
                     ),
                     _GoalTile(
                       icon: Icons.egg_outlined,
-                      label: 'Protein',
+                      label: l10n.protein,
                       value: '${AppConstants.defaultProteinGoal}g',
                       color: AppColors.protein,
                     ),
                     _GoalTile(
                       icon: Icons.grass,
-                      label: 'Carbohydrates',
+                      label: l10n.carbohydrates,
                       value: '${AppConstants.defaultCarbsGoal}g',
                       color: AppColors.carbs,
                     ),
                     _GoalTile(
                       icon: Icons.water_drop_outlined,
-                      label: 'Fat',
+                      label: l10n.fat,
                       value: '${AppConstants.defaultFatGoal}g',
                       color: AppColors.fat,
                     ),
@@ -155,9 +158,9 @@ class ProfileScreen extends ConsumerWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const Text(
-                      'Settings',
-                      style: TextStyle(
+                    Text(
+                      l10n.settings,
+                      style: const TextStyle(
                         fontSize: 18,
                         fontWeight: FontWeight.w600,
                         color: AppColors.textPrimary,
@@ -166,35 +169,35 @@ class ProfileScreen extends ConsumerWidget {
                     const SizedBox(height: 12),
                     _SettingsTile(
                       icon: Icons.notifications_outlined,
-                      label: 'Notifications',
+                      label: l10n.notifications,
                       onTap: () {},
                     ),
                     _SettingsTile(
                       icon: Icons.language,
-                      label: 'Language',
-                      trailing: 'English',
+                      label: l10n.language,
+                      trailing: l10n.english,
                       onTap: () {},
                     ),
                     _SettingsTile(
                       icon: Icons.straighten,
-                      label: 'Units',
-                      trailing: 'Imperial',
+                      label: l10n.units,
+                      trailing: l10n.imperial,
                       onTap: () {},
                     ),
                     _SettingsTile(
                       icon: Icons.dark_mode_outlined,
-                      label: 'Dark Mode',
-                      trailing: 'Off',
+                      label: l10n.darkMode,
+                      trailing: l10n.off,
                       onTap: () {},
                     ),
                     _SettingsTile(
                       icon: Icons.security_outlined,
-                      label: 'Privacy',
+                      label: l10n.privacy,
                       onTap: () {},
                     ),
                     _SettingsTile(
                       icon: Icons.help_outline,
-                      label: 'Help & Support',
+                      label: l10n.helpAndSupport,
                       onTap: () {},
                     ),
                   ],
@@ -208,9 +211,9 @@ class ProfileScreen extends ConsumerWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const Text(
-                      'App',
-                      style: TextStyle(
+                    Text(
+                      l10n.app,
+                      style: const TextStyle(
                         fontSize: 18,
                         fontWeight: FontWeight.w600,
                         color: AppColors.textPrimary,
@@ -219,17 +222,17 @@ class ProfileScreen extends ConsumerWidget {
                     const SizedBox(height: 12),
                     _SettingsTile(
                       icon: Icons.star_outline,
-                      label: 'Rate App',
+                      label: l10n.rateApp,
                       onTap: () {},
                     ),
                     _SettingsTile(
                       icon: Icons.share_outlined,
-                      label: 'Share App',
+                      label: l10n.shareApp,
                       onTap: () {},
                     ),
                     _SettingsTile(
                       icon: Icons.info_outline,
-                      label: 'About',
+                      label: l10n.about,
                       trailing: 'v${AppConstants.appVersion}',
                       onTap: () {},
                     ),
@@ -245,13 +248,13 @@ class ProfileScreen extends ConsumerWidget {
                   width: double.infinity,
                   child: OutlinedButton(
                     onPressed: () {
-                      _showSignOutDialog(context);
+                      _showSignOutDialog(context, l10n);
                     },
                     style: OutlinedButton.styleFrom(
                       foregroundColor: AppColors.error,
                       side: const BorderSide(color: AppColors.error),
                     ),
-                    child: const Text('Sign Out'),
+                    child: Text(l10n.signOut),
                   ),
                 ),
               ),
@@ -263,16 +266,16 @@ class ProfileScreen extends ConsumerWidget {
     );
   }
 
-  void _showSignOutDialog(BuildContext context) {
+  void _showSignOutDialog(BuildContext context, AppLocalizations l10n) {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Sign Out'),
-        content: const Text('Are you sure you want to sign out?'),
+        title: Text(l10n.signOutConfirmTitle),
+        content: Text(l10n.signOutConfirmMessage),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: const Text('Cancel'),
+            child: Text(l10n.cancel),
           ),
           ElevatedButton(
             onPressed: () {
@@ -282,7 +285,7 @@ class ProfileScreen extends ConsumerWidget {
             style: ElevatedButton.styleFrom(
               backgroundColor: AppColors.error,
             ),
-            child: const Text('Sign Out'),
+            child: Text(l10n.signOut),
           ),
         ],
       ),

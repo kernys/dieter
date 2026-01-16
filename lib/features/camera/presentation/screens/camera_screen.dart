@@ -5,6 +5,7 @@ import 'package:camera/camera.dart';
 import 'package:go_router/go_router.dart';
 import 'package:image_picker/image_picker.dart';
 import '../../../../services/api_service.dart';
+import '../../../../l10n/generated/app_localizations.dart';
 import '../providers/camera_provider.dart';
 
 class CameraScreen extends ConsumerStatefulWidget {
@@ -19,6 +20,7 @@ class _CameraScreenState extends ConsumerState<CameraScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final cameraAsync = ref.watch(cameraControllerProvider);
     final scanMode = ref.watch(scanModeProvider);
     final analysisState = ref.watch(analysisStateProvider);
@@ -31,10 +33,10 @@ class _CameraScreenState extends ConsumerState<CameraScreen> {
           cameraAsync.when(
             data: (controller) {
               if (controller == null || !controller.value.isInitialized) {
-                return const Center(
+                return Center(
                   child: Text(
-                    'Camera not available',
-                    style: TextStyle(color: Colors.white),
+                    l10n.cameraNotAvailable,
+                    style: const TextStyle(color: Colors.white),
                   ),
                 );
               }
@@ -63,14 +65,14 @@ class _CameraScreenState extends ConsumerState<CameraScreen> {
                   ),
                   const SizedBox(height: 16),
                   Text(
-                    'Camera error: $error',
+                    l10n.cameraError(error.toString()),
                     style: const TextStyle(color: Colors.white),
                     textAlign: TextAlign.center,
                   ),
                   const SizedBox(height: 24),
                   ElevatedButton(
                     onPressed: () => _pickFromGallery(),
-                    child: const Text('Pick from Gallery'),
+                    child: Text(l10n.pickFromGallery),
                   ),
                 ],
               ),
@@ -93,15 +95,15 @@ class _CameraScreenState extends ConsumerState<CameraScreen> {
                       ),
                       Row(
                         children: [
-                          Icon(
+                          const Icon(
                             Icons.apple,
                             color: Colors.white,
                             size: 24,
                           ),
                           const SizedBox(width: 8),
-                          const Text(
-                            'Dieter AI',
-                            style: TextStyle(
+                          Text(
+                            l10n.appTitle,
+                            style: const TextStyle(
                               color: Colors.white,
                               fontSize: 18,
                               fontWeight: FontWeight.w600,
@@ -112,7 +114,7 @@ class _CameraScreenState extends ConsumerState<CameraScreen> {
                       _IconButton(
                         icon: Icons.help_outline,
                         onPressed: () {
-                          _showHelpDialog();
+                          _showHelpDialog(l10n);
                         },
                       ),
                     ],
@@ -132,7 +134,7 @@ class _CameraScreenState extends ConsumerState<CameraScreen> {
                   child: Row(
                     children: [
                       _ScanModeButton(
-                        label: 'Scan Food',
+                        label: l10n.scanFood,
                         icon: Icons.restaurant_outlined,
                         isSelected: scanMode == ScanMode.food,
                         onPressed: () {
@@ -140,7 +142,7 @@ class _CameraScreenState extends ConsumerState<CameraScreen> {
                         },
                       ),
                       _ScanModeButton(
-                        label: 'Barcode',
+                        label: l10n.barcode,
                         icon: Icons.qr_code,
                         isSelected: scanMode == ScanMode.barcode,
                         onPressed: () {
@@ -148,7 +150,7 @@ class _CameraScreenState extends ConsumerState<CameraScreen> {
                         },
                       ),
                       _ScanModeButton(
-                        label: 'Food Label',
+                        label: l10n.foodLabel,
                         icon: Icons.description_outlined,
                         isSelected: scanMode == ScanMode.label,
                         onPressed: () {
@@ -170,9 +172,9 @@ class _CameraScreenState extends ConsumerState<CameraScreen> {
                   child: Row(
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      const Text(
-                        '.5x',
-                        style: TextStyle(color: Colors.white54, fontSize: 12),
+                      Text(
+                        l10n.zoomHalf,
+                        style: const TextStyle(color: Colors.white54, fontSize: 12),
                       ),
                       const SizedBox(width: 8),
                       Container(
@@ -181,9 +183,9 @@ class _CameraScreenState extends ConsumerState<CameraScreen> {
                           color: Colors.white24,
                           borderRadius: BorderRadius.circular(12),
                         ),
-                        child: const Text(
-                          '1x',
-                          style: TextStyle(
+                        child: Text(
+                          l10n.zoomOne,
+                          style: const TextStyle(
                             color: Colors.white,
                             fontSize: 12,
                             fontWeight: FontWeight.w600,
@@ -272,9 +274,9 @@ class _CameraScreenState extends ConsumerState<CameraScreen> {
                     children: [
                       const CircularProgressIndicator(),
                       const SizedBox(height: 16),
-                      const Text(
-                        'Analyzing food...',
-                        style: TextStyle(
+                      Text(
+                        l10n.analyzingFood,
+                        style: const TextStyle(
                           fontSize: 16,
                           fontWeight: FontWeight.w600,
                         ),
@@ -314,8 +316,9 @@ class _CameraScreenState extends ConsumerState<CameraScreen> {
     } else {
       ref.read(analysisStateProvider.notifier).state = AnalysisState.error;
       if (mounted) {
+        final l10n = AppLocalizations.of(context)!;
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Failed to capture image')),
+          SnackBar(content: Text(l10n.failedToCaptureImage)),
         );
       }
     }
@@ -350,35 +353,36 @@ class _CameraScreenState extends ConsumerState<CameraScreen> {
     } catch (e) {
       ref.read(analysisStateProvider.notifier).state = AnalysisState.error;
       if (mounted) {
+        final l10n = AppLocalizations.of(context)!;
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Analysis failed: $e')),
+          SnackBar(content: Text(l10n.analysisFailed(e.toString()))),
         );
       }
     }
   }
 
-  void _showHelpDialog() {
+  void _showHelpDialog(AppLocalizations l10n) {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('How to use'),
-        content: const Column(
+        title: Text(l10n.howToUse),
+        content: Column(
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text('1. Point your camera at the food'),
-            SizedBox(height: 8),
-            Text('2. Make sure the food is well-lit'),
-            SizedBox(height: 8),
-            Text('3. Tap the capture button'),
-            SizedBox(height: 8),
-            Text('4. Our AI will analyze the nutritional content'),
+            Text(l10n.howToUseStep1),
+            const SizedBox(height: 8),
+            Text(l10n.howToUseStep2),
+            const SizedBox(height: 8),
+            Text(l10n.howToUseStep3),
+            const SizedBox(height: 8),
+            Text(l10n.howToUseStep4),
           ],
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: const Text('Got it'),
+            child: Text(l10n.gotIt),
           ),
         ],
       ),

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:fl_chart/fl_chart.dart';
 import '../../../../core/constants/app_colors.dart';
+import '../../../../l10n/generated/app_localizations.dart';
 import '../providers/progress_provider.dart';
 
 class ProgressScreen extends ConsumerWidget {
@@ -9,6 +10,7 @@ class ProgressScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final l10n = AppLocalizations.of(context)!;
     final currentWeight = ref.watch(currentWeightProvider);
     final goalWeight = ref.watch(goalWeightProvider);
     final progressPercentage = ref.watch(progressPercentageProvider);
@@ -40,9 +42,9 @@ class ProgressScreen extends ConsumerWidget {
             SliverToBoxAdapter(
               child: Padding(
                 padding: const EdgeInsets.all(16),
-                child: const Text(
-                  'Progress',
-                  style: TextStyle(
+                child: Text(
+                  l10n.progress,
+                  style: const TextStyle(
                     fontSize: 28,
                     fontWeight: FontWeight.bold,
                     color: AppColors.textPrimary,
@@ -69,9 +71,9 @@ class ProgressScreen extends ConsumerWidget {
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            const Text(
-                              'Your Weight',
-                              style: TextStyle(
+                            Text(
+                              l10n.yourWeight,
+                              style: const TextStyle(
                                 fontSize: 14,
                                 color: AppColors.textSecondary,
                               ),
@@ -88,9 +90,9 @@ class ProgressScreen extends ConsumerWidget {
                                     color: AppColors.textPrimary,
                                   ),
                                 ),
-                                const Text(
-                                  ' lbs',
-                                  style: TextStyle(
+                                Text(
+                                  ' ${l10n.lbs}',
+                                  style: const TextStyle(
                                     fontSize: 14,
                                     color: AppColors.textSecondary,
                                   ),
@@ -99,7 +101,7 @@ class ProgressScreen extends ConsumerWidget {
                             ),
                             const SizedBox(height: 4),
                             Text(
-                              'Goal ${goalWeight.toInt()} lbs',
+                              l10n.goal(goalWeight.toInt()),
                               style: const TextStyle(
                                 fontSize: 12,
                                 color: AppColors.textTertiary,
@@ -109,14 +111,14 @@ class ProgressScreen extends ConsumerWidget {
                             SizedBox(
                               width: double.infinity,
                               child: ElevatedButton(
-                                onPressed: () => _showLogWeightDialog(context, ref),
+                                onPressed: () => _showLogWeightDialog(context, ref, l10n),
                                 style: ElevatedButton.styleFrom(
                                   minimumSize: const Size(0, 40),
                                 ),
                                 child: Row(
                                   mainAxisAlignment: MainAxisAlignment.center,
                                   children: [
-                                    const Text('Log Weight'),
+                                    Text(l10n.logWeight),
                                     const SizedBox(width: 4),
                                     const Icon(Icons.arrow_forward, size: 16),
                                   ],
@@ -165,7 +167,7 @@ class ProgressScreen extends ConsumerWidget {
                               ),
                             ),
                             Text(
-                              'Day Streak',
+                              l10n.dayStreak,
                               style: TextStyle(
                                 fontSize: 14,
                                 color: AppColors.streak,
@@ -242,9 +244,9 @@ class ProgressScreen extends ConsumerWidget {
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          const Text(
-                            'Weight Progress',
-                            style: TextStyle(
+                          Text(
+                            l10n.weightProgress,
+                            style: const TextStyle(
                               fontSize: 18,
                               fontWeight: FontWeight.w600,
                               color: AppColors.textPrimary,
@@ -264,7 +266,7 @@ class ProgressScreen extends ConsumerWidget {
                                 const Icon(Icons.flag, size: 14),
                                 const SizedBox(width: 4),
                                 Text(
-                                  '${progressPercentage.toInt()}% of goal',
+                                  l10n.percentOfGoal(progressPercentage.toInt()),
                                   style: const TextStyle(
                                     fontSize: 12,
                                     fontWeight: FontWeight.w500,
@@ -281,12 +283,12 @@ class ProgressScreen extends ConsumerWidget {
                       SizedBox(
                         height: 200,
                         child: weightLogsAsync.when(
-                          data: (logs) => _buildChart(logs, ref),
+                          data: (logs) => _buildChart(logs, ref, l10n),
                           loading: () => const Center(
                             child: CircularProgressIndicator(),
                           ),
-                          error: (_, __) => const Center(
-                            child: Text('Error loading data'),
+                          error: (_, __) => Center(
+                            child: Text(l10n.errorLoadingDataSimple),
                           ),
                         ),
                       ),
@@ -297,7 +299,7 @@ class ProgressScreen extends ConsumerWidget {
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
                           _TimeRangeButton(
-                            label: '90D',
+                            label: l10n.range90d,
                             isSelected: timeRange == TimeRange.days90,
                             onPressed: () {
                               ref.read(timeRangeProvider.notifier).state =
@@ -305,7 +307,7 @@ class ProgressScreen extends ConsumerWidget {
                             },
                           ),
                           _TimeRangeButton(
-                            label: '6M',
+                            label: l10n.range6m,
                             isSelected: timeRange == TimeRange.months6,
                             onPressed: () {
                               ref.read(timeRangeProvider.notifier).state =
@@ -313,7 +315,7 @@ class ProgressScreen extends ConsumerWidget {
                             },
                           ),
                           _TimeRangeButton(
-                            label: '1Y',
+                            label: l10n.range1y,
                             isSelected: timeRange == TimeRange.year1,
                             onPressed: () {
                               ref.read(timeRangeProvider.notifier).state =
@@ -321,7 +323,7 @@ class ProgressScreen extends ConsumerWidget {
                             },
                           ),
                           _TimeRangeButton(
-                            label: 'ALL',
+                            label: l10n.rangeAll,
                             isSelected: timeRange == TimeRange.all,
                             onPressed: () {
                               ref.read(timeRangeProvider.notifier).state =
@@ -349,7 +351,7 @@ class ProgressScreen extends ConsumerWidget {
                             const SizedBox(width: 8),
                             Expanded(
                               child: Text(
-                                "Great job! Consistency is key, and you're mastering it!",
+                                l10n.greatJobConsistency,
                                 style: TextStyle(
                                   fontSize: 13,
                                   color: AppColors.success,
@@ -381,9 +383,9 @@ class ProgressScreen extends ConsumerWidget {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      const Text(
-                        'Daily Average Calories',
-                        style: TextStyle(
+                      Text(
+                        l10n.dailyAverageCalories,
+                        style: const TextStyle(
                           fontSize: 18,
                           fontWeight: FontWeight.w600,
                           color: AppColors.textPrimary,
@@ -402,11 +404,11 @@ class ProgressScreen extends ConsumerWidget {
                             ),
                           ),
                           const SizedBox(width: 4),
-                          const Padding(
-                            padding: EdgeInsets.only(bottom: 6),
+                          Padding(
+                            padding: const EdgeInsets.only(bottom: 6),
                             child: Text(
-                              'cal',
-                              style: TextStyle(
+                              l10n.cal,
+                              style: const TextStyle(
                                 fontSize: 16,
                                 color: AppColors.textSecondary,
                               ),
@@ -464,9 +466,9 @@ class ProgressScreen extends ConsumerWidget {
     );
   }
 
-  Widget _buildChart(List<dynamic> logs, WidgetRef ref) {
+  Widget _buildChart(List<dynamic> logs, WidgetRef ref, AppLocalizations l10n) {
     if (logs.isEmpty) {
-      return const Center(child: Text('No weight data'));
+      return Center(child: Text(l10n.noWeightData));
     }
 
     final spots = <FlSpot>[];
@@ -580,36 +582,36 @@ class ProgressScreen extends ConsumerWidget {
     );
   }
 
-  void _showLogWeightDialog(BuildContext context, WidgetRef ref) {
+  void _showLogWeightDialog(BuildContext context, WidgetRef ref, AppLocalizations l10n) {
     final controller = TextEditingController();
 
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Log Weight'),
+        title: Text(l10n.logWeight),
         content: TextField(
           controller: controller,
           keyboardType: const TextInputType.numberWithOptions(decimal: true),
-          decoration: const InputDecoration(
-            labelText: 'Weight (lbs)',
-            hintText: 'Enter your weight',
+          decoration: InputDecoration(
+            labelText: l10n.weightLbs,
+            hintText: l10n.enterYourWeight,
           ),
           autofocus: true,
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: const Text('Cancel'),
+            child: Text(l10n.cancel),
           ),
           ElevatedButton(
             onPressed: () {
               // TODO: Save weight to Supabase
               Navigator.pop(context);
               ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(content: Text('Weight logged!')),
+                SnackBar(content: Text(l10n.weightLogged)),
               );
             },
-            child: const Text('Save'),
+            child: Text(l10n.save),
           ),
         ],
       ),

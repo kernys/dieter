@@ -4,7 +4,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 import '../../../../core/constants/app_colors.dart';
-import '../../../../services/gemini_service.dart';
+import '../../../../services/api_service.dart';
+import '../../../../l10n/generated/app_localizations.dart';
 
 class FoodDetailScreen extends ConsumerStatefulWidget {
   final String? foodId;
@@ -82,6 +83,8 @@ class _FoodDetailScreenState extends ConsumerState<FoodDetailScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+
     return Scaffold(
       backgroundColor: AppColors.background,
       body: Column(
@@ -136,9 +139,9 @@ class _FoodDetailScreenState extends ConsumerState<FoodDetailScreen> {
                         icon: Icons.arrow_back,
                         onPressed: () => context.pop(),
                       ),
-                      const Text(
-                        'Nutrition',
-                        style: TextStyle(
+                      Text(
+                        l10n.nutrition,
+                        style: const TextStyle(
                           color: Colors.white,
                           fontSize: 18,
                           fontWeight: FontWeight.w600,
@@ -195,7 +198,7 @@ class _FoodDetailScreenState extends ConsumerState<FoodDetailScreen> {
                           child: Text(
                             _nameController.text.isNotEmpty
                                 ? _nameController.text
-                                : 'Unknown Food',
+                                : l10n.unknownFood,
                             style: const TextStyle(
                               fontSize: 22,
                               fontWeight: FontWeight.bold,
@@ -270,9 +273,9 @@ class _FoodDetailScreenState extends ConsumerState<FoodDetailScreen> {
                           Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              const Text(
-                                'Calories',
-                                style: TextStyle(
+                              Text(
+                                l10n.calories,
+                                style: const TextStyle(
                                   fontSize: 14,
                                   color: AppColors.textSecondary,
                                 ),
@@ -297,7 +300,7 @@ class _FoodDetailScreenState extends ConsumerState<FoodDetailScreen> {
                       children: [
                         Expanded(
                           child: _MacroCard(
-                            label: 'Protein',
+                            label: l10n.protein,
                             value: '${_totalProtein.toInt()}g',
                             icon: Icons.egg_outlined,
                             color: AppColors.protein,
@@ -306,7 +309,7 @@ class _FoodDetailScreenState extends ConsumerState<FoodDetailScreen> {
                         const SizedBox(width: 12),
                         Expanded(
                           child: _MacroCard(
-                            label: 'Carbs',
+                            label: l10n.carbs,
                             value: '${_totalCarbs.toInt()}g',
                             icon: Icons.grass,
                             color: AppColors.carbs,
@@ -315,7 +318,7 @@ class _FoodDetailScreenState extends ConsumerState<FoodDetailScreen> {
                         const SizedBox(width: 12),
                         Expanded(
                           child: _MacroCard(
-                            label: 'Fats',
+                            label: l10n.fats,
                             value: '${_totalFat.toInt()}g',
                             icon: Icons.water_drop_outlined,
                             color: AppColors.fat,
@@ -329,18 +332,18 @@ class _FoodDetailScreenState extends ConsumerState<FoodDetailScreen> {
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        const Text(
-                          'Ingredients',
-                          style: TextStyle(
+                        Text(
+                          l10n.ingredients,
+                          style: const TextStyle(
                             fontSize: 18,
                             fontWeight: FontWeight.w600,
                             color: AppColors.textPrimary,
                           ),
                         ),
                         TextButton.icon(
-                          onPressed: () => _showAddIngredientDialog(),
+                          onPressed: () => _showAddIngredientDialog(l10n),
                           icon: const Icon(Icons.add, size: 18),
-                          label: const Text('Add more'),
+                          label: Text(l10n.addMore),
                         ),
                       ],
                     ),
@@ -353,10 +356,10 @@ class _FoodDetailScreenState extends ConsumerState<FoodDetailScreen> {
                           color: AppColors.surface,
                           borderRadius: BorderRadius.circular(12),
                         ),
-                        child: const Center(
+                        child: Center(
                           child: Text(
-                            'No ingredients detected',
-                            style: TextStyle(
+                            l10n.noIngredientsDetected,
+                            style: const TextStyle(
                               color: AppColors.textSecondary,
                             ),
                           ),
@@ -445,15 +448,15 @@ class _FoodDetailScreenState extends ConsumerState<FoodDetailScreen> {
                 children: [
                   Expanded(
                     child: OutlinedButton.icon(
-                      onPressed: () => _showFixResultsDialog(),
+                      onPressed: () => _showFixResultsDialog(l10n),
                       icon: const Icon(Icons.add),
-                      label: const Text('Fix Results'),
+                      label: Text(l10n.fixResults),
                     ),
                   ),
                   const SizedBox(width: 12),
                   Expanded(
                     child: ElevatedButton(
-                      onPressed: _isLoading ? null : _saveFoodEntry,
+                      onPressed: _isLoading ? null : () => _saveFoodEntry(l10n),
                       child: _isLoading
                           ? const SizedBox(
                               width: 20,
@@ -463,7 +466,7 @@ class _FoodDetailScreenState extends ConsumerState<FoodDetailScreen> {
                                 color: Colors.white,
                               ),
                             )
-                          : const Text('Done'),
+                          : Text(l10n.done),
                     ),
                   ),
                 ],
@@ -475,7 +478,7 @@ class _FoodDetailScreenState extends ConsumerState<FoodDetailScreen> {
     );
   }
 
-  void _showAddIngredientDialog() {
+  void _showAddIngredientDialog(AppLocalizations l10n) {
     final nameController = TextEditingController();
     final caloriesController = TextEditingController();
     final amountController = TextEditingController();
@@ -483,31 +486,31 @@ class _FoodDetailScreenState extends ConsumerState<FoodDetailScreen> {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Add Ingredient'),
+        title: Text(l10n.addIngredient),
         content: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
             TextField(
               controller: nameController,
-              decoration: const InputDecoration(labelText: 'Name'),
+              decoration: InputDecoration(labelText: l10n.name),
             ),
             const SizedBox(height: 8),
             TextField(
               controller: caloriesController,
-              decoration: const InputDecoration(labelText: 'Calories'),
+              decoration: InputDecoration(labelText: l10n.calories),
               keyboardType: TextInputType.number,
             ),
             const SizedBox(height: 8),
             TextField(
               controller: amountController,
-              decoration: const InputDecoration(labelText: 'Amount (optional)'),
+              decoration: InputDecoration(labelText: l10n.amountOptional),
             ),
           ],
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: const Text('Cancel'),
+            child: Text(l10n.cancel),
           ),
           ElevatedButton(
             onPressed: () {
@@ -524,30 +527,30 @@ class _FoodDetailScreenState extends ConsumerState<FoodDetailScreen> {
                 Navigator.pop(context);
               }
             },
-            child: const Text('Add'),
+            child: Text(l10n.add),
           ),
         ],
       ),
     );
   }
 
-  void _showFixResultsDialog() {
+  void _showFixResultsDialog(AppLocalizations l10n) {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Fix Results'),
+        title: Text(l10n.fixResults),
         content: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
             TextField(
               controller: _nameController,
-              decoration: const InputDecoration(labelText: 'Food Name'),
+              decoration: InputDecoration(labelText: l10n.foodName),
               onChanged: (_) => setState(() {}),
             ),
             const SizedBox(height: 8),
             TextField(
               controller: _caloriesController,
-              decoration: const InputDecoration(labelText: 'Calories'),
+              decoration: InputDecoration(labelText: l10n.calories),
               keyboardType: TextInputType.number,
               onChanged: (_) => setState(() {}),
             ),
@@ -557,7 +560,7 @@ class _FoodDetailScreenState extends ConsumerState<FoodDetailScreen> {
                 Expanded(
                   child: TextField(
                     controller: _proteinController,
-                    decoration: const InputDecoration(labelText: 'Protein (g)'),
+                    decoration: InputDecoration(labelText: l10n.proteinG),
                     keyboardType: TextInputType.number,
                     onChanged: (_) => setState(() {}),
                   ),
@@ -566,7 +569,7 @@ class _FoodDetailScreenState extends ConsumerState<FoodDetailScreen> {
                 Expanded(
                   child: TextField(
                     controller: _carbsController,
-                    decoration: const InputDecoration(labelText: 'Carbs (g)'),
+                    decoration: InputDecoration(labelText: l10n.carbsG),
                     keyboardType: TextInputType.number,
                     onChanged: (_) => setState(() {}),
                   ),
@@ -575,7 +578,7 @@ class _FoodDetailScreenState extends ConsumerState<FoodDetailScreen> {
                 Expanded(
                   child: TextField(
                     controller: _fatController,
-                    decoration: const InputDecoration(labelText: 'Fat (g)'),
+                    decoration: InputDecoration(labelText: l10n.fatG),
                     keyboardType: TextInputType.number,
                     onChanged: (_) => setState(() {}),
                   ),
@@ -587,21 +590,21 @@ class _FoodDetailScreenState extends ConsumerState<FoodDetailScreen> {
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: const Text('Cancel'),
+            child: Text(l10n.cancel),
           ),
           ElevatedButton(
             onPressed: () {
               setState(() {});
               Navigator.pop(context);
             },
-            child: const Text('Save'),
+            child: Text(l10n.save),
           ),
         ],
       ),
     );
   }
 
-  Future<void> _saveFoodEntry() async {
+  Future<void> _saveFoodEntry(AppLocalizations l10n) async {
     setState(() => _isLoading = true);
 
     try {
@@ -610,14 +613,14 @@ class _FoodDetailScreenState extends ConsumerState<FoodDetailScreen> {
 
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Food entry saved!')),
+          SnackBar(content: Text(l10n.foodEntrySaved)),
         );
         context.go('/home');
       }
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Failed to save: $e')),
+          SnackBar(content: Text(l10n.failedToSave(e.toString()))),
         );
       }
     } finally {

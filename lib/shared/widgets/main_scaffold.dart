@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import '../../core/constants/app_colors.dart';
+import '../../l10n/generated/app_localizations.dart';
 
 class MainScaffold extends StatelessWidget {
   final Widget child;
@@ -35,6 +36,7 @@ class MainScaffold extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final selectedIndex = _calculateSelectedIndex(context);
+    final l10n = AppLocalizations.of(context)!;
 
     return Scaffold(
       body: child,
@@ -64,14 +66,14 @@ class MainScaffold extends StatelessWidget {
                 _NavItem(
                   icon: Icons.home_outlined,
                   activeIcon: Icons.home,
-                  label: 'Home',
+                  label: l10n.home,
                   isSelected: selectedIndex == 0,
                   onTap: () => _onItemTapped(context, 0),
                 ),
                 _NavItem(
                   icon: Icons.bar_chart_outlined,
                   activeIcon: Icons.bar_chart,
-                  label: 'Progress',
+                  label: l10n.progress,
                   isSelected: selectedIndex == 1,
                   onTap: () => _onItemTapped(context, 1),
                 ),
@@ -79,18 +81,18 @@ class MainScaffold extends StatelessWidget {
                 _NavItem(
                   icon: Icons.groups_outlined,
                   activeIcon: Icons.groups,
-                  label: 'Groups',
+                  label: l10n.groups,
                   isSelected: false,
                   onTap: () {
                     ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(content: Text('Groups coming soon!')),
+                      SnackBar(content: Text(l10n.groupsComingSoon)),
                     );
                   },
                 ),
                 _NavItem(
                   icon: Icons.person_outline,
                   activeIcon: Icons.person,
-                  label: 'Profile',
+                  label: l10n.profile,
                   isSelected: selectedIndex == 2,
                   onTap: () => _onItemTapped(context, 2),
                 ),

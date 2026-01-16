@@ -17,7 +17,6 @@ class AppConstants {
   // API Keys (Replace with your actual keys)
   static const String supabaseUrl = 'YOUR_SUPABASE_URL';
   static const String supabaseAnonKey = 'YOUR_SUPABASE_ANON_KEY';
-  static const String geminiApiKey = 'YOUR_GEMINI_API_KEY';
 
   // Storage Keys
   static const String userTokenKey = 'user_token';

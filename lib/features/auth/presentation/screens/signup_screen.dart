@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../../../../core/constants/app_colors.dart';
 import '../../../../services/supabase_service.dart';
+import '../../../../l10n/generated/app_localizations.dart';
 
 class SignupScreen extends ConsumerStatefulWidget {
   const SignupScreen({super.key});
@@ -46,9 +47,10 @@ class _SignupScreenState extends ConsumerState<SignupScreen> {
       }
     } catch (e) {
       if (mounted) {
+        final l10n = AppLocalizations.of(context)!;
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Sign up failed: ${e.toString()}'),
+            content: Text(l10n.signupFailed(e.toString())),
             backgroundColor: AppColors.error,
           ),
         );
@@ -62,6 +64,8 @@ class _SignupScreenState extends ConsumerState<SignupScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+
     return Scaffold(
       backgroundColor: AppColors.background,
       appBar: AppBar(
@@ -78,18 +82,18 @@ class _SignupScreenState extends ConsumerState<SignupScreen> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const Text(
-                  'Create Account',
-                  style: TextStyle(
+                Text(
+                  l10n.createAccount,
+                  style: const TextStyle(
                     fontSize: 28,
                     fontWeight: FontWeight.bold,
                     color: AppColors.textPrimary,
                   ),
                 ),
                 const SizedBox(height: 8),
-                const Text(
-                  'Start your journey to better health',
-                  style: TextStyle(
+                Text(
+                  l10n.startYourJourney,
+                  style: const TextStyle(
                     fontSize: 16,
                     color: AppColors.textSecondary,
                   ),
@@ -101,14 +105,14 @@ class _SignupScreenState extends ConsumerState<SignupScreen> {
                   controller: _nameController,
                   textInputAction: TextInputAction.next,
                   textCapitalization: TextCapitalization.words,
-                  decoration: const InputDecoration(
-                    labelText: 'Full Name',
-                    hintText: 'Enter your name',
-                    prefixIcon: Icon(Icons.person_outline),
+                  decoration: InputDecoration(
+                    labelText: l10n.fullName,
+                    hintText: l10n.enterYourName,
+                    prefixIcon: const Icon(Icons.person_outline),
                   ),
                   validator: (value) {
                     if (value == null || value.isEmpty) {
-                      return 'Please enter your name';
+                      return l10n.pleaseEnterName;
                     }
                     return null;
                   },
@@ -120,17 +124,17 @@ class _SignupScreenState extends ConsumerState<SignupScreen> {
                   controller: _emailController,
                   keyboardType: TextInputType.emailAddress,
                   textInputAction: TextInputAction.next,
-                  decoration: const InputDecoration(
-                    labelText: 'Email',
-                    hintText: 'Enter your email',
-                    prefixIcon: Icon(Icons.email_outlined),
+                  decoration: InputDecoration(
+                    labelText: l10n.email,
+                    hintText: l10n.enterYourEmail,
+                    prefixIcon: const Icon(Icons.email_outlined),
                   ),
                   validator: (value) {
                     if (value == null || value.isEmpty) {
-                      return 'Please enter your email';
+                      return l10n.pleaseEnterEmail;
                     }
                     if (!value.contains('@')) {
-                      return 'Please enter a valid email';
+                      return l10n.pleaseEnterValidEmail;
                     }
                     return null;
                   },
@@ -143,8 +147,8 @@ class _SignupScreenState extends ConsumerState<SignupScreen> {
                   obscureText: _obscurePassword,
                   textInputAction: TextInputAction.next,
                   decoration: InputDecoration(
-                    labelText: 'Password',
-                    hintText: 'Create a password',
+                    labelText: l10n.password,
+                    hintText: l10n.createAPassword,
                     prefixIcon: const Icon(Icons.lock_outlined),
                     suffixIcon: IconButton(
                       icon: Icon(
@@ -159,10 +163,10 @@ class _SignupScreenState extends ConsumerState<SignupScreen> {
                   ),
                   validator: (value) {
                     if (value == null || value.isEmpty) {
-                      return 'Please enter a password';
+                      return l10n.pleaseEnterPassword;
                     }
                     if (value.length < 6) {
-                      return 'Password must be at least 6 characters';
+                      return l10n.passwordMinLength;
                     }
                     return null;
                   },
@@ -175,8 +179,8 @@ class _SignupScreenState extends ConsumerState<SignupScreen> {
                   obscureText: _obscureConfirmPassword,
                   textInputAction: TextInputAction.done,
                   decoration: InputDecoration(
-                    labelText: 'Confirm Password',
-                    hintText: 'Re-enter your password',
+                    labelText: l10n.confirmPassword,
+                    hintText: l10n.reenterPassword,
                     prefixIcon: const Icon(Icons.lock_outlined),
                     suffixIcon: IconButton(
                       icon: Icon(
@@ -192,10 +196,10 @@ class _SignupScreenState extends ConsumerState<SignupScreen> {
                   ),
                   validator: (value) {
                     if (value == null || value.isEmpty) {
-                      return 'Please confirm your password';
+                      return l10n.pleaseConfirmPassword;
                     }
                     if (value != _passwordController.text) {
-                      return 'Passwords do not match';
+                      return l10n.passwordsDoNotMatch;
                     }
                     return null;
                   },
@@ -217,14 +221,14 @@ class _SignupScreenState extends ConsumerState<SignupScreen> {
                               color: Colors.white,
                             ),
                           )
-                        : const Text('Create Account'),
+                        : Text(l10n.createAccount),
                   ),
                 ),
                 const SizedBox(height: 24),
 
                 // Terms
                 Text(
-                  'By signing up, you agree to our Terms of Service and Privacy Policy',
+                  l10n.termsOfService,
                   style: TextStyle(
                     fontSize: 12,
                     color: AppColors.textTertiary,
@@ -237,13 +241,13 @@ class _SignupScreenState extends ConsumerState<SignupScreen> {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    const Text(
-                      'Already have an account? ',
-                      style: TextStyle(color: AppColors.textSecondary),
+                    Text(
+                      l10n.alreadyHaveAccount,
+                      style: const TextStyle(color: AppColors.textSecondary),
                     ),
                     TextButton(
                       onPressed: () => context.pop(),
-                      child: const Text('Sign In'),
+                      child: Text(l10n.signIn),
                     ),
                   ],
                 ),

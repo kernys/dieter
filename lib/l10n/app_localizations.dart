@@ -1,0 +1,992 @@
+import 'dart:async';
+
+import 'package:flutter/foundation.dart';
+import 'package:flutter/widgets.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:intl/intl.dart' as intl;
+
+import 'app_localizations_en.dart';
+import 'app_localizations_ko.dart';
+
+// ignore_for_file: type=lint
+
+/// Callers can lookup localized strings with an instance of AppLocalizations
+/// returned by `AppLocalizations.of(context)`.
+///
+/// Applications need to include `AppLocalizations.delegate()` in their app's
+/// `localizationDelegates` list, and the locales they support in the app's
+/// `supportedLocales` list. For example:
+///
+/// ```dart
+/// import 'l10n/app_localizations.dart';
+///
+/// return MaterialApp(
+///   localizationsDelegates: AppLocalizations.localizationsDelegates,
+///   supportedLocales: AppLocalizations.supportedLocales,
+///   home: MyApplicationHome(),
+/// );
+/// ```
+///
+/// ## Update pubspec.yaml
+///
+/// Please make sure to update your pubspec.yaml to include the following
+/// packages:
+///
+/// ```yaml
+/// dependencies:
+///   # Internationalization support.
+///   flutter_localizations:
+///     sdk: flutter
+///   intl: any # Use the pinned version from flutter_localizations
+///
+///   # Rest of dependencies
+/// ```
+///
+/// ## iOS Applications
+///
+/// iOS applications define key application metadata, including supported
+/// locales, in an Info.plist file that is built into the application bundle.
+/// To configure the locales supported by your app, you’ll need to edit this
+/// file.
+///
+/// First, open your project’s ios/Runner.xcworkspace Xcode workspace file.
+/// Then, in the Project Navigator, open the Info.plist file under the Runner
+/// project’s Runner folder.
+///
+/// Next, select the Information Property List item, select Add Item from the
+/// Editor menu, then select Localizations from the pop-up menu.
+///
+/// Select and expand the newly-created Localizations item then, for each
+/// locale your application supports, add a new item and select the locale
+/// you wish to add from the pop-up menu in the Value field. This list should
+/// be consistent with the languages listed in the AppLocalizations.supportedLocales
+/// property.
+abstract class AppLocalizations {
+  AppLocalizations(String locale)
+    : localeName = intl.Intl.canonicalizedLocale(locale.toString());
+
+  final String localeName;
+
+  static AppLocalizations? of(BuildContext context) {
+    return Localizations.of<AppLocalizations>(context, AppLocalizations);
+  }
+
+  static const LocalizationsDelegate<AppLocalizations> delegate =
+      _AppLocalizationsDelegate();
+
+  /// A list of this localizations delegate along with the default localizations
+  /// delegates.
+  ///
+  /// Returns a list of localizations delegates containing this delegate along with
+  /// GlobalMaterialLocalizations.delegate, GlobalCupertinoLocalizations.delegate,
+  /// and GlobalWidgetsLocalizations.delegate.
+  ///
+  /// Additional delegates can be added by appending to this list in
+  /// MaterialApp. This list does not have to be used at all if a custom list
+  /// of delegates is preferred or required.
+  static const List<LocalizationsDelegate<dynamic>> localizationsDelegates =
+      <LocalizationsDelegate<dynamic>>[
+        delegate,
+        GlobalMaterialLocalizations.delegate,
+        GlobalCupertinoLocalizations.delegate,
+        GlobalWidgetsLocalizations.delegate,
+      ];
+
+  /// A list of this localizations delegate's supported locales.
+  static const List<Locale> supportedLocales = <Locale>[
+    Locale('en'),
+    Locale('ko'),
+  ];
+
+  /// App title
+  ///
+  /// In en, this message translates to:
+  /// **'Dieter AI'**
+  String get appTitle;
+
+  /// No description provided for @welcomeBack.
+  ///
+  /// In en, this message translates to:
+  /// **'Welcome back'**
+  String get welcomeBack;
+
+  /// No description provided for @signInToContinue.
+  ///
+  /// In en, this message translates to:
+  /// **'Sign in to continue tracking your nutrition'**
+  String get signInToContinue;
+
+  /// No description provided for @createAccount.
+  ///
+  /// In en, this message translates to:
+  /// **'Create Account'**
+  String get createAccount;
+
+  /// No description provided for @startYourJourney.
+  ///
+  /// In en, this message translates to:
+  /// **'Start your journey to better health'**
+  String get startYourJourney;
+
+  /// No description provided for @email.
+  ///
+  /// In en, this message translates to:
+  /// **'Email'**
+  String get email;
+
+  /// No description provided for @enterYourEmail.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter your email'**
+  String get enterYourEmail;
+
+  /// No description provided for @pleaseEnterEmail.
+  ///
+  /// In en, this message translates to:
+  /// **'Please enter your email'**
+  String get pleaseEnterEmail;
+
+  /// No description provided for @pleaseEnterValidEmail.
+  ///
+  /// In en, this message translates to:
+  /// **'Please enter a valid email'**
+  String get pleaseEnterValidEmail;
+
+  /// No description provided for @password.
+  ///
+  /// In en, this message translates to:
+  /// **'Password'**
+  String get password;
+
+  /// No description provided for @enterYourPassword.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter your password'**
+  String get enterYourPassword;
+
+  /// No description provided for @createAPassword.
+  ///
+  /// In en, this message translates to:
+  /// **'Create a password'**
+  String get createAPassword;
+
+  /// No description provided for @pleaseEnterPassword.
+  ///
+  /// In en, this message translates to:
+  /// **'Please enter your password'**
+  String get pleaseEnterPassword;
+
+  /// No description provided for @passwordMinLength.
+  ///
+  /// In en, this message translates to:
+  /// **'Password must be at least 6 characters'**
+  String get passwordMinLength;
+
+  /// No description provided for @confirmPassword.
+  ///
+  /// In en, this message translates to:
+  /// **'Confirm Password'**
+  String get confirmPassword;
+
+  /// No description provided for @reenterPassword.
+  ///
+  /// In en, this message translates to:
+  /// **'Re-enter your password'**
+  String get reenterPassword;
+
+  /// No description provided for @pleaseConfirmPassword.
+  ///
+  /// In en, this message translates to:
+  /// **'Please confirm your password'**
+  String get pleaseConfirmPassword;
+
+  /// No description provided for @passwordsDoNotMatch.
+  ///
+  /// In en, this message translates to:
+  /// **'Passwords do not match'**
+  String get passwordsDoNotMatch;
+
+  /// No description provided for @fullName.
+  ///
+  /// In en, this message translates to:
+  /// **'Full Name'**
+  String get fullName;
+
+  /// No description provided for @enterYourName.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter your name'**
+  String get enterYourName;
+
+  /// No description provided for @pleaseEnterName.
+  ///
+  /// In en, this message translates to:
+  /// **'Please enter your name'**
+  String get pleaseEnterName;
+
+  /// No description provided for @forgotPassword.
+  ///
+  /// In en, this message translates to:
+  /// **'Forgot Password?'**
+  String get forgotPassword;
+
+  /// No description provided for @signIn.
+  ///
+  /// In en, this message translates to:
+  /// **'Sign In'**
+  String get signIn;
+
+  /// No description provided for @signUp.
+  ///
+  /// In en, this message translates to:
+  /// **'Sign Up'**
+  String get signUp;
+
+  /// No description provided for @signOut.
+  ///
+  /// In en, this message translates to:
+  /// **'Sign Out'**
+  String get signOut;
+
+  /// No description provided for @or.
+  ///
+  /// In en, this message translates to:
+  /// **'or'**
+  String get or;
+
+  /// No description provided for @continueWithGoogle.
+  ///
+  /// In en, this message translates to:
+  /// **'Continue with Google'**
+  String get continueWithGoogle;
+
+  /// No description provided for @dontHaveAccount.
+  ///
+  /// In en, this message translates to:
+  /// **'Don\'t have an account? '**
+  String get dontHaveAccount;
+
+  /// No description provided for @alreadyHaveAccount.
+  ///
+  /// In en, this message translates to:
+  /// **'Already have an account? '**
+  String get alreadyHaveAccount;
+
+  /// No description provided for @skipForNow.
+  ///
+  /// In en, this message translates to:
+  /// **'Skip for now'**
+  String get skipForNow;
+
+  /// No description provided for @termsOfService.
+  ///
+  /// In en, this message translates to:
+  /// **'By signing up, you agree to our Terms of Service and Privacy Policy'**
+  String get termsOfService;
+
+  /// No description provided for @loginFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Login failed: {error}'**
+  String loginFailed(String error);
+
+  /// No description provided for @signupFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Sign up failed: {error}'**
+  String signupFailed(String error);
+
+  /// No description provided for @trackCaloriesWithAI.
+  ///
+  /// In en, this message translates to:
+  /// **'Track calories with AI'**
+  String get trackCaloriesWithAI;
+
+  /// No description provided for @trackCaloriesDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Simply take a photo of your food and our AI will instantly analyze the nutritional content'**
+  String get trackCaloriesDescription;
+
+  /// No description provided for @setYourDailyGoals.
+  ///
+  /// In en, this message translates to:
+  /// **'Set your daily goals'**
+  String get setYourDailyGoals;
+
+  /// No description provided for @adjustAnytime.
+  ///
+  /// In en, this message translates to:
+  /// **'You can adjust these anytime in settings'**
+  String get adjustAnytime;
+
+  /// No description provided for @trackYourWeight.
+  ///
+  /// In en, this message translates to:
+  /// **'Track your weight'**
+  String get trackYourWeight;
+
+  /// No description provided for @optionalWeightGoals.
+  ///
+  /// In en, this message translates to:
+  /// **'Optional: Set your weight goals'**
+  String get optionalWeightGoals;
+
+  /// No description provided for @dailyCalories.
+  ///
+  /// In en, this message translates to:
+  /// **'Daily Calories'**
+  String get dailyCalories;
+
+  /// No description provided for @protein.
+  ///
+  /// In en, this message translates to:
+  /// **'Protein'**
+  String get protein;
+
+  /// No description provided for @carbohydrates.
+  ///
+  /// In en, this message translates to:
+  /// **'Carbohydrates'**
+  String get carbohydrates;
+
+  /// No description provided for @carbs.
+  ///
+  /// In en, this message translates to:
+  /// **'Carbs'**
+  String get carbs;
+
+  /// No description provided for @fat.
+  ///
+  /// In en, this message translates to:
+  /// **'Fat'**
+  String get fat;
+
+  /// No description provided for @fats.
+  ///
+  /// In en, this message translates to:
+  /// **'Fats'**
+  String get fats;
+
+  /// No description provided for @calories.
+  ///
+  /// In en, this message translates to:
+  /// **'Calories'**
+  String get calories;
+
+  /// No description provided for @currentWeight.
+  ///
+  /// In en, this message translates to:
+  /// **'Current Weight'**
+  String get currentWeight;
+
+  /// No description provided for @goalWeight.
+  ///
+  /// In en, this message translates to:
+  /// **'Goal Weight'**
+  String get goalWeight;
+
+  /// No description provided for @enterYourWeight.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter your weight'**
+  String get enterYourWeight;
+
+  /// No description provided for @enterGoalWeight.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter your goal weight'**
+  String get enterGoalWeight;
+
+  /// No description provided for @lbs.
+  ///
+  /// In en, this message translates to:
+  /// **'lbs'**
+  String get lbs;
+
+  /// No description provided for @back.
+  ///
+  /// In en, this message translates to:
+  /// **'Back'**
+  String get back;
+
+  /// No description provided for @continue_.
+  ///
+  /// In en, this message translates to:
+  /// **'Continue'**
+  String get continue_;
+
+  /// No description provided for @getStarted.
+  ///
+  /// In en, this message translates to:
+  /// **'Get Started'**
+  String get getStarted;
+
+  /// No description provided for @caloriesEaten.
+  ///
+  /// In en, this message translates to:
+  /// **'Calories eaten'**
+  String get caloriesEaten;
+
+  /// No description provided for @proteinEaten.
+  ///
+  /// In en, this message translates to:
+  /// **'Protein eaten'**
+  String get proteinEaten;
+
+  /// No description provided for @carbsEaten.
+  ///
+  /// In en, this message translates to:
+  /// **'Carbs eaten'**
+  String get carbsEaten;
+
+  /// No description provided for @fatEaten.
+  ///
+  /// In en, this message translates to:
+  /// **'Fat eaten'**
+  String get fatEaten;
+
+  /// No description provided for @recentlyUploaded.
+  ///
+  /// In en, this message translates to:
+  /// **'Recently uploaded'**
+  String get recentlyUploaded;
+
+  /// No description provided for @noMealsLoggedYet.
+  ///
+  /// In en, this message translates to:
+  /// **'No meals logged yet'**
+  String get noMealsLoggedYet;
+
+  /// No description provided for @tapToAddFirstMeal.
+  ///
+  /// In en, this message translates to:
+  /// **'Tap + to add your first meal'**
+  String get tapToAddFirstMeal;
+
+  /// No description provided for @errorLoadingData.
+  ///
+  /// In en, this message translates to:
+  /// **'Error loading data: {error}'**
+  String errorLoadingData(String error);
+
+  /// No description provided for @home.
+  ///
+  /// In en, this message translates to:
+  /// **'Home'**
+  String get home;
+
+  /// No description provided for @progress.
+  ///
+  /// In en, this message translates to:
+  /// **'Progress'**
+  String get progress;
+
+  /// No description provided for @groups.
+  ///
+  /// In en, this message translates to:
+  /// **'Groups'**
+  String get groups;
+
+  /// No description provided for @groupsComingSoon.
+  ///
+  /// In en, this message translates to:
+  /// **'Groups coming soon!'**
+  String get groupsComingSoon;
+
+  /// No description provided for @profile.
+  ///
+  /// In en, this message translates to:
+  /// **'Profile'**
+  String get profile;
+
+  /// No description provided for @yourWeight.
+  ///
+  /// In en, this message translates to:
+  /// **'Your Weight'**
+  String get yourWeight;
+
+  /// No description provided for @goal.
+  ///
+  /// In en, this message translates to:
+  /// **'Goal {weight} lbs'**
+  String goal(int weight);
+
+  /// No description provided for @logWeight.
+  ///
+  /// In en, this message translates to:
+  /// **'Log Weight'**
+  String get logWeight;
+
+  /// No description provided for @dayStreak.
+  ///
+  /// In en, this message translates to:
+  /// **'Day Streak'**
+  String get dayStreak;
+
+  /// No description provided for @weightProgress.
+  ///
+  /// In en, this message translates to:
+  /// **'Weight Progress'**
+  String get weightProgress;
+
+  /// No description provided for @percentOfGoal.
+  ///
+  /// In en, this message translates to:
+  /// **'{percent}% of goal'**
+  String percentOfGoal(int percent);
+
+  /// No description provided for @errorLoadingDataSimple.
+  ///
+  /// In en, this message translates to:
+  /// **'Error loading data'**
+  String get errorLoadingDataSimple;
+
+  /// No description provided for @greatJobConsistency.
+  ///
+  /// In en, this message translates to:
+  /// **'Great job! Consistency is key, and you\'re mastering it!'**
+  String get greatJobConsistency;
+
+  /// No description provided for @dailyAverageCalories.
+  ///
+  /// In en, this message translates to:
+  /// **'Daily Average Calories'**
+  String get dailyAverageCalories;
+
+  /// No description provided for @cal.
+  ///
+  /// In en, this message translates to:
+  /// **'cal'**
+  String get cal;
+
+  /// No description provided for @noWeightData.
+  ///
+  /// In en, this message translates to:
+  /// **'No weight data'**
+  String get noWeightData;
+
+  /// No description provided for @weightLbs.
+  ///
+  /// In en, this message translates to:
+  /// **'Weight (lbs)'**
+  String get weightLbs;
+
+  /// No description provided for @weightLogged.
+  ///
+  /// In en, this message translates to:
+  /// **'Weight logged!'**
+  String get weightLogged;
+
+  /// No description provided for @save.
+  ///
+  /// In en, this message translates to:
+  /// **'Save'**
+  String get save;
+
+  /// No description provided for @cancel.
+  ///
+  /// In en, this message translates to:
+  /// **'Cancel'**
+  String get cancel;
+
+  /// No description provided for @range90d.
+  ///
+  /// In en, this message translates to:
+  /// **'90D'**
+  String get range90d;
+
+  /// No description provided for @range6m.
+  ///
+  /// In en, this message translates to:
+  /// **'6M'**
+  String get range6m;
+
+  /// No description provided for @range1y.
+  ///
+  /// In en, this message translates to:
+  /// **'1Y'**
+  String get range1y;
+
+  /// No description provided for @rangeAll.
+  ///
+  /// In en, this message translates to:
+  /// **'ALL'**
+  String get rangeAll;
+
+  /// No description provided for @edit.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit'**
+  String get edit;
+
+  /// No description provided for @dailyGoals.
+  ///
+  /// In en, this message translates to:
+  /// **'Daily Goals'**
+  String get dailyGoals;
+
+  /// No description provided for @settings.
+  ///
+  /// In en, this message translates to:
+  /// **'Settings'**
+  String get settings;
+
+  /// No description provided for @notifications.
+  ///
+  /// In en, this message translates to:
+  /// **'Notifications'**
+  String get notifications;
+
+  /// No description provided for @language.
+  ///
+  /// In en, this message translates to:
+  /// **'Language'**
+  String get language;
+
+  /// No description provided for @english.
+  ///
+  /// In en, this message translates to:
+  /// **'English'**
+  String get english;
+
+  /// No description provided for @korean.
+  ///
+  /// In en, this message translates to:
+  /// **'Korean'**
+  String get korean;
+
+  /// No description provided for @units.
+  ///
+  /// In en, this message translates to:
+  /// **'Units'**
+  String get units;
+
+  /// No description provided for @imperial.
+  ///
+  /// In en, this message translates to:
+  /// **'Imperial'**
+  String get imperial;
+
+  /// No description provided for @metric.
+  ///
+  /// In en, this message translates to:
+  /// **'Metric'**
+  String get metric;
+
+  /// No description provided for @darkMode.
+  ///
+  /// In en, this message translates to:
+  /// **'Dark Mode'**
+  String get darkMode;
+
+  /// No description provided for @off.
+  ///
+  /// In en, this message translates to:
+  /// **'Off'**
+  String get off;
+
+  /// No description provided for @on.
+  ///
+  /// In en, this message translates to:
+  /// **'On'**
+  String get on;
+
+  /// No description provided for @privacy.
+  ///
+  /// In en, this message translates to:
+  /// **'Privacy'**
+  String get privacy;
+
+  /// No description provided for @helpAndSupport.
+  ///
+  /// In en, this message translates to:
+  /// **'Help & Support'**
+  String get helpAndSupport;
+
+  /// No description provided for @app.
+  ///
+  /// In en, this message translates to:
+  /// **'App'**
+  String get app;
+
+  /// No description provided for @rateApp.
+  ///
+  /// In en, this message translates to:
+  /// **'Rate App'**
+  String get rateApp;
+
+  /// No description provided for @shareApp.
+  ///
+  /// In en, this message translates to:
+  /// **'Share App'**
+  String get shareApp;
+
+  /// No description provided for @about.
+  ///
+  /// In en, this message translates to:
+  /// **'About'**
+  String get about;
+
+  /// No description provided for @signOutConfirmTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Sign Out'**
+  String get signOutConfirmTitle;
+
+  /// No description provided for @signOutConfirmMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Are you sure you want to sign out?'**
+  String get signOutConfirmMessage;
+
+  /// No description provided for @cameraNotAvailable.
+  ///
+  /// In en, this message translates to:
+  /// **'Camera not available'**
+  String get cameraNotAvailable;
+
+  /// No description provided for @cameraError.
+  ///
+  /// In en, this message translates to:
+  /// **'Camera error: {error}'**
+  String cameraError(String error);
+
+  /// No description provided for @pickFromGallery.
+  ///
+  /// In en, this message translates to:
+  /// **'Pick from Gallery'**
+  String get pickFromGallery;
+
+  /// No description provided for @scanFood.
+  ///
+  /// In en, this message translates to:
+  /// **'Scan Food'**
+  String get scanFood;
+
+  /// No description provided for @barcode.
+  ///
+  /// In en, this message translates to:
+  /// **'Barcode'**
+  String get barcode;
+
+  /// No description provided for @foodLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Food Label'**
+  String get foodLabel;
+
+  /// No description provided for @zoomHalf.
+  ///
+  /// In en, this message translates to:
+  /// **'.5x'**
+  String get zoomHalf;
+
+  /// No description provided for @zoomOne.
+  ///
+  /// In en, this message translates to:
+  /// **'1x'**
+  String get zoomOne;
+
+  /// No description provided for @analyzingFood.
+  ///
+  /// In en, this message translates to:
+  /// **'Analyzing food...'**
+  String get analyzingFood;
+
+  /// No description provided for @failedToCaptureImage.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to capture image'**
+  String get failedToCaptureImage;
+
+  /// No description provided for @analysisFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Analysis failed: {error}'**
+  String analysisFailed(String error);
+
+  /// No description provided for @howToUse.
+  ///
+  /// In en, this message translates to:
+  /// **'How to use'**
+  String get howToUse;
+
+  /// No description provided for @howToUseStep1.
+  ///
+  /// In en, this message translates to:
+  /// **'1. Point your camera at the food'**
+  String get howToUseStep1;
+
+  /// No description provided for @howToUseStep2.
+  ///
+  /// In en, this message translates to:
+  /// **'2. Make sure the food is clearly visible'**
+  String get howToUseStep2;
+
+  /// No description provided for @howToUseStep3.
+  ///
+  /// In en, this message translates to:
+  /// **'3. Tap the camera button to analyze'**
+  String get howToUseStep3;
+
+  /// No description provided for @howToUseStep4.
+  ///
+  /// In en, this message translates to:
+  /// **'4. Review and adjust the results if needed'**
+  String get howToUseStep4;
+
+  /// No description provided for @gotIt.
+  ///
+  /// In en, this message translates to:
+  /// **'Got it'**
+  String get gotIt;
+
+  /// No description provided for @nutrition.
+  ///
+  /// In en, this message translates to:
+  /// **'Nutrition'**
+  String get nutrition;
+
+  /// No description provided for @unknownFood.
+  ///
+  /// In en, this message translates to:
+  /// **'Unknown Food'**
+  String get unknownFood;
+
+  /// No description provided for @ingredients.
+  ///
+  /// In en, this message translates to:
+  /// **'Ingredients'**
+  String get ingredients;
+
+  /// No description provided for @addMore.
+  ///
+  /// In en, this message translates to:
+  /// **'Add more'**
+  String get addMore;
+
+  /// No description provided for @noIngredientsDetected.
+  ///
+  /// In en, this message translates to:
+  /// **'No ingredients detected'**
+  String get noIngredientsDetected;
+
+  /// No description provided for @fixResults.
+  ///
+  /// In en, this message translates to:
+  /// **'Fix Results'**
+  String get fixResults;
+
+  /// No description provided for @done.
+  ///
+  /// In en, this message translates to:
+  /// **'Done'**
+  String get done;
+
+  /// No description provided for @addIngredient.
+  ///
+  /// In en, this message translates to:
+  /// **'Add Ingredient'**
+  String get addIngredient;
+
+  /// No description provided for @name.
+  ///
+  /// In en, this message translates to:
+  /// **'Name'**
+  String get name;
+
+  /// No description provided for @amountOptional.
+  ///
+  /// In en, this message translates to:
+  /// **'Amount (optional)'**
+  String get amountOptional;
+
+  /// No description provided for @add.
+  ///
+  /// In en, this message translates to:
+  /// **'Add'**
+  String get add;
+
+  /// No description provided for @foodName.
+  ///
+  /// In en, this message translates to:
+  /// **'Food Name'**
+  String get foodName;
+
+  /// No description provided for @proteinG.
+  ///
+  /// In en, this message translates to:
+  /// **'Protein (g)'**
+  String get proteinG;
+
+  /// No description provided for @carbsG.
+  ///
+  /// In en, this message translates to:
+  /// **'Carbs (g)'**
+  String get carbsG;
+
+  /// No description provided for @fatG.
+  ///
+  /// In en, this message translates to:
+  /// **'Fat (g)'**
+  String get fatG;
+
+  /// No description provided for @foodEntrySaved.
+  ///
+  /// In en, this message translates to:
+  /// **'Food entry saved!'**
+  String get foodEntrySaved;
+
+  /// No description provided for @failedToSave.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to save: {error}'**
+  String failedToSave(String error);
+
+  /// No description provided for @defaultUserName.
+  ///
+  /// In en, this message translates to:
+  /// **'John Doe'**
+  String get defaultUserName;
+
+  /// No description provided for @defaultUserEmail.
+  ///
+  /// In en, this message translates to:
+  /// **'john.doe@example.com'**
+  String get defaultUserEmail;
+}
+
+class _AppLocalizationsDelegate
+    extends LocalizationsDelegate<AppLocalizations> {
+  const _AppLocalizationsDelegate();
+
+  @override
+  Future<AppLocalizations> load(Locale locale) {
+    return SynchronousFuture<AppLocalizations>(lookupAppLocalizations(locale));
+  }
+
+  @override
+  bool isSupported(Locale locale) =>
+      <String>['en', 'ko'].contains(locale.languageCode);
+
+  @override
+  bool shouldReload(_AppLocalizationsDelegate old) => false;
+}
+
+AppLocalizations lookupAppLocalizations(Locale locale) {
+  // Lookup logic when only language code is specified.
+  switch (locale.languageCode) {
+    case 'en':
+      return AppLocalizationsEn();
+    case 'ko':
+      return AppLocalizationsKo();
+  }
+
+  throw FlutterError(
+    'AppLocalizations.delegate failed to load unsupported locale "$locale". This is likely '
+    'an issue with the localizations generation tool. Please file an issue '
+    'on GitHub with a reproducible sample app and the gen-l10n configuration '
+    'that was used.',
+  );
+}

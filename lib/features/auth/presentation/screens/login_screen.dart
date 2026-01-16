@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../../../../core/constants/app_colors.dart';
+import '../../../../l10n/generated/app_localizations.dart';
 import '../providers/auth_provider.dart';
 
 class LoginScreen extends ConsumerStatefulWidget {
@@ -41,9 +42,10 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
       }
     } catch (e) {
       if (mounted) {
+        final l10n = AppLocalizations.of(context)!;
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Login failed: ${e.toString()}'),
+            content: Text(l10n.loginFailed(e.toString())),
             backgroundColor: AppColors.error,
           ),
         );
@@ -62,6 +64,8 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+
     return Scaffold(
       backgroundColor: AppColors.background,
       body: SafeArea(
@@ -84,9 +88,9 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                         color: AppColors.primary,
                       ),
                       const SizedBox(width: 8),
-                      const Text(
-                        'Dieter AI',
-                        style: TextStyle(
+                      Text(
+                        l10n.appTitle,
+                        style: const TextStyle(
                           fontSize: 32,
                           fontWeight: FontWeight.bold,
                           color: AppColors.textPrimary,
@@ -98,18 +102,18 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                 const SizedBox(height: 60),
 
                 // Title
-                const Text(
-                  'Welcome back',
-                  style: TextStyle(
+                Text(
+                  l10n.welcomeBack,
+                  style: const TextStyle(
                     fontSize: 28,
                     fontWeight: FontWeight.bold,
                     color: AppColors.textPrimary,
                   ),
                 ),
                 const SizedBox(height: 8),
-                const Text(
-                  'Sign in to continue tracking your nutrition',
-                  style: TextStyle(
+                Text(
+                  l10n.signInToContinue,
+                  style: const TextStyle(
                     fontSize: 16,
                     color: AppColors.textSecondary,
                   ),
@@ -121,17 +125,17 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                   controller: _emailController,
                   keyboardType: TextInputType.emailAddress,
                   textInputAction: TextInputAction.next,
-                  decoration: const InputDecoration(
-                    labelText: 'Email',
-                    hintText: 'Enter your email',
-                    prefixIcon: Icon(Icons.email_outlined),
+                  decoration: InputDecoration(
+                    labelText: l10n.email,
+                    hintText: l10n.enterYourEmail,
+                    prefixIcon: const Icon(Icons.email_outlined),
                   ),
                   validator: (value) {
                     if (value == null || value.isEmpty) {
-                      return 'Please enter your email';
+                      return l10n.pleaseEnterEmail;
                     }
                     if (!value.contains('@')) {
-                      return 'Please enter a valid email';
+                      return l10n.pleaseEnterValidEmail;
                     }
                     return null;
                   },
@@ -144,8 +148,8 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                   obscureText: _obscurePassword,
                   textInputAction: TextInputAction.done,
                   decoration: InputDecoration(
-                    labelText: 'Password',
-                    hintText: 'Enter your password',
+                    labelText: l10n.password,
+                    hintText: l10n.enterYourPassword,
                     prefixIcon: const Icon(Icons.lock_outlined),
                     suffixIcon: IconButton(
                       icon: Icon(
@@ -160,10 +164,10 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                   ),
                   validator: (value) {
                     if (value == null || value.isEmpty) {
-                      return 'Please enter your password';
+                      return l10n.pleaseEnterPassword;
                     }
                     if (value.length < 6) {
-                      return 'Password must be at least 6 characters';
+                      return l10n.passwordMinLength;
                     }
                     return null;
                   },
@@ -178,7 +182,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                     onPressed: () {
                       // TODO: Implement forgot password
                     },
-                    child: const Text('Forgot Password?'),
+                    child: Text(l10n.forgotPassword),
                   ),
                 ),
                 const SizedBox(height: 24),
@@ -197,7 +201,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                               color: Colors.white,
                             ),
                           )
-                        : const Text('Sign In'),
+                        : Text(l10n.signIn),
                   ),
                 ),
                 const SizedBox(height: 24),
@@ -209,7 +213,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                     Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 16),
                       child: Text(
-                        'or',
+                        l10n.or,
                         style: TextStyle(
                           color: AppColors.textTertiary,
                         ),
@@ -233,7 +237,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                       errorBuilder: (context, error, stackTrace) =>
                           const Icon(Icons.g_mobiledata, size: 24),
                     ),
-                    label: const Text('Continue with Google'),
+                    label: Text(l10n.continueWithGoogle),
                   ),
                 ),
                 const SizedBox(height: 40),
@@ -242,13 +246,13 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    const Text(
-                      "Don't have an account? ",
-                      style: TextStyle(color: AppColors.textSecondary),
+                    Text(
+                      l10n.dontHaveAccount,
+                      style: const TextStyle(color: AppColors.textSecondary),
                     ),
                     TextButton(
                       onPressed: () => context.push('/signup'),
-                      child: const Text('Sign Up'),
+                      child: Text(l10n.signUp),
                     ),
                   ],
                 ),
@@ -257,9 +261,9 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                 Center(
                   child: TextButton(
                     onPressed: _skipLogin,
-                    child: const Text(
-                      'Skip for now',
-                      style: TextStyle(color: AppColors.textTertiary),
+                    child: Text(
+                      l10n.skipForNow,
+                      style: const TextStyle(color: AppColors.textTertiary),
                     ),
                   ),
                 ),
