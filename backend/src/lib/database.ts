@@ -1,7 +1,11 @@
 import { DataSource, EntitySchema, Repository } from 'typeorm';
 import { UserEntity, FoodEntryEntity, WeightLogEntity } from '@/entities';
+import pg from 'pg';
 import dotenv from 'dotenv';
 dotenv.config();
+
+// Parse PostgreSQL numeric/decimal as JavaScript number instead of string
+pg.types.setTypeParser(1700, (val) => parseFloat(val));
 
 let dataSource: DataSource | null = null;
 
