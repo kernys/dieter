@@ -6,6 +6,8 @@ import 'package:intl/intl.dart';
 import '../../../../core/constants/app_colors.dart';
 import '../../../../services/api_service.dart';
 import '../../../../l10n/generated/app_localizations.dart';
+import '../../../auth/presentation/providers/auth_provider.dart';
+import '../../../home/presentation/providers/home_provider.dart';
 
 class FoodDetailScreen extends ConsumerStatefulWidget {
   final String? foodId;
@@ -608,8 +610,36 @@ class _FoodDetailScreenState extends ConsumerState<FoodDetailScreen> {
     setState(() => _isLoading = true);
 
     try {
-      // TODO: Save to Supabase
-      await Future.delayed(const Duration(seconds: 1));
+      final userId = ref.read(currentUserIdProvider);
+      if (userId == null) {
+        throw Exception('User not authenticated');
+      }
+
+      final apiService = ref.read(apiServiceProvider);
+
+      // Convert ingredients to the expected format
+      final ingredientsData = _ingredients.map((ingredient) => {
+        'name': ingredient.name,
+        'amount': ingredient.amount,
+        'calories': ingredient.calories,
+        'protein': ingredient.protein,
+        'carbs': ingredient.carbs,
+        'fat': ingredient.fat,
+      }).toList();
+
+      await apiService.createFoodEntry(
+        userId: userId,
+        name: _nameController.text.isNotEmpty ? _nameController.text : l10n.unknownFood,
+        calories: _totalCalories,
+        protein: _totalProtein,
+        carbs: _totalCarbs,
+        fat: _totalFat,
+        ingredients: ingredientsData,
+        servings: _servings,
+      );
+
+      // Invalidate the daily summary to refresh home screen
+      ref.invalidate(dailySummaryProvider);
 
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(

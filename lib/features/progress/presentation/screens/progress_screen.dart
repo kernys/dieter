@@ -587,7 +587,7 @@ class ProgressScreen extends ConsumerWidget {
 
     showDialog(
       context: context,
-      builder: (context) => AlertDialog(
+      builder: (dialogContext) => AlertDialog(
         title: Text(l10n.logWeight),
         content: TextField(
           controller: controller,
@@ -600,16 +600,34 @@ class ProgressScreen extends ConsumerWidget {
         ),
         actions: [
           TextButton(
-            onPressed: () => Navigator.pop(context),
+            onPressed: () => Navigator.pop(dialogContext),
             child: Text(l10n.cancel),
           ),
           ElevatedButton(
-            onPressed: () {
-              // TODO: Save weight to Supabase
-              Navigator.pop(context);
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(content: Text(l10n.weightLogged)),
-              );
+            onPressed: () async {
+              final weight = double.tryParse(controller.text);
+              if (weight != null && weight > 0) {
+                try {
+                  await ref.read(
+                    addWeightLogProvider(AddWeightLogParams(weight: weight)).future,
+                  );
+
+                  if (dialogContext.mounted) {
+                    Navigator.pop(dialogContext);
+                  }
+                  if (context.mounted) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(content: Text(l10n.weightLogged)),
+                    );
+                  }
+                } catch (e) {
+                  if (context.mounted) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(content: Text('Failed to log weight: $e')),
+                    );
+                  }
+                }
+              }
             },
             child: Text(l10n.save),
           ),

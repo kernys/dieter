@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/constants/app_constants.dart';
+import '../providers/auth_provider.dart';
 
 class OnboardingScreen extends ConsumerStatefulWidget {
   const OnboardingScreen({super.key});
@@ -40,9 +41,31 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
     }
   }
 
-  void _completeOnboarding() {
-    // TODO: Save settings to Supabase
-    context.go('/home');
+  Future<void> _completeOnboarding() async {
+    try {
+      final updates = <String, dynamic>{
+        'daily_calorie_goal': _calorieGoal,
+        'daily_protein_goal': _proteinGoal,
+        'daily_carbs_goal': _carbsGoal,
+        'daily_fat_goal': _fatGoal,
+      };
+
+      if (_currentWeight != null) {
+        updates['current_weight'] = _currentWeight;
+      }
+      if (_goalWeight != null) {
+        updates['goal_weight'] = _goalWeight;
+      }
+
+      await ref.read(authStateProvider.notifier).updateUser(updates);
+    } catch (e) {
+      // Continue even if saving fails - user can update later
+      debugPrint('Failed to save onboarding settings: $e');
+    }
+
+    if (mounted) {
+      context.go('/home');
+    }
   }
 
   @override

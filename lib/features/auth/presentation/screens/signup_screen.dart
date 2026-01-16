@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../../../../core/constants/app_colors.dart';
-import '../../../../services/supabase_service.dart';
 import '../../../../l10n/generated/app_localizations.dart';
+import '../providers/auth_provider.dart';
 
 class SignupScreen extends ConsumerStatefulWidget {
   const SignupScreen({super.key});
@@ -37,9 +37,10 @@ class _SignupScreenState extends ConsumerState<SignupScreen> {
     setState(() => _isLoading = true);
 
     try {
-      await SupabaseService.signUp(
-        email: _emailController.text.trim(),
-        password: _passwordController.text,
+      await ref.read(authStateProvider.notifier).signup(
+        _emailController.text.trim(),
+        _passwordController.text,
+        _nameController.text.trim(),
       );
 
       if (mounted) {

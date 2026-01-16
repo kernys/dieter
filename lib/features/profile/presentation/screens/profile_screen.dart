@@ -4,6 +4,8 @@ import 'package:go_router/go_router.dart';
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/constants/app_constants.dart';
 import '../../../../l10n/generated/app_localizations.dart';
+import '../../../auth/presentation/providers/auth_provider.dart';
+import '../../../home/presentation/providers/home_provider.dart';
 
 class ProfileScreen extends ConsumerWidget {
   const ProfileScreen({super.key});
@@ -11,6 +13,9 @@ class ProfileScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final l10n = AppLocalizations.of(context)!;
+    final authState = ref.watch(authStateProvider);
+    final user = authState.user;
+    final userGoalsAsync = ref.watch(userGoalsProvider);
 
     return Scaffold(
       backgroundColor: AppColors.background,
@@ -63,7 +68,7 @@ class ProfileScreen extends ConsumerWidget {
                         ),
                         child: Center(
                           child: Text(
-                            'JD',
+                            _getInitials(user?.name ?? l10n.defaultUserName),
                             style: TextStyle(
                               fontSize: 24,
                               fontWeight: FontWeight.bold,
@@ -78,7 +83,7 @@ class ProfileScreen extends ConsumerWidget {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
-                              l10n.defaultUserName,
+                              user?.name ?? l10n.defaultUserName,
                               style: const TextStyle(
                                 fontSize: 20,
                                 fontWeight: FontWeight.w600,
@@ -87,7 +92,7 @@ class ProfileScreen extends ConsumerWidget {
                             ),
                             const SizedBox(height: 4),
                             Text(
-                              l10n.defaultUserEmail,
+                              user?.email ?? l10n.defaultUserEmail,
                               style: const TextStyle(
                                 fontSize: 14,
                                 color: AppColors.textSecondary,
@@ -98,7 +103,7 @@ class ProfileScreen extends ConsumerWidget {
                       ),
                       TextButton(
                         onPressed: () {
-                          // TODO: Edit profile
+                          _showEditProfileDialog(context, ref, l10n, user);
                         },
                         child: Text(l10n.edit),
                       ),
@@ -111,43 +116,88 @@ class ProfileScreen extends ConsumerWidget {
               // Daily Goals Section
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 16),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      l10n.dailyGoals,
-                      style: const TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.w600,
-                        color: AppColors.textPrimary,
+                child: userGoalsAsync.when(
+                  data: (goals) => Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        l10n.dailyGoals,
+                        style: const TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.w600,
+                          color: AppColors.textPrimary,
+                        ),
                       ),
-                    ),
-                    const SizedBox(height: 12),
-                    _GoalTile(
-                      icon: Icons.local_fire_department,
-                      label: l10n.calories,
-                      value: '${AppConstants.defaultCalorieGoal} ${l10n.cal}',
-                      color: AppColors.calories,
-                    ),
-                    _GoalTile(
-                      icon: Icons.egg_outlined,
-                      label: l10n.protein,
-                      value: '${AppConstants.defaultProteinGoal}g',
-                      color: AppColors.protein,
-                    ),
-                    _GoalTile(
-                      icon: Icons.grass,
-                      label: l10n.carbohydrates,
-                      value: '${AppConstants.defaultCarbsGoal}g',
-                      color: AppColors.carbs,
-                    ),
-                    _GoalTile(
-                      icon: Icons.water_drop_outlined,
-                      label: l10n.fat,
-                      value: '${AppConstants.defaultFatGoal}g',
-                      color: AppColors.fat,
-                    ),
-                  ],
+                      const SizedBox(height: 12),
+                      _GoalTile(
+                        icon: Icons.local_fire_department,
+                        label: l10n.calories,
+                        value: '${goals.calorieGoal} ${l10n.cal}',
+                        color: AppColors.calories,
+                        onTap: () => _showEditGoalDialog(context, ref, l10n, 'calories', goals.calorieGoal),
+                      ),
+                      _GoalTile(
+                        icon: Icons.egg_outlined,
+                        label: l10n.protein,
+                        value: '${goals.proteinGoal}g',
+                        color: AppColors.protein,
+                        onTap: () => _showEditGoalDialog(context, ref, l10n, 'protein', goals.proteinGoal),
+                      ),
+                      _GoalTile(
+                        icon: Icons.grass,
+                        label: l10n.carbohydrates,
+                        value: '${goals.carbsGoal}g',
+                        color: AppColors.carbs,
+                        onTap: () => _showEditGoalDialog(context, ref, l10n, 'carbs', goals.carbsGoal),
+                      ),
+                      _GoalTile(
+                        icon: Icons.water_drop_outlined,
+                        label: l10n.fat,
+                        value: '${goals.fatGoal}g',
+                        color: AppColors.fat,
+                        onTap: () => _showEditGoalDialog(context, ref, l10n, 'fat', goals.fatGoal),
+                      ),
+                    ],
+                  ),
+                  loading: () => const Center(child: CircularProgressIndicator()),
+                  error: (_, __) => Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        l10n.dailyGoals,
+                        style: const TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.w600,
+                          color: AppColors.textPrimary,
+                        ),
+                      ),
+                      const SizedBox(height: 12),
+                      _GoalTile(
+                        icon: Icons.local_fire_department,
+                        label: l10n.calories,
+                        value: '${AppConstants.defaultCalorieGoal} ${l10n.cal}',
+                        color: AppColors.calories,
+                      ),
+                      _GoalTile(
+                        icon: Icons.egg_outlined,
+                        label: l10n.protein,
+                        value: '${AppConstants.defaultProteinGoal}g',
+                        color: AppColors.protein,
+                      ),
+                      _GoalTile(
+                        icon: Icons.grass,
+                        label: l10n.carbohydrates,
+                        value: '${AppConstants.defaultCarbsGoal}g',
+                        color: AppColors.carbs,
+                      ),
+                      _GoalTile(
+                        icon: Icons.water_drop_outlined,
+                        label: l10n.fat,
+                        value: '${AppConstants.defaultFatGoal}g',
+                        color: AppColors.fat,
+                      ),
+                    ],
+                  ),
                 ),
               ),
               const SizedBox(height: 24),
@@ -248,7 +298,7 @@ class ProfileScreen extends ConsumerWidget {
                   width: double.infinity,
                   child: OutlinedButton(
                     onPressed: () {
-                      _showSignOutDialog(context, l10n);
+                      _showSignOutDialog(context, ref, l10n);
                     },
                     style: OutlinedButton.styleFrom(
                       foregroundColor: AppColors.error,
@@ -266,7 +316,7 @@ class ProfileScreen extends ConsumerWidget {
     );
   }
 
-  void _showSignOutDialog(BuildContext context, AppLocalizations l10n) {
+  void _showSignOutDialog(BuildContext context, WidgetRef ref, AppLocalizations l10n) {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
@@ -279,6 +329,7 @@ class ProfileScreen extends ConsumerWidget {
           ),
           ElevatedButton(
             onPressed: () {
+              ref.read(authStateProvider.notifier).logout();
               Navigator.pop(context);
               context.go('/login');
             },
@@ -291,6 +342,143 @@ class ProfileScreen extends ConsumerWidget {
       ),
     );
   }
+
+  String _getInitials(String name) {
+    final parts = name.trim().split(' ');
+    if (parts.length >= 2) {
+      return '${parts[0][0]}${parts[1][0]}'.toUpperCase();
+    } else if (parts.isNotEmpty && parts[0].isNotEmpty) {
+      return parts[0][0].toUpperCase();
+    }
+    return 'U';
+  }
+
+  void _showEditProfileDialog(BuildContext context, WidgetRef ref, AppLocalizations l10n, dynamic user) {
+    final nameController = TextEditingController(text: user?.name ?? '');
+
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: Text(l10n.edit),
+        content: TextField(
+          controller: nameController,
+          decoration: InputDecoration(labelText: l10n.name),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: Text(l10n.cancel),
+          ),
+          ElevatedButton(
+            onPressed: () async {
+              if (nameController.text.isNotEmpty) {
+                try {
+                  await ref.read(authStateProvider.notifier).updateUser({
+                    'name': nameController.text,
+                  });
+                  if (context.mounted) {
+                    Navigator.pop(context);
+                  }
+                } catch (e) {
+                  if (context.mounted) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(content: Text(l10n.failedToSave(e.toString()))),
+                    );
+                  }
+                }
+              }
+            },
+            child: Text(l10n.save),
+          ),
+        ],
+      ),
+    );
+  }
+
+  void _showEditGoalDialog(BuildContext context, WidgetRef ref, AppLocalizations l10n, String goalType, int currentValue) {
+    final controller = TextEditingController(text: currentValue.toString());
+
+    String title;
+    switch (goalType) {
+      case 'calories':
+        title = l10n.calories;
+        break;
+      case 'protein':
+        title = l10n.protein;
+        break;
+      case 'carbs':
+        title = l10n.carbohydrates;
+        break;
+      case 'fat':
+        title = l10n.fat;
+        break;
+      default:
+        title = goalType;
+    }
+
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: Text(title),
+        content: TextField(
+          controller: controller,
+          keyboardType: TextInputType.number,
+          decoration: InputDecoration(
+            labelText: goalType == 'calories' ? l10n.cal : 'g',
+          ),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: Text(l10n.cancel),
+          ),
+          ElevatedButton(
+            onPressed: () async {
+              final value = int.tryParse(controller.text);
+              if (value != null && value > 0) {
+                try {
+                  String fieldName;
+                  switch (goalType) {
+                    case 'calories':
+                      fieldName = 'daily_calorie_goal';
+                      break;
+                    case 'protein':
+                      fieldName = 'daily_protein_goal';
+                      break;
+                    case 'carbs':
+                      fieldName = 'daily_carbs_goal';
+                      break;
+                    case 'fat':
+                      fieldName = 'daily_fat_goal';
+                      break;
+                    default:
+                      fieldName = goalType;
+                  }
+
+                  await ref.read(authStateProvider.notifier).updateUser({
+                    fieldName: value,
+                  });
+
+                  ref.invalidate(userGoalsProvider);
+
+                  if (context.mounted) {
+                    Navigator.pop(context);
+                  }
+                } catch (e) {
+                  if (context.mounted) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(content: Text(l10n.failedToSave(e.toString()))),
+                    );
+                  }
+                }
+              }
+            },
+            child: Text(l10n.save),
+          ),
+        ],
+      ),
+    );
+  }
 }
 
 class _GoalTile extends StatelessWidget {
@@ -298,61 +486,66 @@ class _GoalTile extends StatelessWidget {
   final String label;
   final String value;
   final Color color;
+  final VoidCallback? onTap;
 
   const _GoalTile({
     required this.icon,
     required this.label,
     required this.value,
     required this.color,
+    this.onTap,
   });
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      margin: const EdgeInsets.only(bottom: 8),
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: AppColors.card,
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: AppColors.border),
-      ),
-      child: Row(
-        children: [
-          Container(
-            width: 40,
-            height: 40,
-            decoration: BoxDecoration(
-              color: color.withValues(alpha: 0.1),
-              borderRadius: BorderRadius.circular(10),
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        margin: const EdgeInsets.only(bottom: 8),
+        padding: const EdgeInsets.all(16),
+        decoration: BoxDecoration(
+          color: AppColors.card,
+          borderRadius: BorderRadius.circular(12),
+          border: Border.all(color: AppColors.border),
+        ),
+        child: Row(
+          children: [
+            Container(
+              width: 40,
+              height: 40,
+              decoration: BoxDecoration(
+                color: color.withValues(alpha: 0.1),
+                borderRadius: BorderRadius.circular(10),
+              ),
+              child: Icon(icon, color: color, size: 20),
             ),
-            child: Icon(icon, color: color, size: 20),
-          ),
-          const SizedBox(width: 12),
-          Expanded(
-            child: Text(
-              label,
-              style: const TextStyle(
-                fontSize: 14,
-                fontWeight: FontWeight.w500,
-                color: AppColors.textPrimary,
+            const SizedBox(width: 12),
+            Expanded(
+              child: Text(
+                label,
+                style: const TextStyle(
+                  fontSize: 14,
+                  fontWeight: FontWeight.w500,
+                  color: AppColors.textPrimary,
+                ),
               ),
             ),
-          ),
-          Text(
-            value,
-            style: TextStyle(
-              fontSize: 14,
-              fontWeight: FontWeight.w600,
-              color: color,
+            Text(
+              value,
+              style: TextStyle(
+                fontSize: 14,
+                fontWeight: FontWeight.w600,
+                color: color,
+              ),
             ),
-          ),
-          const SizedBox(width: 8),
-          const Icon(
-            Icons.chevron_right,
-            color: AppColors.textTertiary,
-            size: 20,
-          ),
-        ],
+            const SizedBox(width: 8),
+            const Icon(
+              Icons.chevron_right,
+              color: AppColors.textTertiary,
+              size: 20,
+            ),
+          ],
+        ),
       ),
     );
   }
