@@ -405,7 +405,7 @@ class ProgressScreen extends ConsumerWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        'Weight Changes',
+                        l10n.weightChanges,
                         style: TextStyle(
                           fontSize: 18,
                           fontWeight: FontWeight.w600,
@@ -413,12 +413,12 @@ class ProgressScreen extends ConsumerWidget {
                         ),
                       ),
                       const SizedBox(height: 16),
-                      _WeightChangeRow(period: '3 day', change: 0.0, isIncrease: null),
-                      _WeightChangeRow(period: '7 day', change: 0.0, isIncrease: null),
-                      _WeightChangeRow(period: '14 day', change: 0.0, isIncrease: null),
-                      _WeightChangeRow(period: '30 day', change: 1.0, isIncrease: true),
-                      _WeightChangeRow(period: '90 day', change: 1.0, isIncrease: true),
-                      _WeightChangeRow(period: 'All Time', change: 1.0, isIncrease: true),
+                      _WeightChangeRow(period: l10n.day3, change: 0.0, isIncrease: null),
+                      _WeightChangeRow(period: l10n.day7, change: 0.0, isIncrease: null),
+                      _WeightChangeRow(period: l10n.day14, change: 0.0, isIncrease: null),
+                      _WeightChangeRow(period: l10n.day30, change: 1.0, isIncrease: true),
+                      _WeightChangeRow(period: l10n.day90, change: 1.0, isIncrease: true),
+                      _WeightChangeRow(period: l10n.allTime, change: 1.0, isIncrease: true),
                     ],
                   ),
                 ),
@@ -528,18 +528,32 @@ class ProgressScreen extends ConsumerWidget {
       return Center(child: Text(l10n.noWeightData));
     }
 
+    final isMetric = settings.unitSystem == UnitSystem.metric;
     final spots = <FlSpot>[];
+    double minWeight = double.infinity;
+    double maxWeight = double.negativeInfinity;
+
     for (var i = 0; i < logs.length; i++) {
       final log = logs[logs.length - 1 - i];
-      spots.add(FlSpot(i.toDouble(), log.weight));
+      // Convert to kg if metric
+      final weight = isMetric ? log.weight * 0.453592 : log.weight;
+      spots.add(FlSpot(i.toDouble(), weight));
+      if (weight < minWeight) minWeight = weight;
+      if (weight > maxWeight) maxWeight = weight;
     }
+
+    // Add padding to min/max
+    final padding = (maxWeight - minWeight) * 0.1;
+    final chartMinY = (minWeight - padding).clamp(0.0, double.infinity);
+    final chartMaxY = maxWeight + padding;
+    final interval = ((chartMaxY - chartMinY) / 4).ceilToDouble().clamp(1.0, double.infinity);
 
     return LineChart(
       LineChartData(
         gridData: FlGridData(
           show: true,
           drawVerticalLine: false,
-          horizontalInterval: 5,
+          horizontalInterval: interval,
           getDrawingHorizontalLine: (value) {
             return FlLine(
               color: AppColors.border,
@@ -553,7 +567,7 @@ class ProgressScreen extends ConsumerWidget {
             sideTitles: SideTitles(
               showTitles: true,
               reservedSize: 40,
-              interval: 5,
+              interval: interval,
               getTitlesWidget: (value, meta) {
                 return Text(
                   value.toInt().toString(),
@@ -569,13 +583,15 @@ class ProgressScreen extends ConsumerWidget {
             sideTitles: SideTitles(
               showTitles: true,
               reservedSize: 30,
-              interval: 1,
+              interval: logs.length > 6 ? (logs.length / 6).ceilToDouble() : 1,
               getTitlesWidget: (value, meta) {
-                final months = ['Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov'];
                 final index = value.toInt();
-                if (index >= 0 && index < months.length) {
+                if (index >= 0 && index < logs.length) {
+                  final log = logs[logs.length - 1 - index];
+                  final date = log.recordedAt;
+                  final monthNames = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
                   return Text(
-                    months[index],
+                    monthNames[date.month - 1],
                     style: const TextStyle(
                       fontSize: 10,
                       color: AppColors.textTertiary,
@@ -602,7 +618,7 @@ class ProgressScreen extends ConsumerWidget {
             barWidth: 3,
             isStrokeCapRound: true,
             dotData: FlDotData(
-              show: true,
+              show: spots.length <= 10, // Only show dots if 10 or fewer points
               getDotPainter: (spot, percent, barData, index) {
                 return FlDotCirclePainter(
                   radius: 4,
@@ -622,11 +638,8 @@ class ProgressScreen extends ConsumerWidget {
           touchTooltipData: LineTouchTooltipData(
             getTooltipItems: (touchedSpots) {
               return touchedSpots.map((spot) {
-                final displayY = settings.unitSystem == UnitSystem.metric
-                    ? spot.y * 0.453592
-                    : spot.y;
                 return LineTooltipItem(
-                  '${displayY.toStringAsFixed(1)} $weightUnit',
+                  '${spot.y.toStringAsFixed(1)} $weightUnit',
                   const TextStyle(
                     color: Colors.white,
                     fontWeight: FontWeight.bold,
@@ -636,8 +649,8 @@ class ProgressScreen extends ConsumerWidget {
             },
           ),
         ),
-        minY: 115,
-        maxY: 145,
+        minY: chartMinY,
+        maxY: chartMaxY,
       ),
     );
   }
@@ -762,17 +775,17 @@ class _WeightChangeRow extends ConsumerWidget {
 
     if (isIncrease == null || change == 0) {
       changeText = '0.0 $weightUnit';
-      statusText = 'No change';
+      statusText = l10n.noChange;
       statusColor = AppColors.textSecondary;
       statusIcon = Icons.arrow_forward;
     } else if (isIncrease!) {
       changeText = '${displayChange.toStringAsFixed(1)} $weightUnit';
-      statusText = 'Increase';
+      statusText = l10n.increase;
       statusColor = AppColors.error;
       statusIcon = Icons.arrow_outward;
     } else {
       changeText = '${displayChange.toStringAsFixed(1)} $weightUnit';
-      statusText = 'Decrease';
+      statusText = l10n.decrease;
       statusColor = AppColors.success;
       statusIcon = Icons.arrow_downward;
     }

@@ -7,6 +7,7 @@ import '../../../../shared/widgets/circular_progress_indicator_widget.dart';
 import '../../../../shared/widgets/food_entry_card.dart';
 import '../../../../l10n/generated/app_localizations.dart';
 import '../../../../services/api_service.dart';
+import '../../../exercise/presentation/providers/exercise_log_provider.dart';
 import '../providers/home_provider.dart';
 import '../widgets/week_calendar.dart';
 import '../widgets/macro_card.dart';
@@ -22,6 +23,15 @@ class HomeScreen extends ConsumerWidget {
     final userGoalsAsync = ref.watch(userGoalsProvider);
     final streakAsync = ref.watch(streakProvider);
     final dailyQuote = _getDailyQuote(l10n);
+
+    // Get exercise logs for selected date
+    final allExerciseLogs = ref.watch(exerciseLogProvider);
+    final exerciseLogsForDate = allExerciseLogs.where((log) =>
+      log.loggedAt.year == selectedDate.year &&
+      log.loggedAt.month == selectedDate.month &&
+      log.loggedAt.day == selectedDate.day
+    ).toList();
+    final burnedCalories = exerciseLogsForDate.fold(0, (sum, log) => sum + log.caloriesBurned);
 
     // Get goals with defaults
     final userGoals = userGoalsAsync.when(
@@ -204,7 +214,7 @@ class HomeScreen extends ConsumerWidget {
                                     crossAxisAlignment: CrossAxisAlignment.end,
                                     children: [
                                       Text(
-                                        '${summary.totalCalories}',
+                                        '${(summary.totalCalories - burnedCalories).clamp(0, double.infinity).toInt()}',
                                         style: TextStyle(
                                           fontSize: 48,
                                           fontWeight: FontWeight.bold,
@@ -222,18 +232,44 @@ class HomeScreen extends ConsumerWidget {
                                     ],
                                   ),
                                   const SizedBox(height: 4),
-                                  Text(
-                                    l10n.caloriesEaten,
-                                    style: TextStyle(
-                                      fontSize: 14,
-                                      color: context.textSecondaryColor,
-                                    ),
+                                  Row(
+                                    children: [
+                                      Text(
+                                        '${summary.totalCalories}',
+                                        style: TextStyle(
+                                          fontSize: 12,
+                                          color: context.textSecondaryColor,
+                                        ),
+                                      ),
+                                      Text(
+                                        ' ${l10n.caloriesEaten}',
+                                        style: TextStyle(
+                                          fontSize: 12,
+                                          color: context.textSecondaryColor,
+                                        ),
+                                      ),
+                                      if (burnedCalories > 0) ...[
+                                        Text(
+                                          ' - $burnedCalories ',
+                                          style: TextStyle(
+                                            fontSize: 12,
+                                            color: AppColors.success,
+                                            fontWeight: FontWeight.w600,
+                                          ),
+                                        ),
+                                        Icon(
+                                          Icons.fitness_center,
+                                          size: 12,
+                                          color: AppColors.success,
+                                        ),
+                                      ],
+                                    ],
                                   ),
                                 ],
                               ),
                             ),
                             CircularProgressIndicatorWidget(
-                              progress: summary.totalCalories / userGoals.calorieGoal,
+                              progress: (summary.totalCalories - burnedCalories).clamp(0, double.infinity) / userGoals.calorieGoal,
                               size: 80,
                               strokeWidth: 8,
                               progressColor: AppColors.primary,
@@ -295,8 +331,14 @@ class HomeScreen extends ConsumerWidget {
                       ),
                       const SizedBox(height: 12),
 
+                      // Exercise Entries
+                      ...exerciseLogsForDate.map((exerciseLog) => Padding(
+                        padding: const EdgeInsets.only(bottom: 12),
+                        child: _buildExerciseCard(context, l10n, ref, exerciseLog),
+                      )),
+
                       // Food Entries
-                      if (summary.entries.isEmpty)
+                      if (summary.entries.isEmpty && exerciseLogsForDate.isEmpty)
                         Container(
                           padding: const EdgeInsets.all(32),
                           decoration: BoxDecoration(
@@ -412,5 +454,104 @@ class HomeScreen extends ConsumerWidget {
     final dayOfYear = now.difference(DateTime(now.year, 1, 1)).inDays;
     final index = dayOfYear % quotes.length;
     return quotes[index];
+  }
+
+  Widget _buildExerciseCard(BuildContext context, AppLocalizations l10n, WidgetRef ref, ExerciseLog exerciseLog) {
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: context.cardColor,
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: context.borderColor),
+      ),
+      child: Row(
+        children: [
+          Container(
+            width: 50,
+            height: 50,
+            decoration: BoxDecoration(
+              color: AppColors.success.withValues(alpha: 0.1),
+              borderRadius: BorderRadius.circular(12),
+            ),
+            child: Icon(
+              Icons.fitness_center,
+              color: AppColors.success,
+              size: 24,
+            ),
+          ),
+          const SizedBox(width: 12),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  exerciseLog.type,
+                  style: TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.w600,
+                    color: context.textPrimaryColor,
+                  ),
+                ),
+                const SizedBox(height: 4),
+                Row(
+                  children: [
+                    Text(
+                      '${exerciseLog.duration} min',
+                      style: TextStyle(
+                        fontSize: 12,
+                        color: context.textSecondaryColor,
+                      ),
+                    ),
+                    if (exerciseLog.intensity != null) ...[
+                      Text(
+                        ' • ${exerciseLog.intensity}',
+                        style: TextStyle(
+                          fontSize: 12,
+                          color: context.textSecondaryColor,
+                        ),
+                      ),
+                    ],
+                  ],
+                ),
+              ],
+            ),
+          ),
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.end,
+            children: [
+              Text(
+                '-${exerciseLog.caloriesBurned}',
+                style: TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                  color: AppColors.success,
+                ),
+              ),
+              Text(
+                'kcal',
+                style: TextStyle(
+                  fontSize: 12,
+                  color: context.textSecondaryColor,
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(width: 8),
+          GestureDetector(
+            onTap: () {
+              ref.read(exerciseLogProvider.notifier).removeLog(exerciseLog.id);
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(content: Text(l10n.entryDeleted)),
+              );
+            },
+            child: Icon(
+              Icons.close,
+              size: 20,
+              color: context.textTertiaryColor,
+            ),
+          ),
+        ],
+      ),
+    );
   }
 }

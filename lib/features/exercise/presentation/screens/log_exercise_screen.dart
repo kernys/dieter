@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../../../../core/constants/app_colors.dart';
 import '../../../../l10n/generated/app_localizations.dart';
+import '../providers/exercise_log_provider.dart';
 
 class LogExerciseScreen extends ConsumerWidget {
   const LogExerciseScreen({super.key});
@@ -59,28 +60,28 @@ class LogExerciseScreen extends ConsumerWidget {
                 icon: Icons.directions_run,
                 title: l10n.run,
                 description: l10n.runDescription,
-                onTap: () => _showRunInput(context, l10n),
+                onTap: () => _showRunInput(context, l10n, ref),
               ),
               const SizedBox(height: 12),
               _ExerciseOption(
                 icon: Icons.fitness_center,
                 title: l10n.weightLifting,
                 description: l10n.weightLiftingDescription,
-                onTap: () => _showExerciseInput(context, l10n.weightLifting, Icons.fitness_center, l10n),
+                onTap: () => _showExerciseInput(context, l10n.weightLifting, Icons.fitness_center, l10n, ref),
               ),
               const SizedBox(height: 12),
               _ExerciseOption(
                 icon: Icons.edit_note,
                 title: l10n.describe,
                 description: l10n.describeDescription,
-                onTap: () => _showDescribeExercise(context, l10n),
+                onTap: () => _showDescribeExercise(context, l10n, ref),
               ),
               const SizedBox(height: 12),
               _ExerciseOption(
                 icon: Icons.local_fire_department,
                 title: l10n.manual,
                 description: l10n.manualDescription,
-                onTap: () => _showManualCalories(context, l10n),
+                onTap: () => _showManualCalories(context, l10n, ref),
               ),
             ],
           ),
@@ -89,7 +90,7 @@ class LogExerciseScreen extends ConsumerWidget {
     );
   }
 
-  void _showRunInput(BuildContext context, AppLocalizations l10n) {
+  void _showRunInput(BuildContext context, AppLocalizations l10n, WidgetRef ref) {
     final durationController = TextEditingController();
     String selectedIntensity = 'Medium';
 
@@ -199,6 +200,31 @@ class LogExerciseScreen extends ConsumerWidget {
                     onPressed: () {
                       final duration = int.tryParse(durationController.text);
                       if (duration != null && duration > 0) {
+                        // Calculate calories based on intensity
+                        int caloriesPerMin;
+                        switch (selectedIntensity) {
+                          case 'Low':
+                            caloriesPerMin = 8;
+                            break;
+                          case 'High':
+                            caloriesPerMin = 15;
+                            break;
+                          default:
+                            caloriesPerMin = 11;
+                        }
+                        final caloriesBurned = duration * caloriesPerMin;
+
+                        ref.read(exerciseLogProvider.notifier).addLog(
+                          ExerciseLog(
+                            id: DateTime.now().millisecondsSinceEpoch.toString(),
+                            type: l10n.run,
+                            duration: duration,
+                            caloriesBurned: caloriesBurned,
+                            intensity: selectedIntensity,
+                            loggedAt: DateTime.now(),
+                          ),
+                        );
+
                         Navigator.pop(context);
                         Navigator.pop(context);
                         ScaffoldMessenger.of(context).showSnackBar(
@@ -234,7 +260,7 @@ class LogExerciseScreen extends ConsumerWidget {
     );
   }
 
-  void _showExerciseInput(BuildContext context, String exerciseType, IconData icon, AppLocalizations l10n) {
+  void _showExerciseInput(BuildContext context, String exerciseType, IconData icon, AppLocalizations l10n, WidgetRef ref) {
     final durationController = TextEditingController();
 
     showModalBottomSheet(
@@ -308,6 +334,19 @@ class LogExerciseScreen extends ConsumerWidget {
                   onPressed: () {
                     final duration = int.tryParse(durationController.text);
                     if (duration != null && duration > 0) {
+                      // Calculate calories (weight lifting burns ~5 cal/min on average)
+                      final caloriesBurned = duration * 5;
+
+                      ref.read(exerciseLogProvider.notifier).addLog(
+                        ExerciseLog(
+                          id: DateTime.now().millisecondsSinceEpoch.toString(),
+                          type: exerciseType,
+                          duration: duration,
+                          caloriesBurned: caloriesBurned,
+                          loggedAt: DateTime.now(),
+                        ),
+                      );
+
                       Navigator.pop(context);
                       Navigator.pop(context);
                       ScaffoldMessenger.of(context).showSnackBar(
@@ -342,7 +381,7 @@ class LogExerciseScreen extends ConsumerWidget {
     );
   }
 
-  void _showDescribeExercise(BuildContext context, AppLocalizations l10n) {
+  void _showDescribeExercise(BuildContext context, AppLocalizations l10n, WidgetRef ref) {
     final descriptionController = TextEditingController();
 
     showModalBottomSheet(
@@ -400,6 +439,18 @@ class LogExerciseScreen extends ConsumerWidget {
                 child: ElevatedButton(
                   onPressed: () {
                     if (descriptionController.text.isNotEmpty) {
+                      // Estimate 100 calories for described workouts
+                      ref.read(exerciseLogProvider.notifier).addLog(
+                        ExerciseLog(
+                          id: DateTime.now().millisecondsSinceEpoch.toString(),
+                          type: l10n.exercise,
+                          duration: 0,
+                          caloriesBurned: 100,
+                          description: descriptionController.text,
+                          loggedAt: DateTime.now(),
+                        ),
+                      );
+
                       Navigator.pop(context);
                       Navigator.pop(context);
                       ScaffoldMessenger.of(context).showSnackBar(
@@ -432,7 +483,7 @@ class LogExerciseScreen extends ConsumerWidget {
     );
   }
 
-  void _showManualCalories(BuildContext context, AppLocalizations l10n) {
+  void _showManualCalories(BuildContext context, AppLocalizations l10n, WidgetRef ref) {
     final caloriesController = TextEditingController();
 
     showModalBottomSheet(
@@ -493,6 +544,16 @@ class LogExerciseScreen extends ConsumerWidget {
                   onPressed: () {
                     final calories = int.tryParse(caloriesController.text);
                     if (calories != null && calories > 0) {
+                      ref.read(exerciseLogProvider.notifier).addLog(
+                        ExerciseLog(
+                          id: DateTime.now().millisecondsSinceEpoch.toString(),
+                          type: l10n.exercise,
+                          duration: 0,
+                          caloriesBurned: calories,
+                          loggedAt: DateTime.now(),
+                        ),
+                      );
+
                       Navigator.pop(context);
                       Navigator.pop(context);
                       ScaffoldMessenger.of(context).showSnackBar(
