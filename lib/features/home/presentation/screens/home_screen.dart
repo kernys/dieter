@@ -21,6 +21,7 @@ class HomeScreen extends ConsumerWidget {
     final dailySummaryAsync = ref.watch(dailySummaryProvider(selectedDate));
     final userGoalsAsync = ref.watch(userGoalsProvider);
     final streakAsync = ref.watch(streakProvider);
+    final dailyQuote = _getDailyQuote(l10n);
 
     // Get goals with defaults
     final userGoals = userGoalsAsync.when(
@@ -108,6 +109,57 @@ class HomeScreen extends ConsumerWidget {
                 ),
               ),
             ),
+
+            // Motivational Quote
+            SliverToBoxAdapter(
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 16),
+                child: Container(
+                  padding: const EdgeInsets.all(16),
+                  decoration: BoxDecoration(
+                    gradient: LinearGradient(
+                      colors: [
+                        AppColors.primary.withValues(alpha: 0.1),
+                        AppColors.primary.withValues(alpha: 0.05),
+                      ],
+                      begin: Alignment.topLeft,
+                      end: Alignment.bottomRight,
+                    ),
+                    borderRadius: BorderRadius.circular(16),
+                  ),
+                  child: Row(
+                    children: [
+                      Container(
+                        width: 40,
+                        height: 40,
+                        decoration: BoxDecoration(
+                          color: AppColors.primary.withValues(alpha: 0.2),
+                          shape: BoxShape.circle,
+                        ),
+                        child: Icon(
+                          Icons.format_quote,
+                          color: AppColors.primary,
+                          size: 20,
+                        ),
+                      ),
+                      const SizedBox(width: 12),
+                      Expanded(
+                        child: Text(
+                          dailyQuote,
+                          style: TextStyle(
+                            fontSize: 14,
+                            fontWeight: FontWeight.w500,
+                            color: context.textPrimaryColor,
+                            height: 1.4,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+            const SliverToBoxAdapter(child: SizedBox(height: 8)),
 
             // Week Calendar
             SliverToBoxAdapter(
@@ -336,5 +388,29 @@ class HomeScreen extends ConsumerWidget {
         ),
       ),
     );
+  }
+
+  String _getDailyQuote(AppLocalizations l10n) {
+    final quotes = [
+      l10n.quote1,
+      l10n.quote2,
+      l10n.quote3,
+      l10n.quote4,
+      l10n.quote5,
+      l10n.quote6,
+      l10n.quote7,
+      l10n.quote8,
+      l10n.quote9,
+      l10n.quote10,
+      l10n.quote11,
+      l10n.quote12,
+      l10n.quote13,
+      l10n.quote14,
+      l10n.quote15,
+    ];
+    final now = DateTime.now();
+    final dayOfYear = now.difference(DateTime(now.year, 1, 1)).inDays;
+    final index = dayOfYear % quotes.length;
+    return quotes[index];
   }
 }

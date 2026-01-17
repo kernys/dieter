@@ -499,4 +499,268 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String get weeklyReportsDescription => '주간 진행 상황 요약을 받습니다';
+
+  @override
+  String get savedToFavorites => '즐겨찾기에 저장됨';
+
+  @override
+  String get removedFromSaved => '저장된 음식에서 삭제됨';
+
+  @override
+  String get savedFoods => '저장된 음식';
+
+  @override
+  String get noSavedFoods => '저장된 음식이 없습니다';
+
+  @override
+  String get logThisFood => '이 음식 기록하기';
+
+  @override
+  String get party => '파티';
+
+  @override
+  String get partyComingSoon => '곧 오픈합니다! 🎉';
+
+  @override
+  String get partyDescription =>
+      '친구들과 함께 다이어트 목표를 달성하고 서로 응원하며 건강한 습관을 만들어보세요.';
+
+  @override
+  String get comingSoon => 'Coming Soon';
+
+  @override
+  String get exercise => '운동';
+
+  @override
+  String get logExercise => '운동 기록';
+
+  @override
+  String get run => '러닝';
+
+  @override
+  String get runDescription => '달리기, 조깅, 스프린트 등';
+
+  @override
+  String get weightLifting => '웨이트 트레이닝';
+
+  @override
+  String get weightLiftingDescription => '기구, 프리웨이트 등';
+
+  @override
+  String get describe => '설명';
+
+  @override
+  String get describeDescription => '운동을 글로 설명하세요';
+
+  @override
+  String get manual => '직접 입력';
+
+  @override
+  String get manualDescription => '소모한 칼로리를 직접 입력하세요';
+
+  @override
+  String get intensity => '강도';
+
+  @override
+  String get low => '낮음';
+
+  @override
+  String get medium => '중간';
+
+  @override
+  String get high => '높음';
+
+  @override
+  String get durationMinutes => '시간 (분)';
+
+  @override
+  String get enterDuration => '시간 입력';
+
+  @override
+  String runLogged(int duration, String intensity) {
+    return '러닝 기록됨: $duration분 ($intensity 강도)';
+  }
+
+  @override
+  String exerciseLogged(String type, int duration) {
+    return '$type 기록됨: $duration분';
+  }
+
+  @override
+  String get describeYourWorkout => '운동을 설명하세요';
+
+  @override
+  String get describeHint => '예: \"30분 요가와 팔굽혀펴기 20회\"';
+
+  @override
+  String get exerciseLoggedSuccess => '운동이 기록되었습니다!';
+
+  @override
+  String get caloriesBurned => '소모 칼로리';
+
+  @override
+  String get enterCaloriesBurned => '소모 칼로리 입력';
+
+  @override
+  String caloriesBurnedLogged(int calories) {
+    return '$calories칼로리 소모 기록됨!';
+  }
+
+  @override
+  String get logFood => '음식 기록';
+
+  @override
+  String get all => '전체';
+
+  @override
+  String get myFoods => '내 음식';
+
+  @override
+  String get myMeals => '내 식사';
+
+  @override
+  String get describeWhatYouAte => '먹은 음식을 설명하세요';
+
+  @override
+  String get suggestions => '추천';
+
+  @override
+  String get manualAdd => '직접 추가';
+
+  @override
+  String get voiceLog => '음성 기록';
+
+  @override
+  String get noCustomFoodsYet => '저장된 음식이 없습니다';
+
+  @override
+  String get foodsYouCreateWillAppearHere => '생성한 음식이 여기에 표시됩니다.';
+
+  @override
+  String get noSavedMealsYet => '저장된 식사가 없습니다';
+
+  @override
+  String get combineFoodsIntoMeals => '음식을 조합하여 빠르게 기록하세요.';
+
+  @override
+  String get tapToSaveHere => '음식에서 북마크를 눌러 저장하세요.';
+
+  @override
+  String get pleaseSignInToLogFood => '음식을 기록하려면 로그인하세요';
+
+  @override
+  String failedToLogFood(String error) {
+    return '음식 기록 실패: $error';
+  }
+
+  @override
+  String addedFood(String name) {
+    return '$name 추가됨';
+  }
+
+  @override
+  String get voiceLoggingComingSoon => '음성 기록 기능이 곧 출시됩니다';
+
+  @override
+  String get addFoodManually => '직접 음식 추가';
+
+  @override
+  String get addFood => '음식 추가';
+
+  @override
+  String get weightChanges => '체중 변화';
+
+  @override
+  String get day3 => '3일';
+
+  @override
+  String get day7 => '7일';
+
+  @override
+  String get day14 => '14일';
+
+  @override
+  String get day30 => '30일';
+
+  @override
+  String get day90 => '90일';
+
+  @override
+  String get allTime => '전체';
+
+  @override
+  String get noChange => '변화 없음';
+
+  @override
+  String get increase => '증가';
+
+  @override
+  String get decrease => '감소';
+
+  @override
+  String get barcodeScanner => '바코드 스캐너';
+
+  @override
+  String get barcodeScannerDescription =>
+      '식품 포장의 바코드에 카메라를 맞추면 즉시 영양 정보를 확인할 수 있습니다.';
+
+  @override
+  String get barcodeTip1 => '바코드에 조명이 잘 비치도록 하세요';
+
+  @override
+  String get barcodeTip2 => '바코드를 프레임 중앙에 맞추세요';
+
+  @override
+  String get barcodeTip3 => '휴대폰을 흔들리지 않게 잡으세요';
+
+  @override
+  String get nutritionLabelScanner => '영양 성분표 스캐너';
+
+  @override
+  String get nutritionLabelDescription => '영양 성분표에서 정확한 정보를 가져와 섭취량을 추적하세요.';
+
+  @override
+  String get quote1 => '오늘 하루도 건강하게 시작해요! 💪';
+
+  @override
+  String get quote2 => '작은 변화가 큰 결과를 만듭니다.';
+
+  @override
+  String get quote3 => '꾸준함이 최고의 무기입니다.';
+
+  @override
+  String get quote4 => '건강한 식단이 행복한 삶을 만듭니다.';
+
+  @override
+  String get quote5 => '오늘의 노력이 내일의 나를 만듭니다.';
+
+  @override
+  String get quote6 => '포기하지 마세요, 당신은 할 수 있어요!';
+
+  @override
+  String get quote7 => '한 걸음씩, 목표를 향해 나아가요.';
+
+  @override
+  String get quote8 => '건강은 가장 소중한 재산입니다.';
+
+  @override
+  String get quote9 => '오늘도 멋진 선택을 하셨네요! ✨';
+
+  @override
+  String get quote10 => '당신의 노력은 배신하지 않습니다.';
+
+  @override
+  String get quote11 => '매일 조금씩, 더 나은 내가 되어가요.';
+
+  @override
+  String get quote12 => '건강한 몸에 건강한 마음이 깃듭니다.';
+
+  @override
+  String get quote13 => '작심삼일? 오늘부터 다시 시작하면 됩니다!';
+
+  @override
+  String get quote14 => '스스로를 믿으세요, 당신은 대단해요.';
+
+  @override
+  String get quote15 => '좋은 습관이 좋은 인생을 만듭니다.';
 }

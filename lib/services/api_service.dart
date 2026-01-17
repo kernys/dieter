@@ -220,7 +220,7 @@ class ApiService {
       body: jsonEncode({
         'user_id': userId,
         'weight': weight,
-        'note': note,
+        'note': note ?? '',  // Server expects string, not null
       }),
     );
 

@@ -190,3 +190,31 @@ class AddFoodEntryParams {
     this.servings = 1,
   });
 }
+
+// Motivational quotes
+final motivationalQuotes = [
+  '오늘 하루도 건강하게 시작해요! 💪',
+  '작은 변화가 큰 결과를 만듭니다.',
+  '꾸준함이 최고의 무기입니다.',
+  '건강한 식단이 행복한 삶을 만듭니다.',
+  '오늘의 노력이 내일의 나를 만듭니다.',
+  '포기하지 마세요, 당신은 할 수 있어요!',
+  '한 걸음씩, 목표를 향해 나아가요.',
+  '건강은 가장 소중한 재산입니다.',
+  '오늘도 멋진 선택을 하셨네요! ✨',
+  '당신의 노력은 배신하지 않습니다.',
+  '매일 조금씩, 더 나은 내가 되어가요.',
+  '건강한 몸에 건강한 마음이 깃듭니다.',
+  '작심삼일? 오늘부터 다시 시작하면 됩니다!',
+  '스스로를 믿으세요, 당신은 대단해요.',
+  '좋은 습관이 좋은 인생을 만듭니다.',
+];
+
+// Random quote provider - refreshes daily
+final dailyQuoteProvider = Provider<String>((ref) {
+  final now = DateTime.now();
+  // Use day of year as seed for daily rotation
+  final dayOfYear = now.difference(DateTime(now.year, 1, 1)).inDays;
+  final index = dayOfYear % motivationalQuotes.length;
+  return motivationalQuotes[index];
+});

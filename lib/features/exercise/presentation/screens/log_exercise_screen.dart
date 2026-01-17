@@ -2,12 +2,14 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../../../../core/constants/app_colors.dart';
+import '../../../../l10n/generated/app_localizations.dart';
 
 class LogExerciseScreen extends ConsumerWidget {
   const LogExerciseScreen({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final l10n = AppLocalizations.of(context)!;
     return Scaffold(
       backgroundColor: AppColors.background,
       appBar: AppBar(
@@ -28,9 +30,9 @@ class LogExerciseScreen extends ConsumerWidget {
             ),
           ),
         ),
-        title: const Text(
-          'Exercise',
-          style: TextStyle(
+        title: Text(
+          l10n.exercise,
+          style: const TextStyle(
             fontSize: 18,
             fontWeight: FontWeight.w600,
             color: AppColors.textPrimary,
@@ -44,9 +46,9 @@ class LogExerciseScreen extends ConsumerWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const Text(
-                'Log Exercise',
-                style: TextStyle(
+              Text(
+                l10n.logExercise,
+                style: const TextStyle(
                   fontSize: 28,
                   fontWeight: FontWeight.bold,
                   color: AppColors.textPrimary,
@@ -55,30 +57,30 @@ class LogExerciseScreen extends ConsumerWidget {
               const SizedBox(height: 32),
               _ExerciseOption(
                 icon: Icons.directions_run,
-                title: 'Run',
-                description: 'Running, jogging, sprinting, etc.',
-                onTap: () => _showExerciseInput(context, 'Run', Icons.directions_run),
+                title: l10n.run,
+                description: l10n.runDescription,
+                onTap: () => _showRunInput(context, l10n),
               ),
               const SizedBox(height: 12),
               _ExerciseOption(
                 icon: Icons.fitness_center,
-                title: 'Weight lifting',
-                description: 'Machines, free weights, etc.',
-                onTap: () => _showExerciseInput(context, 'Weight lifting', Icons.fitness_center),
+                title: l10n.weightLifting,
+                description: l10n.weightLiftingDescription,
+                onTap: () => _showExerciseInput(context, l10n.weightLifting, Icons.fitness_center, l10n),
               ),
               const SizedBox(height: 12),
               _ExerciseOption(
                 icon: Icons.edit_note,
-                title: 'Describe',
-                description: 'Write your workout in text',
-                onTap: () => _showDescribeExercise(context),
+                title: l10n.describe,
+                description: l10n.describeDescription,
+                onTap: () => _showDescribeExercise(context, l10n),
               ),
               const SizedBox(height: 12),
               _ExerciseOption(
                 icon: Icons.local_fire_department,
-                title: 'Manual',
-                description: 'Enter exactly how many calories you burned',
-                onTap: () => _showManualCalories(context),
+                title: l10n.manual,
+                description: l10n.manualDescription,
+                onTap: () => _showManualCalories(context, l10n),
               ),
             ],
           ),
@@ -87,7 +89,152 @@ class LogExerciseScreen extends ConsumerWidget {
     );
   }
 
-  void _showExerciseInput(BuildContext context, String exerciseType, IconData icon) {
+  void _showRunInput(BuildContext context, AppLocalizations l10n) {
+    final durationController = TextEditingController();
+    String selectedIntensity = 'Medium';
+
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (context) => StatefulBuilder(
+        builder: (context, setState) => Container(
+          padding: EdgeInsets.only(
+            bottom: MediaQuery.of(context).viewInsets.bottom,
+          ),
+          decoration: const BoxDecoration(
+            color: AppColors.background,
+            borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+          ),
+          child: Padding(
+            padding: const EdgeInsets.all(24),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Center(
+                  child: Container(
+                    width: 40,
+                    height: 4,
+                    decoration: BoxDecoration(
+                      color: AppColors.textTertiary,
+                      borderRadius: BorderRadius.circular(2),
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 24),
+                Row(
+                  children: [
+                    Container(
+                      width: 48,
+                      height: 48,
+                      decoration: BoxDecoration(
+                        color: AppColors.surface,
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      child: const Icon(Icons.directions_run, color: AppColors.textPrimary),
+                    ),
+                    const SizedBox(width: 16),
+                    Text(
+                      l10n.run,
+                      style: const TextStyle(
+                        fontSize: 20,
+                        fontWeight: FontWeight.bold,
+                        color: AppColors.textPrimary,
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 24),
+                Text(
+                  l10n.intensity,
+                  style: const TextStyle(
+                    fontSize: 14,
+                    fontWeight: FontWeight.w600,
+                    color: AppColors.textSecondary,
+                  ),
+                ),
+                const SizedBox(height: 12),
+                Row(
+                  children: [
+                    _IntensityChip(
+                      label: l10n.low,
+                      subtitle: '< 6 km/h',
+                      isSelected: selectedIntensity == 'Low',
+                      onTap: () => setState(() => selectedIntensity = 'Low'),
+                    ),
+                    const SizedBox(width: 8),
+                    _IntensityChip(
+                      label: l10n.medium,
+                      subtitle: '6-10 km/h',
+                      isSelected: selectedIntensity == 'Medium',
+                      onTap: () => setState(() => selectedIntensity = 'Medium'),
+                    ),
+                    const SizedBox(width: 8),
+                    _IntensityChip(
+                      label: l10n.high,
+                      subtitle: '> 10 km/h',
+                      isSelected: selectedIntensity == 'High',
+                      onTap: () => setState(() => selectedIntensity = 'High'),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 24),
+                TextField(
+                  controller: durationController,
+                  keyboardType: TextInputType.number,
+                  decoration: InputDecoration(
+                    labelText: l10n.durationMinutes,
+                    hintText: l10n.enterDuration,
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                  ),
+                  autofocus: true,
+                ),
+                const SizedBox(height: 24),
+                SizedBox(
+                  width: double.infinity,
+                  child: ElevatedButton(
+                    onPressed: () {
+                      final duration = int.tryParse(durationController.text);
+                      if (duration != null && duration > 0) {
+                        Navigator.pop(context);
+                        Navigator.pop(context);
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                            content: Text(l10n.runLogged(duration, selectedIntensity)),
+                          ),
+                        );
+                      }
+                    },
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: AppColors.primary,
+                      foregroundColor: Colors.white,
+                      padding: const EdgeInsets.symmetric(vertical: 16),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                    ),
+                    child: Text(
+                      l10n.logExercise,
+                      style: const TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 16),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  void _showExerciseInput(BuildContext context, String exerciseType, IconData icon, AppLocalizations l10n) {
     final durationController = TextEditingController();
 
     showModalBottomSheet(
@@ -146,8 +293,8 @@ class LogExerciseScreen extends ConsumerWidget {
                 controller: durationController,
                 keyboardType: TextInputType.number,
                 decoration: InputDecoration(
-                  labelText: 'Duration (minutes)',
-                  hintText: 'Enter duration',
+                  labelText: l10n.durationMinutes,
+                  hintText: l10n.enterDuration,
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(12),
                   ),
@@ -165,7 +312,7 @@ class LogExerciseScreen extends ConsumerWidget {
                       Navigator.pop(context);
                       ScaffoldMessenger.of(context).showSnackBar(
                         SnackBar(
-                          content: Text('$exerciseType logged: $duration minutes'),
+                          content: Text(l10n.exerciseLogged(exerciseType, duration)),
                         ),
                       );
                     }
@@ -178,9 +325,9 @@ class LogExerciseScreen extends ConsumerWidget {
                       borderRadius: BorderRadius.circular(12),
                     ),
                   ),
-                  child: const Text(
-                    'Log Exercise',
-                    style: TextStyle(
+                  child: Text(
+                    l10n.logExercise,
+                    style: const TextStyle(
                       fontSize: 16,
                       fontWeight: FontWeight.w600,
                     ),
@@ -195,7 +342,7 @@ class LogExerciseScreen extends ConsumerWidget {
     );
   }
 
-  void _showDescribeExercise(BuildContext context) {
+  void _showDescribeExercise(BuildContext context, AppLocalizations l10n) {
     final descriptionController = TextEditingController();
 
     showModalBottomSheet(
@@ -227,9 +374,9 @@ class LogExerciseScreen extends ConsumerWidget {
                 ),
               ),
               const SizedBox(height: 24),
-              const Text(
-                'Describe your workout',
-                style: TextStyle(
+              Text(
+                l10n.describeYourWorkout,
+                style: const TextStyle(
                   fontSize: 20,
                   fontWeight: FontWeight.bold,
                   color: AppColors.textPrimary,
@@ -240,7 +387,7 @@ class LogExerciseScreen extends ConsumerWidget {
                 controller: descriptionController,
                 maxLines: 4,
                 decoration: InputDecoration(
-                  hintText: 'e.g., "30 minutes of yoga and 20 push-ups"',
+                  hintText: l10n.describeHint,
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(12),
                   ),
@@ -256,7 +403,7 @@ class LogExerciseScreen extends ConsumerWidget {
                       Navigator.pop(context);
                       Navigator.pop(context);
                       ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(content: Text('Exercise logged!')),
+                        SnackBar(content: Text(l10n.exerciseLoggedSuccess)),
                       );
                     }
                   },
@@ -268,9 +415,9 @@ class LogExerciseScreen extends ConsumerWidget {
                       borderRadius: BorderRadius.circular(12),
                     ),
                   ),
-                  child: const Text(
-                    'Log Exercise',
-                    style: TextStyle(
+                  child: Text(
+                    l10n.logExercise,
+                    style: const TextStyle(
                       fontSize: 16,
                       fontWeight: FontWeight.w600,
                     ),
@@ -285,7 +432,7 @@ class LogExerciseScreen extends ConsumerWidget {
     );
   }
 
-  void _showManualCalories(BuildContext context) {
+  void _showManualCalories(BuildContext context, AppLocalizations l10n) {
     final caloriesController = TextEditingController();
 
     showModalBottomSheet(
@@ -317,9 +464,9 @@ class LogExerciseScreen extends ConsumerWidget {
                 ),
               ),
               const SizedBox(height: 24),
-              const Text(
-                'Calories burned',
-                style: TextStyle(
+              Text(
+                l10n.caloriesBurned,
+                style: const TextStyle(
                   fontSize: 20,
                   fontWeight: FontWeight.bold,
                   color: AppColors.textPrimary,
@@ -330,9 +477,9 @@ class LogExerciseScreen extends ConsumerWidget {
                 controller: caloriesController,
                 keyboardType: TextInputType.number,
                 decoration: InputDecoration(
-                  labelText: 'Calories',
-                  hintText: 'Enter calories burned',
-                  suffixText: 'cal',
+                  labelText: l10n.calories,
+                  hintText: l10n.enterCaloriesBurned,
+                  suffixText: l10n.cal,
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(12),
                   ),
@@ -349,7 +496,7 @@ class LogExerciseScreen extends ConsumerWidget {
                       Navigator.pop(context);
                       Navigator.pop(context);
                       ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(content: Text('$calories calories burned logged!')),
+                        SnackBar(content: Text(l10n.caloriesBurnedLogged(calories))),
                       );
                     }
                   },
@@ -361,9 +508,9 @@ class LogExerciseScreen extends ConsumerWidget {
                       borderRadius: BorderRadius.circular(12),
                     ),
                   ),
-                  child: const Text(
-                    'Log Exercise',
-                    style: TextStyle(
+                  child: Text(
+                    l10n.logExercise,
+                    style: const TextStyle(
                       fontSize: 16,
                       fontWeight: FontWeight.w600,
                     ),
@@ -438,6 +585,59 @@ class _ExerciseOption extends StatelessWidget {
               ),
             ),
           ],
+        ),
+      ),
+    );
+  }
+}
+
+class _IntensityChip extends StatelessWidget {
+  final String label;
+  final String subtitle;
+  final bool isSelected;
+  final VoidCallback onTap;
+
+  const _IntensityChip({
+    required this.label,
+    required this.subtitle,
+    required this.isSelected,
+    required this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Expanded(
+      child: GestureDetector(
+        onTap: onTap,
+        child: Container(
+          padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 8),
+          decoration: BoxDecoration(
+            color: isSelected ? AppColors.primary : AppColors.surface,
+            borderRadius: BorderRadius.circular(12),
+            border: Border.all(
+              color: isSelected ? AppColors.primary : AppColors.border,
+            ),
+          ),
+          child: Column(
+            children: [
+              Text(
+                label,
+                style: TextStyle(
+                  fontSize: 14,
+                  fontWeight: FontWeight.w600,
+                  color: isSelected ? Colors.white : AppColors.textPrimary,
+                ),
+              ),
+              const SizedBox(height: 2),
+              Text(
+                subtitle,
+                style: TextStyle(
+                  fontSize: 11,
+                  color: isSelected ? Colors.white70 : AppColors.textSecondary,
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );

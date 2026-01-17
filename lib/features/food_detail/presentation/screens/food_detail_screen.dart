@@ -11,6 +11,7 @@ import '../../../../l10n/generated/app_localizations.dart';
 import '../../../../shared/models/food_entry_model.dart';
 import '../../../auth/presentation/providers/auth_provider.dart';
 import '../../../home/presentation/providers/home_provider.dart';
+import '../../../food/presentation/providers/saved_foods_provider.dart';
 
 class FoodDetailScreen extends ConsumerStatefulWidget {
   final String? foodId;
@@ -173,6 +174,18 @@ class _FoodDetailScreenState extends ConsumerState<FoodDetailScreen> {
                       ),
                       Row(
                         children: [
+                          Consumer(
+                            builder: (context, ref, _) {
+                              final savedFoods = ref.watch(savedFoodsProvider);
+                              final isSaved = savedFoods.any((f) =>
+                                f.name.toLowerCase() == _nameController.text.toLowerCase());
+                              return _HeaderButton(
+                                icon: isSaved ? Icons.bookmark : Icons.bookmark_border,
+                                onPressed: () => _toggleSaveFood(ref, l10n, isSaved),
+                              );
+                            },
+                          ),
+                          const SizedBox(width: 8),
                           _HeaderButton(
                             icon: Icons.ios_share,
                             onPressed: () => _shareEntry(l10n),
@@ -508,6 +521,39 @@ class _FoodDetailScreenState extends ConsumerState<FoodDetailScreen> {
         ],
       ),
     );
+  }
+
+  void _toggleSaveFood(WidgetRef ref, AppLocalizations l10n, bool isSaved) {
+    final name = _nameController.text;
+    if (name.isEmpty) return;
+
+    if (isSaved) {
+      // Find and remove
+      final savedFoods = ref.read(savedFoodsProvider);
+      final food = savedFoods.firstWhere(
+        (f) => f.name.toLowerCase() == name.toLowerCase(),
+      );
+      ref.read(savedFoodsProvider.notifier).removeFood(food.id);
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(l10n.removedFromSaved)),
+      );
+    } else {
+      // Save the food
+      final food = SavedFood(
+        id: DateTime.now().millisecondsSinceEpoch.toString(),
+        name: name,
+        calories: int.tryParse(_caloriesController.text) ?? 0,
+        protein: double.tryParse(_proteinController.text) ?? 0,
+        carbs: double.tryParse(_carbsController.text) ?? 0,
+        fat: double.tryParse(_fatController.text) ?? 0,
+        imageUrl: _imageUrl,
+        savedAt: DateTime.now(),
+      );
+      ref.read(savedFoodsProvider.notifier).addFood(food);
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(l10n.savedToFavorites)),
+      );
+    }
   }
 
   void _showAddIngredientDialog(AppLocalizations l10n) {

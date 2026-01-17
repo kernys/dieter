@@ -1045,6 +1045,510 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Receive weekly progress summaries'**
   String get weeklyReportsDescription;
+
+  /// No description provided for @savedToFavorites.
+  ///
+  /// In en, this message translates to:
+  /// **'Saved to favorites'**
+  String get savedToFavorites;
+
+  /// No description provided for @removedFromSaved.
+  ///
+  /// In en, this message translates to:
+  /// **'Removed from saved foods'**
+  String get removedFromSaved;
+
+  /// No description provided for @savedFoods.
+  ///
+  /// In en, this message translates to:
+  /// **'Saved Foods'**
+  String get savedFoods;
+
+  /// No description provided for @noSavedFoods.
+  ///
+  /// In en, this message translates to:
+  /// **'No saved foods yet'**
+  String get noSavedFoods;
+
+  /// No description provided for @logThisFood.
+  ///
+  /// In en, this message translates to:
+  /// **'Log this food'**
+  String get logThisFood;
+
+  /// No description provided for @party.
+  ///
+  /// In en, this message translates to:
+  /// **'Party'**
+  String get party;
+
+  /// No description provided for @partyComingSoon.
+  ///
+  /// In en, this message translates to:
+  /// **'Coming Soon! 🎉'**
+  String get partyComingSoon;
+
+  /// No description provided for @partyDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Achieve diet goals with friends and support each other to build healthy habits.'**
+  String get partyDescription;
+
+  /// No description provided for @comingSoon.
+  ///
+  /// In en, this message translates to:
+  /// **'Coming Soon'**
+  String get comingSoon;
+
+  /// No description provided for @exercise.
+  ///
+  /// In en, this message translates to:
+  /// **'Exercise'**
+  String get exercise;
+
+  /// No description provided for @logExercise.
+  ///
+  /// In en, this message translates to:
+  /// **'Log Exercise'**
+  String get logExercise;
+
+  /// No description provided for @run.
+  ///
+  /// In en, this message translates to:
+  /// **'Run'**
+  String get run;
+
+  /// No description provided for @runDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Running, jogging, sprinting, etc.'**
+  String get runDescription;
+
+  /// No description provided for @weightLifting.
+  ///
+  /// In en, this message translates to:
+  /// **'Weight lifting'**
+  String get weightLifting;
+
+  /// No description provided for @weightLiftingDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Machines, free weights, etc.'**
+  String get weightLiftingDescription;
+
+  /// No description provided for @describe.
+  ///
+  /// In en, this message translates to:
+  /// **'Describe'**
+  String get describe;
+
+  /// No description provided for @describeDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Write your workout in text'**
+  String get describeDescription;
+
+  /// No description provided for @manual.
+  ///
+  /// In en, this message translates to:
+  /// **'Manual'**
+  String get manual;
+
+  /// No description provided for @manualDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter exactly how many calories you burned'**
+  String get manualDescription;
+
+  /// No description provided for @intensity.
+  ///
+  /// In en, this message translates to:
+  /// **'Intensity'**
+  String get intensity;
+
+  /// No description provided for @low.
+  ///
+  /// In en, this message translates to:
+  /// **'Low'**
+  String get low;
+
+  /// No description provided for @medium.
+  ///
+  /// In en, this message translates to:
+  /// **'Medium'**
+  String get medium;
+
+  /// No description provided for @high.
+  ///
+  /// In en, this message translates to:
+  /// **'High'**
+  String get high;
+
+  /// No description provided for @durationMinutes.
+  ///
+  /// In en, this message translates to:
+  /// **'Duration (minutes)'**
+  String get durationMinutes;
+
+  /// No description provided for @enterDuration.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter duration'**
+  String get enterDuration;
+
+  /// No description provided for @runLogged.
+  ///
+  /// In en, this message translates to:
+  /// **'Run logged: {duration} min ({intensity} intensity)'**
+  String runLogged(int duration, String intensity);
+
+  /// No description provided for @exerciseLogged.
+  ///
+  /// In en, this message translates to:
+  /// **'{type} logged: {duration} minutes'**
+  String exerciseLogged(String type, int duration);
+
+  /// No description provided for @describeYourWorkout.
+  ///
+  /// In en, this message translates to:
+  /// **'Describe your workout'**
+  String get describeYourWorkout;
+
+  /// No description provided for @describeHint.
+  ///
+  /// In en, this message translates to:
+  /// **'e.g., \"30 minutes of yoga and 20 push-ups\"'**
+  String get describeHint;
+
+  /// No description provided for @exerciseLoggedSuccess.
+  ///
+  /// In en, this message translates to:
+  /// **'Exercise logged!'**
+  String get exerciseLoggedSuccess;
+
+  /// No description provided for @caloriesBurned.
+  ///
+  /// In en, this message translates to:
+  /// **'Calories burned'**
+  String get caloriesBurned;
+
+  /// No description provided for @enterCaloriesBurned.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter calories burned'**
+  String get enterCaloriesBurned;
+
+  /// No description provided for @caloriesBurnedLogged.
+  ///
+  /// In en, this message translates to:
+  /// **'{calories} calories burned logged!'**
+  String caloriesBurnedLogged(int calories);
+
+  /// No description provided for @logFood.
+  ///
+  /// In en, this message translates to:
+  /// **'Log Food'**
+  String get logFood;
+
+  /// No description provided for @all.
+  ///
+  /// In en, this message translates to:
+  /// **'All'**
+  String get all;
+
+  /// No description provided for @myFoods.
+  ///
+  /// In en, this message translates to:
+  /// **'My foods'**
+  String get myFoods;
+
+  /// No description provided for @myMeals.
+  ///
+  /// In en, this message translates to:
+  /// **'My meals'**
+  String get myMeals;
+
+  /// No description provided for @describeWhatYouAte.
+  ///
+  /// In en, this message translates to:
+  /// **'Describe what you ate'**
+  String get describeWhatYouAte;
+
+  /// No description provided for @suggestions.
+  ///
+  /// In en, this message translates to:
+  /// **'Suggestions'**
+  String get suggestions;
+
+  /// No description provided for @manualAdd.
+  ///
+  /// In en, this message translates to:
+  /// **'Manual Add'**
+  String get manualAdd;
+
+  /// No description provided for @voiceLog.
+  ///
+  /// In en, this message translates to:
+  /// **'Voice Log'**
+  String get voiceLog;
+
+  /// No description provided for @noCustomFoodsYet.
+  ///
+  /// In en, this message translates to:
+  /// **'No custom foods yet'**
+  String get noCustomFoodsYet;
+
+  /// No description provided for @foodsYouCreateWillAppearHere.
+  ///
+  /// In en, this message translates to:
+  /// **'Foods you create will appear here.'**
+  String get foodsYouCreateWillAppearHere;
+
+  /// No description provided for @noSavedMealsYet.
+  ///
+  /// In en, this message translates to:
+  /// **'No saved meals yet'**
+  String get noSavedMealsYet;
+
+  /// No description provided for @combineFoodsIntoMeals.
+  ///
+  /// In en, this message translates to:
+  /// **'Combine foods into meals for quick logging.'**
+  String get combineFoodsIntoMeals;
+
+  /// No description provided for @tapToSaveHere.
+  ///
+  /// In en, this message translates to:
+  /// **'Tap bookmark on any food to save here.'**
+  String get tapToSaveHere;
+
+  /// No description provided for @pleaseSignInToLogFood.
+  ///
+  /// In en, this message translates to:
+  /// **'Please sign in to log food'**
+  String get pleaseSignInToLogFood;
+
+  /// No description provided for @failedToLogFood.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to log food: {error}'**
+  String failedToLogFood(String error);
+
+  /// No description provided for @addedFood.
+  ///
+  /// In en, this message translates to:
+  /// **'Added {name}'**
+  String addedFood(String name);
+
+  /// No description provided for @voiceLoggingComingSoon.
+  ///
+  /// In en, this message translates to:
+  /// **'Voice logging coming soon'**
+  String get voiceLoggingComingSoon;
+
+  /// No description provided for @addFoodManually.
+  ///
+  /// In en, this message translates to:
+  /// **'Add Food Manually'**
+  String get addFoodManually;
+
+  /// No description provided for @addFood.
+  ///
+  /// In en, this message translates to:
+  /// **'Add Food'**
+  String get addFood;
+
+  /// No description provided for @weightChanges.
+  ///
+  /// In en, this message translates to:
+  /// **'Weight Changes'**
+  String get weightChanges;
+
+  /// No description provided for @day3.
+  ///
+  /// In en, this message translates to:
+  /// **'3 day'**
+  String get day3;
+
+  /// No description provided for @day7.
+  ///
+  /// In en, this message translates to:
+  /// **'7 day'**
+  String get day7;
+
+  /// No description provided for @day14.
+  ///
+  /// In en, this message translates to:
+  /// **'14 day'**
+  String get day14;
+
+  /// No description provided for @day30.
+  ///
+  /// In en, this message translates to:
+  /// **'30 day'**
+  String get day30;
+
+  /// No description provided for @day90.
+  ///
+  /// In en, this message translates to:
+  /// **'90 day'**
+  String get day90;
+
+  /// No description provided for @allTime.
+  ///
+  /// In en, this message translates to:
+  /// **'All Time'**
+  String get allTime;
+
+  /// No description provided for @noChange.
+  ///
+  /// In en, this message translates to:
+  /// **'No change'**
+  String get noChange;
+
+  /// No description provided for @increase.
+  ///
+  /// In en, this message translates to:
+  /// **'Increase'**
+  String get increase;
+
+  /// No description provided for @decrease.
+  ///
+  /// In en, this message translates to:
+  /// **'Decrease'**
+  String get decrease;
+
+  /// No description provided for @barcodeScanner.
+  ///
+  /// In en, this message translates to:
+  /// **'Barcode Scanner'**
+  String get barcodeScanner;
+
+  /// No description provided for @barcodeScannerDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Point your camera at a barcode on any food package to instantly get nutrition information.'**
+  String get barcodeScannerDescription;
+
+  /// No description provided for @barcodeTip1.
+  ///
+  /// In en, this message translates to:
+  /// **'Make sure the barcode is well-lit'**
+  String get barcodeTip1;
+
+  /// No description provided for @barcodeTip2.
+  ///
+  /// In en, this message translates to:
+  /// **'Center the barcode in the frame'**
+  String get barcodeTip2;
+
+  /// No description provided for @barcodeTip3.
+  ///
+  /// In en, this message translates to:
+  /// **'Hold your phone steady'**
+  String get barcodeTip3;
+
+  /// No description provided for @nutritionLabelScanner.
+  ///
+  /// In en, this message translates to:
+  /// **'Nutrition Label Scanner'**
+  String get nutritionLabelScanner;
+
+  /// No description provided for @nutritionLabelDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Get nutrition details from any label to track your intake accurately.'**
+  String get nutritionLabelDescription;
+
+  /// No description provided for @quote1.
+  ///
+  /// In en, this message translates to:
+  /// **'Start your day healthy! 💪'**
+  String get quote1;
+
+  /// No description provided for @quote2.
+  ///
+  /// In en, this message translates to:
+  /// **'Small changes make big results.'**
+  String get quote2;
+
+  /// No description provided for @quote3.
+  ///
+  /// In en, this message translates to:
+  /// **'Consistency is the best weapon.'**
+  String get quote3;
+
+  /// No description provided for @quote4.
+  ///
+  /// In en, this message translates to:
+  /// **'A healthy diet creates a happy life.'**
+  String get quote4;
+
+  /// No description provided for @quote5.
+  ///
+  /// In en, this message translates to:
+  /// **'Today\'s effort makes tomorrow\'s you.'**
+  String get quote5;
+
+  /// No description provided for @quote6.
+  ///
+  /// In en, this message translates to:
+  /// **'Don\'t give up, you can do it!'**
+  String get quote6;
+
+  /// No description provided for @quote7.
+  ///
+  /// In en, this message translates to:
+  /// **'One step at a time, towards your goal.'**
+  String get quote7;
+
+  /// No description provided for @quote8.
+  ///
+  /// In en, this message translates to:
+  /// **'Health is the most precious asset.'**
+  String get quote8;
+
+  /// No description provided for @quote9.
+  ///
+  /// In en, this message translates to:
+  /// **'Great choice today! ✨'**
+  String get quote9;
+
+  /// No description provided for @quote10.
+  ///
+  /// In en, this message translates to:
+  /// **'Your efforts won\'t betray you.'**
+  String get quote10;
+
+  /// No description provided for @quote11.
+  ///
+  /// In en, this message translates to:
+  /// **'A little better every day.'**
+  String get quote11;
+
+  /// No description provided for @quote12.
+  ///
+  /// In en, this message translates to:
+  /// **'A healthy body nurtures a healthy mind.'**
+  String get quote12;
+
+  /// No description provided for @quote13.
+  ///
+  /// In en, this message translates to:
+  /// **'Three days? Start again from today!'**
+  String get quote13;
+
+  /// No description provided for @quote14.
+  ///
+  /// In en, this message translates to:
+  /// **'Believe in yourself, you\'re amazing.'**
+  String get quote14;
+
+  /// No description provided for @quote15.
+  ///
+  /// In en, this message translates to:
+  /// **'Good habits make a good life.'**
+  String get quote15;
 }
 
 class _AppLocalizationsDelegate

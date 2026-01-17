@@ -503,4 +503,271 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get weeklyReportsDescription => 'Receive weekly progress summaries';
+
+  @override
+  String get savedToFavorites => 'Saved to favorites';
+
+  @override
+  String get removedFromSaved => 'Removed from saved foods';
+
+  @override
+  String get savedFoods => 'Saved Foods';
+
+  @override
+  String get noSavedFoods => 'No saved foods yet';
+
+  @override
+  String get logThisFood => 'Log this food';
+
+  @override
+  String get party => 'Party';
+
+  @override
+  String get partyComingSoon => 'Coming Soon! 🎉';
+
+  @override
+  String get partyDescription =>
+      'Achieve diet goals with friends and support each other to build healthy habits.';
+
+  @override
+  String get comingSoon => 'Coming Soon';
+
+  @override
+  String get exercise => 'Exercise';
+
+  @override
+  String get logExercise => 'Log Exercise';
+
+  @override
+  String get run => 'Run';
+
+  @override
+  String get runDescription => 'Running, jogging, sprinting, etc.';
+
+  @override
+  String get weightLifting => 'Weight lifting';
+
+  @override
+  String get weightLiftingDescription => 'Machines, free weights, etc.';
+
+  @override
+  String get describe => 'Describe';
+
+  @override
+  String get describeDescription => 'Write your workout in text';
+
+  @override
+  String get manual => 'Manual';
+
+  @override
+  String get manualDescription => 'Enter exactly how many calories you burned';
+
+  @override
+  String get intensity => 'Intensity';
+
+  @override
+  String get low => 'Low';
+
+  @override
+  String get medium => 'Medium';
+
+  @override
+  String get high => 'High';
+
+  @override
+  String get durationMinutes => 'Duration (minutes)';
+
+  @override
+  String get enterDuration => 'Enter duration';
+
+  @override
+  String runLogged(int duration, String intensity) {
+    return 'Run logged: $duration min ($intensity intensity)';
+  }
+
+  @override
+  String exerciseLogged(String type, int duration) {
+    return '$type logged: $duration minutes';
+  }
+
+  @override
+  String get describeYourWorkout => 'Describe your workout';
+
+  @override
+  String get describeHint => 'e.g., \"30 minutes of yoga and 20 push-ups\"';
+
+  @override
+  String get exerciseLoggedSuccess => 'Exercise logged!';
+
+  @override
+  String get caloriesBurned => 'Calories burned';
+
+  @override
+  String get enterCaloriesBurned => 'Enter calories burned';
+
+  @override
+  String caloriesBurnedLogged(int calories) {
+    return '$calories calories burned logged!';
+  }
+
+  @override
+  String get logFood => 'Log Food';
+
+  @override
+  String get all => 'All';
+
+  @override
+  String get myFoods => 'My foods';
+
+  @override
+  String get myMeals => 'My meals';
+
+  @override
+  String get describeWhatYouAte => 'Describe what you ate';
+
+  @override
+  String get suggestions => 'Suggestions';
+
+  @override
+  String get manualAdd => 'Manual Add';
+
+  @override
+  String get voiceLog => 'Voice Log';
+
+  @override
+  String get noCustomFoodsYet => 'No custom foods yet';
+
+  @override
+  String get foodsYouCreateWillAppearHere =>
+      'Foods you create will appear here.';
+
+  @override
+  String get noSavedMealsYet => 'No saved meals yet';
+
+  @override
+  String get combineFoodsIntoMeals =>
+      'Combine foods into meals for quick logging.';
+
+  @override
+  String get tapToSaveHere => 'Tap bookmark on any food to save here.';
+
+  @override
+  String get pleaseSignInToLogFood => 'Please sign in to log food';
+
+  @override
+  String failedToLogFood(String error) {
+    return 'Failed to log food: $error';
+  }
+
+  @override
+  String addedFood(String name) {
+    return 'Added $name';
+  }
+
+  @override
+  String get voiceLoggingComingSoon => 'Voice logging coming soon';
+
+  @override
+  String get addFoodManually => 'Add Food Manually';
+
+  @override
+  String get addFood => 'Add Food';
+
+  @override
+  String get weightChanges => 'Weight Changes';
+
+  @override
+  String get day3 => '3 day';
+
+  @override
+  String get day7 => '7 day';
+
+  @override
+  String get day14 => '14 day';
+
+  @override
+  String get day30 => '30 day';
+
+  @override
+  String get day90 => '90 day';
+
+  @override
+  String get allTime => 'All Time';
+
+  @override
+  String get noChange => 'No change';
+
+  @override
+  String get increase => 'Increase';
+
+  @override
+  String get decrease => 'Decrease';
+
+  @override
+  String get barcodeScanner => 'Barcode Scanner';
+
+  @override
+  String get barcodeScannerDescription =>
+      'Point your camera at a barcode on any food package to instantly get nutrition information.';
+
+  @override
+  String get barcodeTip1 => 'Make sure the barcode is well-lit';
+
+  @override
+  String get barcodeTip2 => 'Center the barcode in the frame';
+
+  @override
+  String get barcodeTip3 => 'Hold your phone steady';
+
+  @override
+  String get nutritionLabelScanner => 'Nutrition Label Scanner';
+
+  @override
+  String get nutritionLabelDescription =>
+      'Get nutrition details from any label to track your intake accurately.';
+
+  @override
+  String get quote1 => 'Start your day healthy! 💪';
+
+  @override
+  String get quote2 => 'Small changes make big results.';
+
+  @override
+  String get quote3 => 'Consistency is the best weapon.';
+
+  @override
+  String get quote4 => 'A healthy diet creates a happy life.';
+
+  @override
+  String get quote5 => 'Today\'s effort makes tomorrow\'s you.';
+
+  @override
+  String get quote6 => 'Don\'t give up, you can do it!';
+
+  @override
+  String get quote7 => 'One step at a time, towards your goal.';
+
+  @override
+  String get quote8 => 'Health is the most precious asset.';
+
+  @override
+  String get quote9 => 'Great choice today! ✨';
+
+  @override
+  String get quote10 => 'Your efforts won\'t betray you.';
+
+  @override
+  String get quote11 => 'A little better every day.';
+
+  @override
+  String get quote12 => 'A healthy body nurtures a healthy mind.';
+
+  @override
+  String get quote13 => 'Three days? Start again from today!';
+
+  @override
+  String get quote14 => 'Believe in yourself, you\'re amazing.';
+
+  @override
+  String get quote15 => 'Good habits make a good life.';
 }

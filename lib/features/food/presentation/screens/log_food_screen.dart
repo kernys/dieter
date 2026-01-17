@@ -1,6 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../../core/constants/app_colors.dart';
+import '../../../../l10n/generated/app_localizations.dart';
+import '../../../home/presentation/providers/home_provider.dart';
+import '../../../auth/presentation/providers/auth_provider.dart';
+import '../providers/saved_foods_provider.dart';
 
 class LogFoodScreen extends ConsumerStatefulWidget {
   const LogFoodScreen({super.key});
@@ -48,6 +52,7 @@ class _LogFoodScreenState extends ConsumerState<LogFoodScreen>
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Scaffold(
       backgroundColor: AppColors.background,
       appBar: AppBar(
@@ -68,9 +73,9 @@ class _LogFoodScreenState extends ConsumerState<LogFoodScreen>
             ),
           ),
         ),
-        title: const Text(
-          'Log Food',
-          style: TextStyle(
+        title: Text(
+          l10n.logFood,
+          style: const TextStyle(
             color: AppColors.textPrimary,
             fontSize: 18,
             fontWeight: FontWeight.w600,
@@ -103,11 +108,11 @@ class _LogFoodScreenState extends ConsumerState<LogFoodScreen>
               indicatorColor: AppColors.primary,
               indicatorWeight: 2,
               tabAlignment: TabAlignment.start,
-              tabs: const [
-                Tab(text: 'All'),
-                Tab(text: 'My foods'),
-                Tab(text: 'My meals'),
-                Tab(text: 'Saved foods'),
+              tabs: [
+                Tab(text: l10n.all),
+                Tab(text: l10n.myFoods),
+                Tab(text: l10n.myMeals),
+                Tab(text: l10n.savedFoods),
               ],
             ),
           ),
@@ -117,9 +122,9 @@ class _LogFoodScreenState extends ConsumerState<LogFoodScreen>
             child: TabBarView(
               controller: _tabController,
               children: [
-                _buildAllTab(),
-                _buildMyFoodsTab(),
-                _buildMyMealsTab(),
+                _buildAllTab(l10n),
+                _buildMyFoodsTab(l10n),
+                _buildMyMealsTab(l10n),
                 _buildSavedFoodsTab(),
               ],
             ),
@@ -129,7 +134,7 @@ class _LogFoodScreenState extends ConsumerState<LogFoodScreen>
     );
   }
 
-  Widget _buildAllTab() {
+  Widget _buildAllTab(AppLocalizations l10n) {
     return SingleChildScrollView(
       padding: const EdgeInsets.all(16),
       child: Column(
@@ -150,8 +155,8 @@ class _LogFoodScreenState extends ConsumerState<LogFoodScreen>
                 Expanded(
                   child: TextField(
                     controller: _searchController,
-                    decoration: const InputDecoration(
-                      hintText: 'Describe what you ate',
+                    decoration: InputDecoration(
+                      hintText: l10n.describeWhatYouAte,
                       border: InputBorder.none,
                       isDense: true,
                       contentPadding: EdgeInsets.zero,
@@ -167,9 +172,9 @@ class _LogFoodScreenState extends ConsumerState<LogFoodScreen>
           const SizedBox(height: 24),
 
           // Suggestions
-          const Text(
-            'Suggestions',
-            style: TextStyle(
+          Text(
+            l10n.suggestions,
+            style: const TextStyle(
               fontSize: 16,
               fontWeight: FontWeight.bold,
               color: AppColors.textPrimary,
@@ -178,7 +183,7 @@ class _LogFoodScreenState extends ConsumerState<LogFoodScreen>
           const SizedBox(height: 12),
 
           // Suggestion items
-          ..._filteredSuggestions.map((suggestion) => _buildSuggestionItem(suggestion)),
+          ..._filteredSuggestions.map((suggestion) => _buildSuggestionItem(suggestion, l10n)),
 
           const SizedBox(height: 24),
 
@@ -188,16 +193,16 @@ class _LogFoodScreenState extends ConsumerState<LogFoodScreen>
               Expanded(
                 child: _ActionButton(
                   icon: Icons.list_alt,
-                  label: 'Manual Add',
-                  onTap: () => _showManualAddSheet(),
+                  label: l10n.manualAdd,
+                  onTap: () => _showManualAddSheet(l10n),
                 ),
               ),
               const SizedBox(width: 12),
               Expanded(
                 child: _ActionButton(
                   icon: Icons.mic,
-                  label: 'Voice Log',
-                  onTap: () => _showVoiceLog(),
+                  label: l10n.voiceLog,
+                  onTap: () => _showVoiceLog(l10n),
                 ),
               ),
             ],
@@ -207,7 +212,7 @@ class _LogFoodScreenState extends ConsumerState<LogFoodScreen>
     );
   }
 
-  Widget _buildSuggestionItem(_FoodSuggestion suggestion) {
+  Widget _buildSuggestionItem(_FoodSuggestion suggestion, AppLocalizations l10n) {
     return Container(
       margin: const EdgeInsets.only(bottom: 8),
       padding: const EdgeInsets.all(16),
@@ -237,7 +242,7 @@ class _LogFoodScreenState extends ConsumerState<LogFoodScreen>
                         size: 14, color: AppColors.textTertiary),
                     const SizedBox(width: 4),
                     Text(
-                      '${suggestion.calories} cal',
+                      '${suggestion.calories} ${l10n.cal}',
                       style: const TextStyle(
                         fontSize: 14,
                         color: AppColors.textSecondary,
@@ -257,7 +262,7 @@ class _LogFoodScreenState extends ConsumerState<LogFoodScreen>
             ),
           ),
           GestureDetector(
-            onTap: () => _addFood(suggestion),
+            onTap: () => _addFood(suggestion, l10n),
             child: Container(
               width: 32,
               height: 32,
@@ -277,94 +282,218 @@ class _LogFoodScreenState extends ConsumerState<LogFoodScreen>
     );
   }
 
-  Widget _buildMyFoodsTab() {
+  Widget _buildMyFoodsTab(AppLocalizations l10n) {
     return _buildEmptyState(
       icon: Icons.restaurant,
-      title: 'No custom foods yet',
-      subtitle: 'Foods you create will appear here.',
+      title: l10n.noCustomFoodsYet,
+      subtitle: l10n.foodsYouCreateWillAppearHere,
     );
   }
 
-  Widget _buildMyMealsTab() {
+  Widget _buildMyMealsTab(AppLocalizations l10n) {
     return _buildEmptyState(
       icon: Icons.dinner_dining,
-      title: 'No saved meals yet',
-      subtitle: 'Combine foods into meals for quick logging.',
+      title: l10n.noSavedMealsYet,
+      subtitle: l10n.combineFoodsIntoMeals,
     );
   }
 
   Widget _buildSavedFoodsTab() {
-    return Center(
-      child: Padding(
-        padding: const EdgeInsets.all(32),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            // Example image placeholder
+    final l10n = AppLocalizations.of(context)!;
+    final savedFoods = ref.watch(savedFoodsProvider);
+
+    if (savedFoods.isEmpty) {
+      return Center(
+        child: Padding(
+          padding: const EdgeInsets.all(32),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Container(
+                width: 80,
+                height: 80,
+                decoration: BoxDecoration(
+                  color: AppColors.surface,
+                  shape: BoxShape.circle,
+                ),
+                child: Icon(
+                  Icons.bookmark_border,
+                  size: 40,
+                  color: AppColors.textTertiary,
+                ),
+              ),
+              const SizedBox(height: 24),
+              Text(
+                l10n.noSavedFoods,
+                style: const TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                  color: AppColors.textPrimary,
+                ),
+              ),
+              const SizedBox(height: 8),
+              Text(
+                l10n.tapToSaveHere,
+                style: const TextStyle(
+                  fontSize: 14,
+                  color: AppColors.textSecondary,
+                ),
+                textAlign: TextAlign.center,
+              ),
+            ],
+          ),
+        ),
+      );
+    }
+
+    return ListView.builder(
+      padding: const EdgeInsets.all(16),
+      itemCount: savedFoods.length,
+      itemBuilder: (context, index) {
+        final food = savedFoods[index];
+        return _buildSavedFoodItem(food, l10n);
+      },
+    );
+  }
+
+  Widget _buildSavedFoodItem(SavedFood food, AppLocalizations l10n) {
+    return Container(
+      margin: const EdgeInsets.only(bottom: 8),
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: AppColors.border),
+      ),
+      child: Row(
+        children: [
+          if (food.imageUrl != null)
+            ClipRRect(
+              borderRadius: BorderRadius.circular(8),
+              child: Image.network(
+                food.imageUrl!,
+                width: 48,
+                height: 48,
+                fit: BoxFit.cover,
+                errorBuilder: (_, __, ___) => Container(
+                  width: 48,
+                  height: 48,
+                  decoration: BoxDecoration(
+                    color: AppColors.surface,
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  child: const Icon(Icons.restaurant, color: AppColors.textTertiary),
+                ),
+              ),
+            )
+          else
             Container(
-              width: 200,
-              height: 150,
+              width: 48,
+              height: 48,
               decoration: BoxDecoration(
                 color: AppColors.surface,
-                borderRadius: BorderRadius.circular(16),
+                borderRadius: BorderRadius.circular(8),
               ),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Icon(
-                    Icons.bookmark_border,
-                    size: 48,
-                    color: AppColors.textTertiary,
-                  ),
-                  const SizedBox(height: 8),
-                  Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.circular(4),
-                    ),
-                    child: const Text(
-                      '9 AM',
-                      style: TextStyle(fontSize: 10, color: AppColors.textSecondary),
-                    ),
-                  ),
-                ],
-              ),
+              child: const Icon(Icons.restaurant, color: AppColors.textTertiary),
             ),
-            const SizedBox(height: 24),
-            const Text(
-              'No saved foods yet',
-              style: TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.bold,
-                color: AppColors.textPrimary,
-              ),
-            ),
-            const SizedBox(height: 8),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
+          const SizedBox(width: 12),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const Text(
-                  'Tap ',
-                  style: TextStyle(
-                    fontSize: 14,
-                    color: AppColors.textSecondary,
+                Text(
+                  food.name,
+                  style: const TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.w600,
+                    color: AppColors.textPrimary,
                   ),
                 ),
-                Icon(Icons.bookmark_border, size: 16, color: AppColors.textSecondary),
-                const Text(
-                  ' on any logged food to save here.',
-                  style: TextStyle(
-                    fontSize: 14,
+                const SizedBox(height: 4),
+                Text(
+                  '${food.calories} cal · P: ${food.protein.toStringAsFixed(0)}g · C: ${food.carbs.toStringAsFixed(0)}g · F: ${food.fat.toStringAsFixed(0)}g',
+                  style: const TextStyle(
+                    fontSize: 12,
                     color: AppColors.textSecondary,
                   ),
                 ),
               ],
             ),
-          ],
-        ),
+          ),
+          Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              GestureDetector(
+                onTap: () => _logSavedFood(food, l10n),
+                child: Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                  decoration: BoxDecoration(
+                    color: AppColors.primary,
+                    borderRadius: BorderRadius.circular(16),
+                  ),
+                  child: Text(
+                    l10n.logThisFood,
+                    style: const TextStyle(
+                      fontSize: 12,
+                      fontWeight: FontWeight.w600,
+                      color: Colors.white,
+                    ),
+                  ),
+                ),
+              ),
+              const SizedBox(width: 8),
+              GestureDetector(
+                onTap: () {
+                  ref.read(savedFoodsProvider.notifier).removeFood(food.id);
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(content: Text(l10n.removedFromSaved)),
+                  );
+                },
+                child: const Icon(
+                  Icons.delete_outline,
+                  size: 20,
+                  color: AppColors.textTertiary,
+                ),
+              ),
+            ],
+          ),
+        ],
       ),
     );
+  }
+
+  Future<void> _logSavedFood(SavedFood food, AppLocalizations l10n) async {
+    final authState = ref.read(authStateProvider);
+    if (authState.userId == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(l10n.pleaseSignInToLogFood)),
+      );
+      return;
+    }
+
+    try {
+      await ref.read(addFoodEntryProvider(AddFoodEntryParams(
+        name: food.name,
+        calories: food.calories,
+        protein: food.protein,
+        carbs: food.carbs,
+        fat: food.fat,
+        imageUrl: food.imageUrl,
+      )).future);
+
+      if (mounted) {
+        Navigator.pop(context);
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(l10n.foodEntrySaved)),
+        );
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(l10n.failedToLogFood(e.toString()))),
+        );
+      }
+    }
   }
 
   Widget _buildEmptyState({
@@ -408,17 +537,17 @@ class _LogFoodScreenState extends ConsumerState<LogFoodScreen>
     );
   }
 
-  void _addFood(_FoodSuggestion suggestion) {
+  void _addFood(_FoodSuggestion suggestion, AppLocalizations l10n) {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
-        content: Text('Added ${suggestion.name}'),
+        content: Text(l10n.addedFood(suggestion.name)),
         behavior: SnackBarBehavior.floating,
       ),
     );
     // TODO: Actually add the food entry via API
   }
 
-  void _showManualAddSheet() {
+  void _showManualAddSheet(AppLocalizations l10n) {
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
@@ -426,14 +555,14 @@ class _LogFoodScreenState extends ConsumerState<LogFoodScreen>
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
       ),
-      builder: (context) => const _ManualAddSheet(),
+      builder: (context) => _ManualAddSheet(l10n: l10n),
     );
   }
 
-  void _showVoiceLog() {
+  void _showVoiceLog(AppLocalizations l10n) {
     ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(
-        content: Text('Voice logging coming soon'),
+      SnackBar(
+        content: Text(l10n.voiceLoggingComingSoon),
         behavior: SnackBarBehavior.floating,
       ),
     );
@@ -495,7 +624,9 @@ class _ActionButton extends StatelessWidget {
 }
 
 class _ManualAddSheet extends StatefulWidget {
-  const _ManualAddSheet();
+  final AppLocalizations l10n;
+
+  const _ManualAddSheet({required this.l10n});
 
   @override
   State<_ManualAddSheet> createState() => _ManualAddSheetState();
@@ -520,6 +651,7 @@ class _ManualAddSheetState extends State<_ManualAddSheet> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = widget.l10n;
     return Padding(
       padding: EdgeInsets.only(
         left: 24,
@@ -532,31 +664,31 @@ class _ManualAddSheetState extends State<_ManualAddSheet> {
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Text(
-              'Add Food Manually',
-              style: TextStyle(
+            Text(
+              l10n.addFoodManually,
+              style: const TextStyle(
                 fontSize: 20,
                 fontWeight: FontWeight.bold,
                 color: AppColors.textPrimary,
               ),
             ),
             const SizedBox(height: 20),
-            _buildTextField(_nameController, 'Food Name', ''),
+            _buildTextField(_nameController, l10n.foodName, ''),
             const SizedBox(height: 12),
-            _buildTextField(_caloriesController, 'Calories', 'cal'),
+            _buildTextField(_caloriesController, l10n.calories, l10n.cal),
             const SizedBox(height: 12),
             Row(
               children: [
                 Expanded(
-                  child: _buildTextField(_proteinController, 'Protein', 'g'),
+                  child: _buildTextField(_proteinController, l10n.protein, 'g'),
                 ),
                 const SizedBox(width: 12),
                 Expanded(
-                  child: _buildTextField(_carbsController, 'Carbs', 'g'),
+                  child: _buildTextField(_carbsController, l10n.carbs, 'g'),
                 ),
                 const SizedBox(width: 12),
                 Expanded(
-                  child: _buildTextField(_fatController, 'Fat', 'g'),
+                  child: _buildTextField(_fatController, l10n.fat, 'g'),
                 ),
               ],
             ),
@@ -573,7 +705,7 @@ class _ManualAddSheetState extends State<_ManualAddSheet> {
                     borderRadius: BorderRadius.circular(25),
                   ),
                 ),
-                child: const Text('Add Food'),
+                child: Text(l10n.addFood),
               ),
             ),
           ],
@@ -604,7 +736,7 @@ class _ManualAddSheetState extends State<_ManualAddSheet> {
     Navigator.pop(context);
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
-        content: Text('Added ${_nameController.text}'),
+        content: Text(widget.l10n.addedFood(_nameController.text)),
         behavior: SnackBarBehavior.floating,
       ),
     );
