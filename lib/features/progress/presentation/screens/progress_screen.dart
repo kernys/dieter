@@ -390,6 +390,42 @@ class ProgressScreen extends ConsumerWidget {
             ),
             const SliverToBoxAdapter(child: SizedBox(height: 16)),
 
+            // Weight Changes Card
+            SliverToBoxAdapter(
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 16),
+                child: Container(
+                  padding: const EdgeInsets.all(16),
+                  decoration: BoxDecoration(
+                    color: AppColors.card,
+                    borderRadius: BorderRadius.circular(16),
+                    border: Border.all(color: AppColors.border),
+                  ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const Text(
+                        'Weight Changes',
+                        style: TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.w600,
+                          color: AppColors.textPrimary,
+                        ),
+                      ),
+                      const SizedBox(height: 16),
+                      _WeightChangeRow(period: '3 day', change: 0.0, isIncrease: null),
+                      _WeightChangeRow(period: '7 day', change: 0.0, isIncrease: null),
+                      _WeightChangeRow(period: '14 day', change: 0.0, isIncrease: null),
+                      _WeightChangeRow(period: '30 day', change: 1.0, isIncrease: true),
+                      _WeightChangeRow(period: '90 day', change: 1.0, isIncrease: true),
+                      _WeightChangeRow(period: 'All Time', change: 1.0, isIncrease: true),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+            const SliverToBoxAdapter(child: SizedBox(height: 16)),
+
             // Daily Average Calories
             SliverToBoxAdapter(
               child: Padding(
@@ -694,6 +730,107 @@ class _TimeRangeButton extends StatelessWidget {
             color: isSelected ? Colors.white : AppColors.textSecondary,
           ),
         ),
+      ),
+    );
+  }
+}
+
+class _WeightChangeRow extends StatelessWidget {
+  final String period;
+  final double change;
+  final bool? isIncrease;
+
+  const _WeightChangeRow({
+    required this.period,
+    required this.change,
+    required this.isIncrease,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    String changeText;
+    String statusText;
+    Color statusColor;
+    IconData? statusIcon;
+
+    if (isIncrease == null || change == 0) {
+      changeText = '0.0 lbs';
+      statusText = 'No change';
+      statusColor = AppColors.textSecondary;
+      statusIcon = Icons.arrow_forward;
+    } else if (isIncrease!) {
+      changeText = '${change.toStringAsFixed(0)} lbs';
+      statusText = 'Increase';
+      statusColor = AppColors.error;
+      statusIcon = Icons.arrow_outward;
+    } else {
+      changeText = '${change.toStringAsFixed(0)} lbs';
+      statusText = 'Decrease';
+      statusColor = AppColors.success;
+      statusIcon = Icons.arrow_downward;
+    }
+
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 8),
+      child: Row(
+        children: [
+          SizedBox(
+            width: 60,
+            child: Text(
+              period,
+              style: const TextStyle(
+                fontSize: 14,
+                color: AppColors.textSecondary,
+              ),
+            ),
+          ),
+          const SizedBox(width: 12),
+          // Progress bar
+          Container(
+            width: 60,
+            height: 8,
+            decoration: BoxDecoration(
+              color: AppColors.progressBackground,
+              borderRadius: BorderRadius.circular(4),
+            ),
+            child: FractionallySizedBox(
+              alignment: Alignment.centerLeft,
+              widthFactor: change > 0 ? 0.6 : 0.2,
+              child: Container(
+                decoration: BoxDecoration(
+                  color: change > 0 ? const Color(0xFFB8D4E8) : AppColors.progressBackground,
+                  borderRadius: BorderRadius.circular(4),
+                ),
+              ),
+            ),
+          ),
+          const SizedBox(width: 16),
+          SizedBox(
+            width: 60,
+            child: Text(
+              changeText,
+              style: const TextStyle(
+                fontSize: 14,
+                fontWeight: FontWeight.w500,
+                color: AppColors.textPrimary,
+              ),
+            ),
+          ),
+          const Spacer(),
+          Icon(
+            statusIcon,
+            size: 14,
+            color: statusColor,
+          ),
+          const SizedBox(width: 4),
+          Text(
+            statusText,
+            style: TextStyle(
+              fontSize: 14,
+              color: statusColor,
+            ),
+          ),
+        ],
       ),
     );
   }

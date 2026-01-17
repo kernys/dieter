@@ -3,13 +3,42 @@ import 'package:go_router/go_router.dart';
 import '../../core/constants/app_colors.dart';
 import '../../l10n/generated/app_localizations.dart';
 
-class MainScaffold extends StatelessWidget {
+class MainScaffold extends StatefulWidget {
   final Widget child;
 
   const MainScaffold({
     super.key,
     required this.child,
   });
+
+  @override
+  State<MainScaffold> createState() => _MainScaffoldState();
+}
+
+class _MainScaffoldState extends State<MainScaffold>
+    with SingleTickerProviderStateMixin {
+  bool _isFabMenuOpen = false;
+  late AnimationController _animationController;
+  late Animation<double> _animation;
+
+  @override
+  void initState() {
+    super.initState();
+    _animationController = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 200),
+    );
+    _animation = CurvedAnimation(
+      parent: _animationController,
+      curve: Curves.easeInOut,
+    );
+  }
+
+  @override
+  void dispose() {
+    _animationController.dispose();
+    super.dispose();
+  }
 
   int _calculateSelectedIndex(BuildContext context) {
     final location = GoRouterState.of(context).uri.path;
@@ -33,17 +62,79 @@ class MainScaffold extends StatelessWidget {
     }
   }
 
+  void _toggleFabMenu() {
+    setState(() {
+      _isFabMenuOpen = !_isFabMenuOpen;
+      if (_isFabMenuOpen) {
+        _animationController.forward();
+      } else {
+        _animationController.reverse();
+      }
+    });
+  }
+
+  void _closeFabMenu() {
+    if (_isFabMenuOpen) {
+      setState(() {
+        _isFabMenuOpen = false;
+        _animationController.reverse();
+      });
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final selectedIndex = _calculateSelectedIndex(context);
     final l10n = AppLocalizations.of(context)!;
 
     return Scaffold(
-      body: child,
-      floatingActionButton: FloatingActionButton(
-        onPressed: () => context.push('/camera'),
-        backgroundColor: AppColors.primary,
-        child: const Icon(Icons.add, size: 28),
+      body: Stack(
+        children: [
+          widget.child,
+          // Overlay when menu is open
+          if (_isFabMenuOpen)
+            GestureDetector(
+              onTap: _closeFabMenu,
+              child: AnimatedBuilder(
+                animation: _animation,
+                builder: (context, child) => Container(
+                  color: Colors.black.withValues(alpha: 0.3 * _animation.value),
+                ),
+              ),
+            ),
+          // FAB Menu
+          if (_isFabMenuOpen)
+            Positioned(
+              left: 0,
+              right: 0,
+              bottom: 100,
+              child: FadeTransition(
+                opacity: _animation,
+                child: SlideTransition(
+                  position: Tween<Offset>(
+                    begin: const Offset(0, 0.3),
+                    end: Offset.zero,
+                  ).animate(_animation),
+                  child: _buildFabMenu(context),
+                ),
+              ),
+            ),
+        ],
+      ),
+      floatingActionButton: AnimatedBuilder(
+        animation: _animation,
+        builder: (context, child) => Transform.rotate(
+          angle: _animation.value * 0.785, // 45 degrees
+          child: FloatingActionButton(
+            onPressed: _toggleFabMenu,
+            backgroundColor: _isFabMenuOpen ? AppColors.textPrimary : AppColors.primary,
+            child: Icon(
+              _isFabMenuOpen ? Icons.close : Icons.add,
+              size: 28,
+              color: Colors.white,
+            ),
+          ),
+        ),
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
       bottomNavigationBar: Container(
@@ -99,6 +190,143 @@ class MainScaffold extends StatelessWidget {
               ],
             ),
           ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildFabMenu(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 24),
+      child: Column(
+        children: [
+          Row(
+            children: [
+              Expanded(
+                child: _FabMenuItem(
+                  icon: Icons.fitness_center,
+                  label: 'Log exercise',
+                  onTap: () {
+                    _closeFabMenu();
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(content: Text('Exercise logging coming soon')),
+                    );
+                  },
+                ),
+              ),
+              const SizedBox(width: 12),
+              Expanded(
+                child: _FabMenuItem(
+                  icon: Icons.bookmark,
+                  label: 'Saved foods',
+                  onTap: () {
+                    _closeFabMenu();
+                    context.push('/log-food');
+                  },
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 12),
+          Row(
+            children: [
+              Expanded(
+                child: _FabMenuItem(
+                  icon: Icons.search,
+                  label: 'Food Database',
+                  onTap: () {
+                    _closeFabMenu();
+                    context.push('/log-food');
+                  },
+                ),
+              ),
+              const SizedBox(width: 12),
+              Expanded(
+                child: _FabMenuItem(
+                  icon: Icons.camera_alt,
+                  label: 'Scan food',
+                  isPremium: true,
+                  onTap: () {
+                    _closeFabMenu();
+                    context.push('/camera');
+                  },
+                ),
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _FabMenuItem extends StatelessWidget {
+  final IconData icon;
+  final String label;
+  final VoidCallback onTap;
+  final bool isPremium;
+
+  const _FabMenuItem({
+    required this.icon,
+    required this.label,
+    required this.onTap,
+    this.isPremium = false,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        padding: const EdgeInsets.symmetric(vertical: 20),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(16),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withValues(alpha: 0.08),
+              blurRadius: 10,
+              offset: const Offset(0, 4),
+            ),
+          ],
+        ),
+        child: Stack(
+          children: [
+            Center(
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Icon(icon, size: 28, color: AppColors.textPrimary),
+                  const SizedBox(height: 8),
+                  Text(
+                    label,
+                    style: const TextStyle(
+                      fontSize: 14,
+                      fontWeight: FontWeight.w500,
+                      color: AppColors.textPrimary,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            if (isPremium)
+              Positioned(
+                top: 0,
+                right: 8,
+                child: Container(
+                  padding: const EdgeInsets.all(4),
+                  decoration: BoxDecoration(
+                    color: const Color(0xFFD4AF37),
+                    borderRadius: BorderRadius.circular(4),
+                  ),
+                  child: const Icon(
+                    Icons.workspace_premium,
+                    size: 12,
+                    color: Colors.white,
+                  ),
+                ),
+              ),
+          ],
         ),
       ),
     );

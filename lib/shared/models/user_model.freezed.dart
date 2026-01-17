@@ -15,7 +15,7 @@ T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$UserModel {
 
- String get id; String get email; String? get name; String? get avatarUrl; int get dailyCalorieGoal; int get dailyProteinGoal; int get dailyCarbsGoal; int get dailyFatGoal; double? get currentWeight; double? get goalWeight; DateTime? get createdAt;
+ String get id; String get email; String? get name; String? get avatarUrl; int get dailyCalorieGoal; int get dailyProteinGoal; int get dailyCarbsGoal; int get dailyFatGoal; double? get currentWeight; double? get goalWeight; double? get heightFeet; double? get heightInches; double? get heightCm; DateTime? get birthDate; String? get gender; int get dailyStepGoal; bool? get onboardingCompleted; DateTime? get createdAt;
 /// Create a copy of UserModel
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -28,16 +28,16 @@ $UserModelCopyWith<UserModel> get copyWith => _$UserModelCopyWithImpl<UserModel>
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is UserModel&&(identical(other.id, id) || other.id == id)&&(identical(other.email, email) || other.email == email)&&(identical(other.name, name) || other.name == name)&&(identical(other.avatarUrl, avatarUrl) || other.avatarUrl == avatarUrl)&&(identical(other.dailyCalorieGoal, dailyCalorieGoal) || other.dailyCalorieGoal == dailyCalorieGoal)&&(identical(other.dailyProteinGoal, dailyProteinGoal) || other.dailyProteinGoal == dailyProteinGoal)&&(identical(other.dailyCarbsGoal, dailyCarbsGoal) || other.dailyCarbsGoal == dailyCarbsGoal)&&(identical(other.dailyFatGoal, dailyFatGoal) || other.dailyFatGoal == dailyFatGoal)&&(identical(other.currentWeight, currentWeight) || other.currentWeight == currentWeight)&&(identical(other.goalWeight, goalWeight) || other.goalWeight == goalWeight)&&(identical(other.createdAt, createdAt) || other.createdAt == createdAt));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is UserModel&&(identical(other.id, id) || other.id == id)&&(identical(other.email, email) || other.email == email)&&(identical(other.name, name) || other.name == name)&&(identical(other.avatarUrl, avatarUrl) || other.avatarUrl == avatarUrl)&&(identical(other.dailyCalorieGoal, dailyCalorieGoal) || other.dailyCalorieGoal == dailyCalorieGoal)&&(identical(other.dailyProteinGoal, dailyProteinGoal) || other.dailyProteinGoal == dailyProteinGoal)&&(identical(other.dailyCarbsGoal, dailyCarbsGoal) || other.dailyCarbsGoal == dailyCarbsGoal)&&(identical(other.dailyFatGoal, dailyFatGoal) || other.dailyFatGoal == dailyFatGoal)&&(identical(other.currentWeight, currentWeight) || other.currentWeight == currentWeight)&&(identical(other.goalWeight, goalWeight) || other.goalWeight == goalWeight)&&(identical(other.heightFeet, heightFeet) || other.heightFeet == heightFeet)&&(identical(other.heightInches, heightInches) || other.heightInches == heightInches)&&(identical(other.heightCm, heightCm) || other.heightCm == heightCm)&&(identical(other.birthDate, birthDate) || other.birthDate == birthDate)&&(identical(other.gender, gender) || other.gender == gender)&&(identical(other.dailyStepGoal, dailyStepGoal) || other.dailyStepGoal == dailyStepGoal)&&(identical(other.onboardingCompleted, onboardingCompleted) || other.onboardingCompleted == onboardingCompleted)&&(identical(other.createdAt, createdAt) || other.createdAt == createdAt));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,id,email,name,avatarUrl,dailyCalorieGoal,dailyProteinGoal,dailyCarbsGoal,dailyFatGoal,currentWeight,goalWeight,createdAt);
+int get hashCode => Object.hash(runtimeType,id,email,name,avatarUrl,dailyCalorieGoal,dailyProteinGoal,dailyCarbsGoal,dailyFatGoal,currentWeight,goalWeight,heightFeet,heightInches,heightCm,birthDate,gender,dailyStepGoal,onboardingCompleted,createdAt);
 
 @override
 String toString() {
-  return 'UserModel(id: $id, email: $email, name: $name, avatarUrl: $avatarUrl, dailyCalorieGoal: $dailyCalorieGoal, dailyProteinGoal: $dailyProteinGoal, dailyCarbsGoal: $dailyCarbsGoal, dailyFatGoal: $dailyFatGoal, currentWeight: $currentWeight, goalWeight: $goalWeight, createdAt: $createdAt)';
+  return 'UserModel(id: $id, email: $email, name: $name, avatarUrl: $avatarUrl, dailyCalorieGoal: $dailyCalorieGoal, dailyProteinGoal: $dailyProteinGoal, dailyCarbsGoal: $dailyCarbsGoal, dailyFatGoal: $dailyFatGoal, currentWeight: $currentWeight, goalWeight: $goalWeight, heightFeet: $heightFeet, heightInches: $heightInches, heightCm: $heightCm, birthDate: $birthDate, gender: $gender, dailyStepGoal: $dailyStepGoal, onboardingCompleted: $onboardingCompleted, createdAt: $createdAt)';
 }
 
 
@@ -48,7 +48,7 @@ abstract mixin class $UserModelCopyWith<$Res>  {
   factory $UserModelCopyWith(UserModel value, $Res Function(UserModel) _then) = _$UserModelCopyWithImpl;
 @useResult
 $Res call({
- String id, String email, String? name, String? avatarUrl, int dailyCalorieGoal, int dailyProteinGoal, int dailyCarbsGoal, int dailyFatGoal, double? currentWeight, double? goalWeight, DateTime? createdAt
+ String id, String email, String? name, String? avatarUrl, int dailyCalorieGoal, int dailyProteinGoal, int dailyCarbsGoal, int dailyFatGoal, double? currentWeight, double? goalWeight, double? heightFeet, double? heightInches, double? heightCm, DateTime? birthDate, String? gender, int dailyStepGoal, bool? onboardingCompleted, DateTime? createdAt
 });
 
 
@@ -65,7 +65,7 @@ class _$UserModelCopyWithImpl<$Res>
 
 /// Create a copy of UserModel
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? email = null,Object? name = freezed,Object? avatarUrl = freezed,Object? dailyCalorieGoal = null,Object? dailyProteinGoal = null,Object? dailyCarbsGoal = null,Object? dailyFatGoal = null,Object? currentWeight = freezed,Object? goalWeight = freezed,Object? createdAt = freezed,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? email = null,Object? name = freezed,Object? avatarUrl = freezed,Object? dailyCalorieGoal = null,Object? dailyProteinGoal = null,Object? dailyCarbsGoal = null,Object? dailyFatGoal = null,Object? currentWeight = freezed,Object? goalWeight = freezed,Object? heightFeet = freezed,Object? heightInches = freezed,Object? heightCm = freezed,Object? birthDate = freezed,Object? gender = freezed,Object? dailyStepGoal = null,Object? onboardingCompleted = freezed,Object? createdAt = freezed,}) {
   return _then(_self.copyWith(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as String,email: null == email ? _self.email : email // ignore: cast_nullable_to_non_nullable
@@ -77,7 +77,14 @@ as int,dailyCarbsGoal: null == dailyCarbsGoal ? _self.dailyCarbsGoal : dailyCarb
 as int,dailyFatGoal: null == dailyFatGoal ? _self.dailyFatGoal : dailyFatGoal // ignore: cast_nullable_to_non_nullable
 as int,currentWeight: freezed == currentWeight ? _self.currentWeight : currentWeight // ignore: cast_nullable_to_non_nullable
 as double?,goalWeight: freezed == goalWeight ? _self.goalWeight : goalWeight // ignore: cast_nullable_to_non_nullable
-as double?,createdAt: freezed == createdAt ? _self.createdAt : createdAt // ignore: cast_nullable_to_non_nullable
+as double?,heightFeet: freezed == heightFeet ? _self.heightFeet : heightFeet // ignore: cast_nullable_to_non_nullable
+as double?,heightInches: freezed == heightInches ? _self.heightInches : heightInches // ignore: cast_nullable_to_non_nullable
+as double?,heightCm: freezed == heightCm ? _self.heightCm : heightCm // ignore: cast_nullable_to_non_nullable
+as double?,birthDate: freezed == birthDate ? _self.birthDate : birthDate // ignore: cast_nullable_to_non_nullable
+as DateTime?,gender: freezed == gender ? _self.gender : gender // ignore: cast_nullable_to_non_nullable
+as String?,dailyStepGoal: null == dailyStepGoal ? _self.dailyStepGoal : dailyStepGoal // ignore: cast_nullable_to_non_nullable
+as int,onboardingCompleted: freezed == onboardingCompleted ? _self.onboardingCompleted : onboardingCompleted // ignore: cast_nullable_to_non_nullable
+as bool?,createdAt: freezed == createdAt ? _self.createdAt : createdAt // ignore: cast_nullable_to_non_nullable
 as DateTime?,
   ));
 }
@@ -163,10 +170,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String id,  String email,  String? name,  String? avatarUrl,  int dailyCalorieGoal,  int dailyProteinGoal,  int dailyCarbsGoal,  int dailyFatGoal,  double? currentWeight,  double? goalWeight,  DateTime? createdAt)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String id,  String email,  String? name,  String? avatarUrl,  int dailyCalorieGoal,  int dailyProteinGoal,  int dailyCarbsGoal,  int dailyFatGoal,  double? currentWeight,  double? goalWeight,  double? heightFeet,  double? heightInches,  double? heightCm,  DateTime? birthDate,  String? gender,  int dailyStepGoal,  bool? onboardingCompleted,  DateTime? createdAt)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _UserModel() when $default != null:
-return $default(_that.id,_that.email,_that.name,_that.avatarUrl,_that.dailyCalorieGoal,_that.dailyProteinGoal,_that.dailyCarbsGoal,_that.dailyFatGoal,_that.currentWeight,_that.goalWeight,_that.createdAt);case _:
+return $default(_that.id,_that.email,_that.name,_that.avatarUrl,_that.dailyCalorieGoal,_that.dailyProteinGoal,_that.dailyCarbsGoal,_that.dailyFatGoal,_that.currentWeight,_that.goalWeight,_that.heightFeet,_that.heightInches,_that.heightCm,_that.birthDate,_that.gender,_that.dailyStepGoal,_that.onboardingCompleted,_that.createdAt);case _:
   return orElse();
 
 }
@@ -184,10 +191,10 @@ return $default(_that.id,_that.email,_that.name,_that.avatarUrl,_that.dailyCalor
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String id,  String email,  String? name,  String? avatarUrl,  int dailyCalorieGoal,  int dailyProteinGoal,  int dailyCarbsGoal,  int dailyFatGoal,  double? currentWeight,  double? goalWeight,  DateTime? createdAt)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String id,  String email,  String? name,  String? avatarUrl,  int dailyCalorieGoal,  int dailyProteinGoal,  int dailyCarbsGoal,  int dailyFatGoal,  double? currentWeight,  double? goalWeight,  double? heightFeet,  double? heightInches,  double? heightCm,  DateTime? birthDate,  String? gender,  int dailyStepGoal,  bool? onboardingCompleted,  DateTime? createdAt)  $default,) {final _that = this;
 switch (_that) {
 case _UserModel():
-return $default(_that.id,_that.email,_that.name,_that.avatarUrl,_that.dailyCalorieGoal,_that.dailyProteinGoal,_that.dailyCarbsGoal,_that.dailyFatGoal,_that.currentWeight,_that.goalWeight,_that.createdAt);case _:
+return $default(_that.id,_that.email,_that.name,_that.avatarUrl,_that.dailyCalorieGoal,_that.dailyProteinGoal,_that.dailyCarbsGoal,_that.dailyFatGoal,_that.currentWeight,_that.goalWeight,_that.heightFeet,_that.heightInches,_that.heightCm,_that.birthDate,_that.gender,_that.dailyStepGoal,_that.onboardingCompleted,_that.createdAt);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -204,10 +211,10 @@ return $default(_that.id,_that.email,_that.name,_that.avatarUrl,_that.dailyCalor
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String id,  String email,  String? name,  String? avatarUrl,  int dailyCalorieGoal,  int dailyProteinGoal,  int dailyCarbsGoal,  int dailyFatGoal,  double? currentWeight,  double? goalWeight,  DateTime? createdAt)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String id,  String email,  String? name,  String? avatarUrl,  int dailyCalorieGoal,  int dailyProteinGoal,  int dailyCarbsGoal,  int dailyFatGoal,  double? currentWeight,  double? goalWeight,  double? heightFeet,  double? heightInches,  double? heightCm,  DateTime? birthDate,  String? gender,  int dailyStepGoal,  bool? onboardingCompleted,  DateTime? createdAt)?  $default,) {final _that = this;
 switch (_that) {
 case _UserModel() when $default != null:
-return $default(_that.id,_that.email,_that.name,_that.avatarUrl,_that.dailyCalorieGoal,_that.dailyProteinGoal,_that.dailyCarbsGoal,_that.dailyFatGoal,_that.currentWeight,_that.goalWeight,_that.createdAt);case _:
+return $default(_that.id,_that.email,_that.name,_that.avatarUrl,_that.dailyCalorieGoal,_that.dailyProteinGoal,_that.dailyCarbsGoal,_that.dailyFatGoal,_that.currentWeight,_that.goalWeight,_that.heightFeet,_that.heightInches,_that.heightCm,_that.birthDate,_that.gender,_that.dailyStepGoal,_that.onboardingCompleted,_that.createdAt);case _:
   return null;
 
 }
@@ -219,7 +226,7 @@ return $default(_that.id,_that.email,_that.name,_that.avatarUrl,_that.dailyCalor
 @JsonSerializable()
 
 class _UserModel implements UserModel {
-  const _UserModel({required this.id, required this.email, this.name, this.avatarUrl, this.dailyCalorieGoal = 2500, this.dailyProteinGoal = 150, this.dailyCarbsGoal = 275, this.dailyFatGoal = 70, this.currentWeight, this.goalWeight, this.createdAt});
+  const _UserModel({required this.id, required this.email, this.name, this.avatarUrl, this.dailyCalorieGoal = 2500, this.dailyProteinGoal = 150, this.dailyCarbsGoal = 275, this.dailyFatGoal = 70, this.currentWeight, this.goalWeight, this.heightFeet, this.heightInches, this.heightCm, this.birthDate, this.gender, this.dailyStepGoal = 10000, this.onboardingCompleted, this.createdAt});
   factory _UserModel.fromJson(Map<String, dynamic> json) => _$UserModelFromJson(json);
 
 @override final  String id;
@@ -232,6 +239,13 @@ class _UserModel implements UserModel {
 @override@JsonKey() final  int dailyFatGoal;
 @override final  double? currentWeight;
 @override final  double? goalWeight;
+@override final  double? heightFeet;
+@override final  double? heightInches;
+@override final  double? heightCm;
+@override final  DateTime? birthDate;
+@override final  String? gender;
+@override@JsonKey() final  int dailyStepGoal;
+@override final  bool? onboardingCompleted;
 @override final  DateTime? createdAt;
 
 /// Create a copy of UserModel
@@ -247,16 +261,16 @@ Map<String, dynamic> toJson() {
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _UserModel&&(identical(other.id, id) || other.id == id)&&(identical(other.email, email) || other.email == email)&&(identical(other.name, name) || other.name == name)&&(identical(other.avatarUrl, avatarUrl) || other.avatarUrl == avatarUrl)&&(identical(other.dailyCalorieGoal, dailyCalorieGoal) || other.dailyCalorieGoal == dailyCalorieGoal)&&(identical(other.dailyProteinGoal, dailyProteinGoal) || other.dailyProteinGoal == dailyProteinGoal)&&(identical(other.dailyCarbsGoal, dailyCarbsGoal) || other.dailyCarbsGoal == dailyCarbsGoal)&&(identical(other.dailyFatGoal, dailyFatGoal) || other.dailyFatGoal == dailyFatGoal)&&(identical(other.currentWeight, currentWeight) || other.currentWeight == currentWeight)&&(identical(other.goalWeight, goalWeight) || other.goalWeight == goalWeight)&&(identical(other.createdAt, createdAt) || other.createdAt == createdAt));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _UserModel&&(identical(other.id, id) || other.id == id)&&(identical(other.email, email) || other.email == email)&&(identical(other.name, name) || other.name == name)&&(identical(other.avatarUrl, avatarUrl) || other.avatarUrl == avatarUrl)&&(identical(other.dailyCalorieGoal, dailyCalorieGoal) || other.dailyCalorieGoal == dailyCalorieGoal)&&(identical(other.dailyProteinGoal, dailyProteinGoal) || other.dailyProteinGoal == dailyProteinGoal)&&(identical(other.dailyCarbsGoal, dailyCarbsGoal) || other.dailyCarbsGoal == dailyCarbsGoal)&&(identical(other.dailyFatGoal, dailyFatGoal) || other.dailyFatGoal == dailyFatGoal)&&(identical(other.currentWeight, currentWeight) || other.currentWeight == currentWeight)&&(identical(other.goalWeight, goalWeight) || other.goalWeight == goalWeight)&&(identical(other.heightFeet, heightFeet) || other.heightFeet == heightFeet)&&(identical(other.heightInches, heightInches) || other.heightInches == heightInches)&&(identical(other.heightCm, heightCm) || other.heightCm == heightCm)&&(identical(other.birthDate, birthDate) || other.birthDate == birthDate)&&(identical(other.gender, gender) || other.gender == gender)&&(identical(other.dailyStepGoal, dailyStepGoal) || other.dailyStepGoal == dailyStepGoal)&&(identical(other.onboardingCompleted, onboardingCompleted) || other.onboardingCompleted == onboardingCompleted)&&(identical(other.createdAt, createdAt) || other.createdAt == createdAt));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,id,email,name,avatarUrl,dailyCalorieGoal,dailyProteinGoal,dailyCarbsGoal,dailyFatGoal,currentWeight,goalWeight,createdAt);
+int get hashCode => Object.hash(runtimeType,id,email,name,avatarUrl,dailyCalorieGoal,dailyProteinGoal,dailyCarbsGoal,dailyFatGoal,currentWeight,goalWeight,heightFeet,heightInches,heightCm,birthDate,gender,dailyStepGoal,onboardingCompleted,createdAt);
 
 @override
 String toString() {
-  return 'UserModel(id: $id, email: $email, name: $name, avatarUrl: $avatarUrl, dailyCalorieGoal: $dailyCalorieGoal, dailyProteinGoal: $dailyProteinGoal, dailyCarbsGoal: $dailyCarbsGoal, dailyFatGoal: $dailyFatGoal, currentWeight: $currentWeight, goalWeight: $goalWeight, createdAt: $createdAt)';
+  return 'UserModel(id: $id, email: $email, name: $name, avatarUrl: $avatarUrl, dailyCalorieGoal: $dailyCalorieGoal, dailyProteinGoal: $dailyProteinGoal, dailyCarbsGoal: $dailyCarbsGoal, dailyFatGoal: $dailyFatGoal, currentWeight: $currentWeight, goalWeight: $goalWeight, heightFeet: $heightFeet, heightInches: $heightInches, heightCm: $heightCm, birthDate: $birthDate, gender: $gender, dailyStepGoal: $dailyStepGoal, onboardingCompleted: $onboardingCompleted, createdAt: $createdAt)';
 }
 
 
@@ -267,7 +281,7 @@ abstract mixin class _$UserModelCopyWith<$Res> implements $UserModelCopyWith<$Re
   factory _$UserModelCopyWith(_UserModel value, $Res Function(_UserModel) _then) = __$UserModelCopyWithImpl;
 @override @useResult
 $Res call({
- String id, String email, String? name, String? avatarUrl, int dailyCalorieGoal, int dailyProteinGoal, int dailyCarbsGoal, int dailyFatGoal, double? currentWeight, double? goalWeight, DateTime? createdAt
+ String id, String email, String? name, String? avatarUrl, int dailyCalorieGoal, int dailyProteinGoal, int dailyCarbsGoal, int dailyFatGoal, double? currentWeight, double? goalWeight, double? heightFeet, double? heightInches, double? heightCm, DateTime? birthDate, String? gender, int dailyStepGoal, bool? onboardingCompleted, DateTime? createdAt
 });
 
 
@@ -284,7 +298,7 @@ class __$UserModelCopyWithImpl<$Res>
 
 /// Create a copy of UserModel
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? email = null,Object? name = freezed,Object? avatarUrl = freezed,Object? dailyCalorieGoal = null,Object? dailyProteinGoal = null,Object? dailyCarbsGoal = null,Object? dailyFatGoal = null,Object? currentWeight = freezed,Object? goalWeight = freezed,Object? createdAt = freezed,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? email = null,Object? name = freezed,Object? avatarUrl = freezed,Object? dailyCalorieGoal = null,Object? dailyProteinGoal = null,Object? dailyCarbsGoal = null,Object? dailyFatGoal = null,Object? currentWeight = freezed,Object? goalWeight = freezed,Object? heightFeet = freezed,Object? heightInches = freezed,Object? heightCm = freezed,Object? birthDate = freezed,Object? gender = freezed,Object? dailyStepGoal = null,Object? onboardingCompleted = freezed,Object? createdAt = freezed,}) {
   return _then(_UserModel(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as String,email: null == email ? _self.email : email // ignore: cast_nullable_to_non_nullable
@@ -296,7 +310,14 @@ as int,dailyCarbsGoal: null == dailyCarbsGoal ? _self.dailyCarbsGoal : dailyCarb
 as int,dailyFatGoal: null == dailyFatGoal ? _self.dailyFatGoal : dailyFatGoal // ignore: cast_nullable_to_non_nullable
 as int,currentWeight: freezed == currentWeight ? _self.currentWeight : currentWeight // ignore: cast_nullable_to_non_nullable
 as double?,goalWeight: freezed == goalWeight ? _self.goalWeight : goalWeight // ignore: cast_nullable_to_non_nullable
-as double?,createdAt: freezed == createdAt ? _self.createdAt : createdAt // ignore: cast_nullable_to_non_nullable
+as double?,heightFeet: freezed == heightFeet ? _self.heightFeet : heightFeet // ignore: cast_nullable_to_non_nullable
+as double?,heightInches: freezed == heightInches ? _self.heightInches : heightInches // ignore: cast_nullable_to_non_nullable
+as double?,heightCm: freezed == heightCm ? _self.heightCm : heightCm // ignore: cast_nullable_to_non_nullable
+as double?,birthDate: freezed == birthDate ? _self.birthDate : birthDate // ignore: cast_nullable_to_non_nullable
+as DateTime?,gender: freezed == gender ? _self.gender : gender // ignore: cast_nullable_to_non_nullable
+as String?,dailyStepGoal: null == dailyStepGoal ? _self.dailyStepGoal : dailyStepGoal // ignore: cast_nullable_to_non_nullable
+as int,onboardingCompleted: freezed == onboardingCompleted ? _self.onboardingCompleted : onboardingCompleted // ignore: cast_nullable_to_non_nullable
+as bool?,createdAt: freezed == createdAt ? _self.createdAt : createdAt // ignore: cast_nullable_to_non_nullable
 as DateTime?,
   ));
 }

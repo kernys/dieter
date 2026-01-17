@@ -14,10 +14,6 @@ class AppConstants {
   // API Configuration
   static const String apiBaseUrl = 'https://dieter-api.vercel.app/api';
 
-  // API Keys (Replace with your actual keys)
-  static const String supabaseUrl = 'YOUR_SUPABASE_URL';
-  static const String supabaseAnonKey = 'YOUR_SUPABASE_ANON_KEY';
-
   // Storage Keys
   static const String userTokenKey = 'user_token';
   static const String onboardingCompletedKey = 'onboarding_completed';

@@ -16,6 +16,13 @@ abstract class UserModel with _$UserModel {
     @Default(70) int dailyFatGoal,
     double? currentWeight,
     double? goalWeight,
+    double? heightFeet,
+    double? heightInches,
+    double? heightCm,
+    DateTime? birthDate,
+    String? gender,
+    @Default(10000) int dailyStepGoal,
+    bool? onboardingCompleted,
     DateTime? createdAt,
   }) = _UserModel;
 

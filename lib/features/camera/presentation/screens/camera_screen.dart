@@ -173,6 +173,7 @@ class _CameraScreenState extends ConsumerState<CameraScreen> {
                         isSelected: scanMode == ScanMode.label,
                         onPressed: () {
                           ref.read(scanModeProvider.notifier).state = ScanMode.label;
+                          _showNutritionLabelInfo();
                         },
                       ),
                     ],
@@ -452,6 +453,238 @@ class _CameraScreenState extends ConsumerState<CameraScreen> {
           TextButton(
             onPressed: () => Navigator.pop(context),
             child: Text(l10n.gotIt),
+          ),
+        ],
+      ),
+    );
+  }
+
+  void _showNutritionLabelInfo() {
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: Colors.transparent,
+      isScrollControlled: true,
+      builder: (context) => Container(
+        decoration: const BoxDecoration(
+          color: Color(0xFF2C2C2E),
+          borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+        ),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            // Handle
+            Container(
+              margin: const EdgeInsets.only(top: 12),
+              width: 40,
+              height: 4,
+              decoration: BoxDecoration(
+                color: Colors.white24,
+                borderRadius: BorderRadius.circular(2),
+              ),
+            ),
+            // Header
+            Padding(
+              padding: const EdgeInsets.all(16),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  GestureDetector(
+                    onTap: () => Navigator.pop(context),
+                    child: const Icon(Icons.close, color: Colors.white, size: 24),
+                  ),
+                  const Spacer(),
+                  GestureDetector(
+                    onTap: () => _showHelpDialog(AppLocalizations.of(context)!),
+                    child: const Icon(Icons.help_outline, color: Colors.white, size: 24),
+                  ),
+                ],
+              ),
+            ),
+            // Nutrition Facts Image
+            Container(
+              margin: const EdgeInsets.symmetric(horizontal: 48),
+              padding: const EdgeInsets.all(16),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(8),
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const Text(
+                    'Nutrition Facts',
+                    style: TextStyle(
+                      fontSize: 20,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.black,
+                    ),
+                  ),
+                  const Text(
+                    '2 servings per container',
+                    style: TextStyle(fontSize: 12, color: Colors.black87),
+                  ),
+                  const Text(
+                    'Serving size    3/4 cup (170g)',
+                    style: TextStyle(
+                      fontSize: 12,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.black,
+                    ),
+                  ),
+                  const Divider(color: Colors.black, thickness: 8, height: 16),
+                  const Text(
+                    'Amount per serving',
+                    style: TextStyle(fontSize: 10, color: Colors.black87),
+                  ),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: const [
+                      Text(
+                        'Calories',
+                        style: TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.black,
+                        ),
+                      ),
+                      Text(
+                        '130',
+                        style: TextStyle(
+                          fontSize: 24,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.black,
+                        ),
+                      ),
+                    ],
+                  ),
+                  const Divider(color: Colors.black, thickness: 4, height: 8),
+                  _buildNutritionRow('Total Fat', '4g', '5%'),
+                  _buildNutritionRow('  Saturated Fat', '2.5g', '13%', isIndented: true),
+                  _buildNutritionRow('Cholesterol', '15mg', '5%'),
+                  _buildNutritionRow('Sodium', '55mg', '2%'),
+                  _buildNutritionRow('Total Carbohydrate', '6g', '2%'),
+                  _buildNutritionRow('Protein', '15g', '5%'),
+                ],
+              ),
+            ),
+            const SizedBox(height: 24),
+            // Title
+            const Text(
+              'Nutrition Label Scanner',
+              style: TextStyle(
+                fontSize: 22,
+                fontWeight: FontWeight.bold,
+                color: Colors.white,
+              ),
+            ),
+            const SizedBox(height: 8),
+            const Padding(
+              padding: EdgeInsets.symmetric(horizontal: 32),
+              child: Text(
+                'Get nutrition details from any label to track your intake accurately.',
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  fontSize: 14,
+                  color: Colors.white70,
+                ),
+              ),
+            ),
+            const SizedBox(height: 24),
+            // Got it button
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 48),
+              child: ElevatedButton(
+                onPressed: () => Navigator.pop(context),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.white,
+                  foregroundColor: Colors.black,
+                  minimumSize: const Size(double.infinity, 48),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(24),
+                  ),
+                ),
+                child: const Text(
+                  'Got it',
+                  style: TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+              ),
+            ),
+            const SizedBox(height: 16),
+            // Premium badge
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                const Text(
+                  '3 free scans left',
+                  style: TextStyle(
+                    fontSize: 14,
+                    color: Colors.white70,
+                  ),
+                ),
+                const SizedBox(width: 12),
+                Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                  decoration: BoxDecoration(
+                    gradient: const LinearGradient(
+                      colors: [Color(0xFFD4AF37), Color(0xFFC9A227)],
+                    ),
+                    borderRadius: BorderRadius.circular(20),
+                  ),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: const [
+                      Icon(Icons.workspace_premium, size: 16, color: Colors.black),
+                      SizedBox(width: 4),
+                      Text(
+                        'Premium',
+                        style: TextStyle(
+                          fontSize: 14,
+                          fontWeight: FontWeight.w600,
+                          color: Colors.black,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 32),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildNutritionRow(String label, String value, String percent, {bool isIndented = false}) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 2),
+      child: Row(
+        children: [
+          Expanded(
+            child: Text(
+              label,
+              style: TextStyle(
+                fontSize: isIndented ? 10 : 11,
+                fontWeight: isIndented ? FontWeight.normal : FontWeight.bold,
+                color: Colors.black,
+              ),
+            ),
+          ),
+          Text(
+            value,
+            style: const TextStyle(fontSize: 11, color: Colors.black),
+          ),
+          const SizedBox(width: 16),
+          Text(
+            percent,
+            style: const TextStyle(
+              fontSize: 11,
+              fontWeight: FontWeight.bold,
+              color: Colors.black,
+            ),
           ),
         ],
       ),

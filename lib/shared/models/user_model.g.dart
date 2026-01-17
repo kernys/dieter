@@ -17,6 +17,15 @@ _UserModel _$UserModelFromJson(Map<String, dynamic> json) => _UserModel(
   dailyFatGoal: (json['dailyFatGoal'] as num?)?.toInt() ?? 70,
   currentWeight: (json['currentWeight'] as num?)?.toDouble(),
   goalWeight: (json['goalWeight'] as num?)?.toDouble(),
+  heightFeet: (json['heightFeet'] as num?)?.toDouble(),
+  heightInches: (json['heightInches'] as num?)?.toDouble(),
+  heightCm: (json['heightCm'] as num?)?.toDouble(),
+  birthDate: json['birthDate'] == null
+      ? null
+      : DateTime.parse(json['birthDate'] as String),
+  gender: json['gender'] as String?,
+  dailyStepGoal: (json['dailyStepGoal'] as num?)?.toInt() ?? 10000,
+  onboardingCompleted: json['onboardingCompleted'] as bool?,
   createdAt: json['createdAt'] == null
       ? null
       : DateTime.parse(json['createdAt'] as String),
@@ -34,5 +43,12 @@ Map<String, dynamic> _$UserModelToJson(_UserModel instance) =>
       'dailyFatGoal': instance.dailyFatGoal,
       'currentWeight': instance.currentWeight,
       'goalWeight': instance.goalWeight,
+      'heightFeet': instance.heightFeet,
+      'heightInches': instance.heightInches,
+      'heightCm': instance.heightCm,
+      'birthDate': instance.birthDate?.toIso8601String(),
+      'gender': instance.gender,
+      'dailyStepGoal': instance.dailyStepGoal,
+      'onboardingCompleted': instance.onboardingCompleted,
       'createdAt': instance.createdAt?.toIso8601String(),
     };
