@@ -182,5 +182,12 @@
   "@failedToSave": { "placeholders": { "error": { "type": "String" } } },
 
   "defaultUserName": "John Doe",
-  "defaultUserEmail": "john.doe@example.com"
+  "defaultUserEmail": "john.doe@example.com",
+
+  "mealReminders": "Meal Reminders",
+  "mealRemindersDescription": "Get reminded to log your meals",
+  "weightReminders": "Weight Reminders",
+  "weightRemindersDescription": "Get reminded to log your weight",
+  "weeklyReports": "Weekly Reports",
+  "weeklyReportsDescription": "Receive weekly progress summaries"
 }

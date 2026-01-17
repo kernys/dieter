@@ -141,6 +141,11 @@ final addWeightLogProvider = FutureProvider.family<WeightLogModel?, AddWeightLog
     throw Exception('User not authenticated');
   }
 
+  // Check if user is in guest mode - cannot save to server
+  if (authState.isGuestMode) {
+    throw Exception('Please sign in to save weight logs');
+  }
+
   try {
     final log = await apiService.createWeightLog(
       userId: userId,

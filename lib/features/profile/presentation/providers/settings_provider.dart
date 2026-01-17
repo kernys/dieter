@@ -9,22 +9,34 @@ class AppSettings {
   final UnitSystem unitSystem;
   final bool darkMode;
   final String locale;
+  final bool mealReminders;
+  final bool weightReminders;
+  final bool weeklyReports;
 
   const AppSettings({
     this.unitSystem = UnitSystem.imperial,
     this.darkMode = false,
     this.locale = 'en',
+    this.mealReminders = true,
+    this.weightReminders = true,
+    this.weeklyReports = true,
   });
 
   AppSettings copyWith({
     UnitSystem? unitSystem,
     bool? darkMode,
     String? locale,
+    bool? mealReminders,
+    bool? weightReminders,
+    bool? weeklyReports,
   }) {
     return AppSettings(
       unitSystem: unitSystem ?? this.unitSystem,
       darkMode: darkMode ?? this.darkMode,
       locale: locale ?? this.locale,
+      mealReminders: mealReminders ?? this.mealReminders,
+      weightReminders: weightReminders ?? this.weightReminders,
+      weeklyReports: weeklyReports ?? this.weeklyReports,
     );
   }
 }
@@ -41,11 +53,17 @@ class SettingsNotifier extends StateNotifier<AppSettings> {
     final unitSystemStr = prefs.getString('unit_system') ?? 'imperial';
     final darkMode = prefs.getBool('dark_mode') ?? false;
     final locale = prefs.getString('locale') ?? 'en';
+    final mealReminders = prefs.getBool('meal_reminders') ?? true;
+    final weightReminders = prefs.getBool('weight_reminders') ?? true;
+    final weeklyReports = prefs.getBool('weekly_reports') ?? true;
 
     state = AppSettings(
       unitSystem: unitSystemStr == 'metric' ? UnitSystem.metric : UnitSystem.imperial,
       darkMode: darkMode,
       locale: locale,
+      mealReminders: mealReminders,
+      weightReminders: weightReminders,
+      weeklyReports: weeklyReports,
     );
   }
 
@@ -65,6 +83,24 @@ class SettingsNotifier extends StateNotifier<AppSettings> {
     final prefs = await SharedPreferences.getInstance();
     await prefs.setString('locale', locale);
     state = state.copyWith(locale: locale);
+  }
+
+  Future<void> setMealReminders(bool enabled) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setBool('meal_reminders', enabled);
+    state = state.copyWith(mealReminders: enabled);
+  }
+
+  Future<void> setWeightReminders(bool enabled) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setBool('weight_reminders', enabled);
+    state = state.copyWith(weightReminders: enabled);
+  }
+
+  Future<void> setWeeklyReports(bool enabled) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setBool('weekly_reports', enabled);
+    state = state.copyWith(weeklyReports: enabled);
   }
 
   // Convert weight based on unit system

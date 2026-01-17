@@ -139,7 +139,7 @@ class _MainScaffoldState extends State<MainScaffold>
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
       bottomNavigationBar: Container(
         decoration: BoxDecoration(
-          color: AppColors.background,
+          color: context.backgroundColor,
           boxShadow: [
             BoxShadow(
               color: AppColors.shadow,
@@ -152,29 +152,34 @@ class _MainScaffoldState extends State<MainScaffold>
           child: Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
             child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceAround,
               children: [
-                _NavItem(
-                  icon: Icons.home_outlined,
-                  activeIcon: Icons.home,
-                  label: l10n.home,
-                  isSelected: selectedIndex == 0,
-                  onTap: () => _onItemTapped(context, 0),
+                Expanded(
+                  child: _NavItem(
+                    icon: Icons.home_outlined,
+                    activeIcon: Icons.home,
+                    label: l10n.home,
+                    isSelected: selectedIndex == 0,
+                    onTap: () => _onItemTapped(context, 0),
+                  ),
                 ),
-                _NavItem(
-                  icon: Icons.bar_chart_outlined,
-                  activeIcon: Icons.bar_chart,
-                  label: l10n.progress,
-                  isSelected: selectedIndex == 1,
-                  onTap: () => _onItemTapped(context, 1),
+                Expanded(
+                  child: _NavItem(
+                    icon: Icons.bar_chart_outlined,
+                    activeIcon: Icons.bar_chart,
+                    label: l10n.progress,
+                    isSelected: selectedIndex == 1,
+                    onTap: () => _onItemTapped(context, 1),
+                  ),
                 ),
                 const SizedBox(width: 56), // Space for FAB
-                _NavItem(
-                  icon: Icons.person_outline,
-                  activeIcon: Icons.person,
-                  label: l10n.profile,
-                  isSelected: selectedIndex == 2,
-                  onTap: () => _onItemTapped(context, 2),
+                Expanded(
+                  child: _NavItem(
+                    icon: Icons.person_outline,
+                    activeIcon: Icons.person,
+                    label: l10n.profile,
+                    isSelected: selectedIndex == 2,
+                    onTap: () => _onItemTapped(context, 2),
+                  ),
                 ),
               ],
             ),

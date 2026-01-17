@@ -33,10 +33,10 @@ class ProfileScreen extends ConsumerWidget {
                   children: [
                     Text(
                       l10n.profile,
-                      style: const TextStyle(
+                      style: TextStyle(
                         fontSize: 28,
                         fontWeight: FontWeight.bold,
-                        color: AppColors.textPrimary,
+                        color: context.textPrimaryColor,
                       ),
                     ),
                     IconButton(
@@ -55,9 +55,9 @@ class ProfileScreen extends ConsumerWidget {
                 child: Container(
                   padding: const EdgeInsets.all(20),
                   decoration: BoxDecoration(
-                    color: AppColors.card,
+                    color: context.cardColor,
                     borderRadius: BorderRadius.circular(16),
-                    border: Border.all(color: AppColors.border),
+                    border: Border.all(color: context.borderColor),
                   ),
                   child: Row(
                     children: [
@@ -86,18 +86,18 @@ class ProfileScreen extends ConsumerWidget {
                           children: [
                             Text(
                               user?.name ?? l10n.defaultUserName,
-                              style: const TextStyle(
+                              style: TextStyle(
                                 fontSize: 20,
                                 fontWeight: FontWeight.w600,
-                                color: AppColors.textPrimary,
+                                color: context.textPrimaryColor,
                               ),
                             ),
                             const SizedBox(height: 4),
                             Text(
                               user?.email ?? l10n.defaultUserEmail,
-                              style: const TextStyle(
+                              style: TextStyle(
                                 fontSize: 14,
-                                color: AppColors.textSecondary,
+                                color: context.textSecondaryColor,
                               ),
                             ),
                           ],
@@ -124,10 +124,10 @@ class ProfileScreen extends ConsumerWidget {
                     children: [
                       Text(
                         l10n.dailyGoals,
-                        style: const TextStyle(
+                        style: TextStyle(
                           fontSize: 18,
                           fontWeight: FontWeight.w600,
-                          color: AppColors.textPrimary,
+                          color: context.textPrimaryColor,
                         ),
                       ),
                       const SizedBox(height: 12),
@@ -167,10 +167,10 @@ class ProfileScreen extends ConsumerWidget {
                     children: [
                       Text(
                         l10n.dailyGoals,
-                        style: const TextStyle(
+                        style: TextStyle(
                           fontSize: 18,
                           fontWeight: FontWeight.w600,
-                          color: AppColors.textPrimary,
+                          color: context.textPrimaryColor,
                         ),
                       ),
                       const SizedBox(height: 12),
@@ -212,19 +212,17 @@ class ProfileScreen extends ConsumerWidget {
                   children: [
                     Text(
                       l10n.settings,
-                      style: const TextStyle(
+                      style: TextStyle(
                         fontSize: 18,
                         fontWeight: FontWeight.w600,
-                        color: AppColors.textPrimary,
+                        color: context.textPrimaryColor,
                       ),
                     ),
                     const SizedBox(height: 12),
                     _SettingsTile(
                       icon: Icons.notifications_outlined,
                       label: l10n.notifications,
-                      onTap: () {
-                        // TODO: Implement notifications settings
-                      },
+                      onTap: () => _showNotificationsDialog(context, ref, l10n, settings),
                     ),
                     _SettingsTile(
                       icon: Icons.language,
@@ -273,10 +271,10 @@ class ProfileScreen extends ConsumerWidget {
                   children: [
                     Text(
                       l10n.app,
-                      style: const TextStyle(
+                      style: TextStyle(
                         fontSize: 18,
                         fontWeight: FontWeight.w600,
-                        color: AppColors.textPrimary,
+                        color: context.textPrimaryColor,
                       ),
                     ),
                     const SizedBox(height: 12),
@@ -575,6 +573,73 @@ class ProfileScreen extends ConsumerWidget {
       ),
     );
   }
+
+  void _showNotificationsDialog(
+    BuildContext context,
+    WidgetRef ref,
+    AppLocalizations l10n,
+    AppSettings settings,
+  ) {
+    // Use local state for the dialog to reflect immediate updates
+    bool mealReminders = settings.mealReminders;
+    bool weightReminders = settings.weightReminders;
+    bool weeklyReports = settings.weeklyReports;
+
+    showDialog(
+      context: context,
+      builder: (context) => StatefulBuilder(
+        builder: (context, setState) {
+          return AlertDialog(
+            title: Text(l10n.notifications),
+            content: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                SwitchListTile(
+                  title: Text(l10n.mealReminders),
+                  subtitle: Text(l10n.mealRemindersDescription),
+                  value: mealReminders,
+                  onChanged: (value) {
+                    ref.read(settingsProvider.notifier).setMealReminders(value);
+                    setState(() {
+                      mealReminders = value;
+                    });
+                  },
+                ),
+                SwitchListTile(
+                  title: Text(l10n.weightReminders),
+                  subtitle: Text(l10n.weightRemindersDescription),
+                  value: weightReminders,
+                  onChanged: (value) {
+                    ref.read(settingsProvider.notifier).setWeightReminders(value);
+                    setState(() {
+                      weightReminders = value;
+                    });
+                  },
+                ),
+                SwitchListTile(
+                  title: Text(l10n.weeklyReports),
+                  subtitle: Text(l10n.weeklyReportsDescription),
+                  value: weeklyReports,
+                  onChanged: (value) {
+                    ref.read(settingsProvider.notifier).setWeeklyReports(value);
+                    setState(() {
+                      weeklyReports = value;
+                    });
+                  },
+                ),
+              ],
+            ),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(context),
+                child: Text(l10n.done),
+              ),
+            ],
+          );
+        },
+      ),
+    );
+  }
 }
 
 class _GoalTile extends StatelessWidget {
@@ -600,9 +665,9 @@ class _GoalTile extends StatelessWidget {
         margin: const EdgeInsets.only(bottom: 8),
         padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
-          color: AppColors.card,
+          color: context.cardColor,
           borderRadius: BorderRadius.circular(12),
-          border: Border.all(color: AppColors.border),
+          border: Border.all(color: context.borderColor),
         ),
         child: Row(
           children: [
@@ -619,10 +684,10 @@ class _GoalTile extends StatelessWidget {
             Expanded(
               child: Text(
                 label,
-                style: const TextStyle(
+                style: TextStyle(
                   fontSize: 14,
                   fontWeight: FontWeight.w500,
-                  color: AppColors.textPrimary,
+                  color: context.textPrimaryColor,
                 ),
               ),
             ),
@@ -635,9 +700,9 @@ class _GoalTile extends StatelessWidget {
               ),
             ),
             const SizedBox(width: 8),
-            const Icon(
+            Icon(
               Icons.chevron_right,
-              color: AppColors.textTertiary,
+              color: context.textTertiaryColor,
               size: 20,
             ),
           ],
@@ -668,36 +733,36 @@ class _SettingsTile extends StatelessWidget {
         margin: const EdgeInsets.only(bottom: 8),
         padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
-          color: AppColors.card,
+          color: context.cardColor,
           borderRadius: BorderRadius.circular(12),
-          border: Border.all(color: AppColors.border),
+          border: Border.all(color: context.borderColor),
         ),
         child: Row(
           children: [
-            Icon(icon, color: AppColors.textSecondary, size: 22),
+            Icon(icon, color: context.textSecondaryColor, size: 22),
             const SizedBox(width: 12),
             Expanded(
               child: Text(
                 label,
-                style: const TextStyle(
+                style: TextStyle(
                   fontSize: 14,
                   fontWeight: FontWeight.w500,
-                  color: AppColors.textPrimary,
+                  color: context.textPrimaryColor,
                 ),
               ),
             ),
             if (trailing != null)
               Text(
                 trailing!,
-                style: const TextStyle(
+                style: TextStyle(
                   fontSize: 14,
-                  color: AppColors.textSecondary,
+                  color: context.textSecondaryColor,
                 ),
               ),
             const SizedBox(width: 8),
-            const Icon(
+            Icon(
               Icons.chevron_right,
-              color: AppColors.textTertiary,
+              color: context.textTertiaryColor,
               size: 20,
             ),
           ],

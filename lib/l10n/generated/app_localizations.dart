@@ -1009,6 +1009,42 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'john.doe@example.com'**
   String get defaultUserEmail;
+
+  /// No description provided for @mealReminders.
+  ///
+  /// In en, this message translates to:
+  /// **'Meal Reminders'**
+  String get mealReminders;
+
+  /// No description provided for @mealRemindersDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Get reminded to log your meals'**
+  String get mealRemindersDescription;
+
+  /// No description provided for @weightReminders.
+  ///
+  /// In en, this message translates to:
+  /// **'Weight Reminders'**
+  String get weightReminders;
+
+  /// No description provided for @weightRemindersDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Get reminded to log your weight'**
+  String get weightRemindersDescription;
+
+  /// No description provided for @weeklyReports.
+  ///
+  /// In en, this message translates to:
+  /// **'Weekly Reports'**
+  String get weeklyReports;
+
+  /// No description provided for @weeklyReportsDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Receive weekly progress summaries'**
+  String get weeklyReportsDescription;
 }
 
 class _AppLocalizationsDelegate

@@ -481,4 +481,22 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String get defaultUserEmail => 'user@example.com';
+
+  @override
+  String get mealReminders => '식사 알림';
+
+  @override
+  String get mealRemindersDescription => '식사 기록 알림을 받습니다';
+
+  @override
+  String get weightReminders => '체중 알림';
+
+  @override
+  String get weightRemindersDescription => '체중 기록 알림을 받습니다';
+
+  @override
+  String get weeklyReports => '주간 리포트';
+
+  @override
+  String get weeklyReportsDescription => '주간 진행 상황 요약을 받습니다';
 }

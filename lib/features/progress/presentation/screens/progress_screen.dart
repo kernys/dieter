@@ -63,10 +63,10 @@ class ProgressScreen extends ConsumerWidget {
                 padding: const EdgeInsets.all(16),
                 child: Text(
                   l10n.progress,
-                  style: const TextStyle(
+                  style: TextStyle(
                     fontSize: 28,
                     fontWeight: FontWeight.bold,
-                    color: AppColors.textPrimary,
+                    color: context.textPrimaryColor,
                   ),
                 ),
               ),
@@ -83,18 +83,18 @@ class ProgressScreen extends ConsumerWidget {
                       child: Container(
                         padding: const EdgeInsets.all(16),
                         decoration: BoxDecoration(
-                          color: AppColors.card,
+                          color: context.cardColor,
                           borderRadius: BorderRadius.circular(16),
-                          border: Border.all(color: AppColors.border),
+                          border: Border.all(color: context.borderColor),
                         ),
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
                               l10n.yourWeight,
-                              style: const TextStyle(
+                              style: TextStyle(
                                 fontSize: 14,
-                                color: AppColors.textSecondary,
+                                color: context.textSecondaryColor,
                               ),
                             ),
                             const SizedBox(height: 8),
@@ -157,9 +157,9 @@ class ProgressScreen extends ConsumerWidget {
                       child: Container(
                         padding: const EdgeInsets.all(16),
                         decoration: BoxDecoration(
-                          color: AppColors.card,
+                          color: context.cardColor,
                           borderRadius: BorderRadius.circular(16),
-                          border: Border.all(color: AppColors.border),
+                          border: Border.all(color: context.borderColor),
                         ),
                         child: Column(
                           children: [
@@ -181,10 +181,10 @@ class ProgressScreen extends ConsumerWidget {
                             const SizedBox(height: 8),
                             Text(
                               '${streakData.currentStreak}',
-                              style: const TextStyle(
+                              style: TextStyle(
                                 fontSize: 32,
                                 fontWeight: FontWeight.bold,
-                                color: AppColors.textPrimary,
+                                color: context.textPrimaryColor,
                               ),
                             ),
                             Text(
@@ -255,9 +255,9 @@ class ProgressScreen extends ConsumerWidget {
                 child: Container(
                   padding: const EdgeInsets.all(16),
                   decoration: BoxDecoration(
-                    color: AppColors.card,
+                    color: context.cardColor,
                     borderRadius: BorderRadius.circular(16),
-                    border: Border.all(color: AppColors.border),
+                    border: Border.all(color: context.borderColor),
                   ),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -267,10 +267,10 @@ class ProgressScreen extends ConsumerWidget {
                         children: [
                           Text(
                             l10n.weightProgress,
-                            style: const TextStyle(
+                            style: TextStyle(
                               fontSize: 18,
                               fontWeight: FontWeight.w600,
-                              color: AppColors.textPrimary,
+                              color: context.textPrimaryColor,
                             ),
                           ),
                           Container(
@@ -397,19 +397,19 @@ class ProgressScreen extends ConsumerWidget {
                 child: Container(
                   padding: const EdgeInsets.all(16),
                   decoration: BoxDecoration(
-                    color: AppColors.card,
+                    color: context.cardColor,
                     borderRadius: BorderRadius.circular(16),
-                    border: Border.all(color: AppColors.border),
+                    border: Border.all(color: context.borderColor),
                   ),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      const Text(
+                      Text(
                         'Weight Changes',
                         style: TextStyle(
                           fontSize: 18,
                           fontWeight: FontWeight.w600,
-                          color: AppColors.textPrimary,
+                          color: context.textPrimaryColor,
                         ),
                       ),
                       const SizedBox(height: 16),
@@ -433,19 +433,19 @@ class ProgressScreen extends ConsumerWidget {
                 child: Container(
                   padding: const EdgeInsets.all(16),
                   decoration: BoxDecoration(
-                    color: AppColors.card,
+                    color: context.cardColor,
                     borderRadius: BorderRadius.circular(16),
-                    border: Border.all(color: AppColors.border),
+                    border: Border.all(color: context.borderColor),
                   ),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
                         l10n.dailyAverageCalories,
-                        style: const TextStyle(
+                        style: TextStyle(
                           fontSize: 18,
                           fontWeight: FontWeight.w600,
-                          color: AppColors.textPrimary,
+                          color: context.textPrimaryColor,
                         ),
                       ),
                       const SizedBox(height: 8),
@@ -454,10 +454,10 @@ class ProgressScreen extends ConsumerWidget {
                         children: [
                           Text(
                             '${dailyAverage.calories}',
-                            style: const TextStyle(
+                            style: TextStyle(
                               fontSize: 36,
                               fontWeight: FontWeight.bold,
-                              color: AppColors.textPrimary,
+                              color: context.textPrimaryColor,
                             ),
                           ),
                           const SizedBox(width: 4),
@@ -465,9 +465,9 @@ class ProgressScreen extends ConsumerWidget {
                             padding: const EdgeInsets.only(bottom: 6),
                             child: Text(
                               l10n.cal,
-                              style: const TextStyle(
+                              style: TextStyle(
                                 fontSize: 16,
-                                color: AppColors.textSecondary,
+                                color: context.textSecondaryColor,
                               ),
                             ),
                           ),
@@ -686,8 +686,9 @@ class ProgressScreen extends ConsumerWidget {
                   }
                 } catch (e) {
                   if (context.mounted) {
+                    final errorMessage = e.toString().replaceFirst('Exception: ', '');
                     ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(content: Text('Failed to log weight: $e')),
+                      SnackBar(content: Text(errorMessage)),
                     );
                   }
                 }
@@ -727,7 +728,7 @@ class _TimeRangeButton extends StatelessWidget {
           style: TextStyle(
             fontSize: 12,
             fontWeight: FontWeight.w600,
-            color: isSelected ? Colors.white : AppColors.textSecondary,
+            color: isSelected ? Colors.white : context.textSecondaryColor,
           ),
         ),
       ),
@@ -784,9 +785,9 @@ class _WeightChangeRow extends ConsumerWidget {
             width: 60,
             child: Text(
               period,
-              style: const TextStyle(
+              style: TextStyle(
                 fontSize: 14,
-                color: AppColors.textSecondary,
+                color: context.textSecondaryColor,
               ),
             ),
           ),
@@ -815,10 +816,10 @@ class _WeightChangeRow extends ConsumerWidget {
             width: 60,
             child: Text(
               changeText,
-              style: const TextStyle(
+              style: TextStyle(
                 fontSize: 14,
                 fontWeight: FontWeight.w500,
-                color: AppColors.textPrimary,
+                color: context.textPrimaryColor,
               ),
             ),
           ),

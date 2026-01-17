@@ -227,7 +227,10 @@ class ApiService {
     if (response.statusCode == 201) {
       return WeightLogModel.fromJson(jsonDecode(response.body));
     } else {
-      throw ApiException(response.statusCode, 'Failed to create weight log');
+      final errorBody = jsonDecode(response.body);
+      final errorMessage = errorBody['error'] ?? 'Failed to create weight log';
+      final details = errorBody['details'];
+      throw ApiException(response.statusCode, details != null ? '$errorMessage: $details' : errorMessage);
     }
   }
 

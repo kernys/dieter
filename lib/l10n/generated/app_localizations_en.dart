@@ -485,4 +485,22 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get defaultUserEmail => 'john.doe@example.com';
+
+  @override
+  String get mealReminders => 'Meal Reminders';
+
+  @override
+  String get mealRemindersDescription => 'Get reminded to log your meals';
+
+  @override
+  String get weightReminders => 'Weight Reminders';
+
+  @override
+  String get weightRemindersDescription => 'Get reminded to log your weight';
+
+  @override
+  String get weeklyReports => 'Weekly Reports';
+
+  @override
+  String get weeklyReportsDescription => 'Receive weekly progress summaries';
 }

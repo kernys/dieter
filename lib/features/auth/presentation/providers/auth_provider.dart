@@ -19,6 +19,9 @@ class AuthState {
     this.isLoading = false,
   });
 
+  // Check if user is in guest mode (no real account)
+  bool get isGuestMode => userId == 'guest-user';
+
   AuthState copyWith({
     String? userId,
     String? accessToken,
@@ -200,4 +203,8 @@ final currentUserProvider = Provider<UserModel?>((ref) {
 
 final currentUserIdProvider = Provider<String?>((ref) {
   return ref.watch(authStateProvider).userId;
+});
+
+final isGuestModeProvider = Provider<bool>((ref) {
+  return ref.watch(authStateProvider).isGuestMode;
 });

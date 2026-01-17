@@ -61,17 +61,17 @@ class HomeScreen extends ConsumerWidget {
                     Row(
                       children: [
                         Icon(
-                          Icons.apple,
+                          Icons.restaurant_menu,
                           size: 28,
                           color: AppColors.primary,
                         ),
                         const SizedBox(width: 8),
                         Text(
                           l10n.appTitle,
-                          style: const TextStyle(
+                          style: TextStyle(
                             fontSize: 22,
                             fontWeight: FontWeight.bold,
-                            color: AppColors.textPrimary,
+                            color: context.textPrimaryColor,
                           ),
                         ),
                       ],
@@ -131,9 +131,9 @@ class HomeScreen extends ConsumerWidget {
                       Container(
                         padding: const EdgeInsets.all(20),
                         decoration: BoxDecoration(
-                          color: AppColors.card,
+                          color: context.cardColor,
                           borderRadius: BorderRadius.circular(20),
-                          border: Border.all(color: AppColors.border),
+                          border: Border.all(color: context.borderColor),
                           boxShadow: [
                             BoxShadow(
                               color: AppColors.shadow,
@@ -153,18 +153,18 @@ class HomeScreen extends ConsumerWidget {
                                     children: [
                                       Text(
                                         '${summary.totalCalories}',
-                                        style: const TextStyle(
+                                        style: TextStyle(
                                           fontSize: 48,
                                           fontWeight: FontWeight.bold,
-                                          color: AppColors.textPrimary,
+                                          color: context.textPrimaryColor,
                                           height: 1,
                                         ),
                                       ),
                                       Text(
                                         '/${userGoals.calorieGoal}',
-                                        style: const TextStyle(
+                                        style: TextStyle(
                                           fontSize: 20,
-                                          color: AppColors.textSecondary,
+                                          color: context.textSecondaryColor,
                                         ),
                                       ),
                                     ],
@@ -172,9 +172,9 @@ class HomeScreen extends ConsumerWidget {
                                   const SizedBox(height: 4),
                                   Text(
                                     l10n.caloriesEaten,
-                                    style: const TextStyle(
+                                    style: TextStyle(
                                       fontSize: 14,
-                                      color: AppColors.textSecondary,
+                                      color: context.textSecondaryColor,
                                     ),
                                   ),
                                 ],
@@ -235,10 +235,10 @@ class HomeScreen extends ConsumerWidget {
                       // Recently uploaded
                       Text(
                         l10n.recentlyUploaded,
-                        style: const TextStyle(
+                        style: TextStyle(
                           fontSize: 18,
                           fontWeight: FontWeight.w600,
-                          color: AppColors.textPrimary,
+                          color: context.textPrimaryColor,
                         ),
                       ),
                       const SizedBox(height: 12),
@@ -248,7 +248,7 @@ class HomeScreen extends ConsumerWidget {
                         Container(
                           padding: const EdgeInsets.all(32),
                           decoration: BoxDecoration(
-                            color: AppColors.surface,
+                            color: context.surfaceColor,
                             borderRadius: BorderRadius.circular(16),
                           ),
                           child: Column(
@@ -256,23 +256,23 @@ class HomeScreen extends ConsumerWidget {
                               Icon(
                                 Icons.camera_alt_outlined,
                                 size: 48,
-                                color: AppColors.textTertiary,
+                                color: context.textTertiaryColor,
                               ),
                               const SizedBox(height: 12),
                               Text(
                                 l10n.noMealsLoggedYet,
-                                style: const TextStyle(
+                                style: TextStyle(
                                   fontSize: 16,
                                   fontWeight: FontWeight.w600,
-                                  color: AppColors.textSecondary,
+                                  color: context.textSecondaryColor,
                                 ),
                               ),
                               const SizedBox(height: 4),
                               Text(
                                 l10n.tapToAddFirstMeal,
-                                style: const TextStyle(
+                                style: TextStyle(
                                   fontSize: 14,
-                                  color: AppColors.textTertiary,
+                                  color: context.textTertiaryColor,
                                 ),
                               ),
                             ],
