@@ -2,7 +2,7 @@ class AppConstants {
   AppConstants._();
 
   // App Info
-  static const String appName = 'Dieter AI';
+  static const String appName = 'Diet AI';
   static const String appVersion = '1.0.0';
 
   // Default Goals

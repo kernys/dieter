@@ -177,21 +177,48 @@ class OnboardingAllSetPage extends ConsumerWidget {
   }
 
   IconData _getGoalIcon(OnboardingState state) {
-    if (state.goalWeight! < state.currentWeight!) {
+    final isMetric = state.unitSystem == UnitSystem.metric;
+
+    double goalWeight = state.goalWeight!;
+    double currentWeight;
+
+    if (isMetric) {
+      currentWeight = state.currentWeightKg ?? state.currentWeight! * 0.453592;
+    } else {
+      currentWeight = state.currentWeight!;
+    }
+
+    if (goalWeight < currentWeight) {
       return Icons.trending_down;
-    } else if (state.goalWeight! > state.currentWeight!) {
+    } else if (goalWeight > currentWeight) {
       return Icons.trending_up;
     }
     return Icons.trending_flat;
   }
 
   String _getGoalMessage(OnboardingState state) {
-    final diff = (state.goalWeight! - state.currentWeight!).abs();
-    if (state.goalWeight! < state.currentWeight!) {
-      return 'Goal: Lose ${diff.toStringAsFixed(0)} lbs to reach ${state.goalWeight!.toStringAsFixed(0)} lbs';
-    } else if (state.goalWeight! > state.currentWeight!) {
-      return 'Goal: Gain ${diff.toStringAsFixed(0)} lbs to reach ${state.goalWeight!.toStringAsFixed(0)} lbs';
+    final isMetric = state.unitSystem == UnitSystem.metric;
+    final unit = isMetric ? 'kg' : 'lbs';
+
+    double goalWeight;
+    double currentWeight;
+
+    if (isMetric) {
+      // goalWeight in metric is stored directly, currentWeight uses currentWeightKg
+      goalWeight = state.goalWeight!;
+      currentWeight = state.currentWeightKg ?? state.currentWeight! * 0.453592;
+    } else {
+      goalWeight = state.goalWeight!;
+      currentWeight = state.currentWeight!;
     }
-    return 'Goal: Maintain your current weight of ${state.currentWeight!.toStringAsFixed(0)} lbs';
+
+    final diff = (goalWeight - currentWeight).abs();
+
+    if (goalWeight < currentWeight) {
+      return 'Goal: Lose ${diff.toStringAsFixed(0)} $unit to reach ${goalWeight.toStringAsFixed(0)} $unit';
+    } else if (goalWeight > currentWeight) {
+      return 'Goal: Gain ${diff.toStringAsFixed(0)} $unit to reach ${goalWeight.toStringAsFixed(0)} $unit';
+    }
+    return 'Goal: Maintain your current weight of ${currentWeight.toStringAsFixed(0)} $unit';
   }
 }

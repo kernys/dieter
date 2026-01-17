@@ -114,7 +114,7 @@ class _CameraScreenState extends ConsumerState<CameraScreen> {
                       Row(
                         children: [
                           const Icon(
-                            Icons.apple,
+                            Icons.restaurant_menu,
                             color: Colors.white,
                             size: 24,
                           ),
@@ -165,6 +165,7 @@ class _CameraScreenState extends ConsumerState<CameraScreen> {
                         isSelected: scanMode == ScanMode.barcode,
                         onPressed: () {
                           ref.read(scanModeProvider.notifier).state = ScanMode.barcode;
+                          _showBarcodeInfo();
                         },
                       ),
                       _ScanModeButton(
@@ -355,6 +356,16 @@ class _CameraScreenState extends ConsumerState<CameraScreen> {
     final minZoom = cameraNotifier.minZoom;
     final maxZoom = cameraNotifier.maxZoom;
 
+    // Determine which button should be selected based on closest zoom level
+    String selectedZoom;
+    if (_currentZoom < 0.75) {
+      selectedZoom = '.5x';
+    } else if (_currentZoom < 1.5) {
+      selectedZoom = '1x';
+    } else {
+      selectedZoom = '2x';
+    }
+
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
       decoration: BoxDecoration(
@@ -364,16 +375,17 @@ class _CameraScreenState extends ConsumerState<CameraScreen> {
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          // Zoom out button
+          // 0.5x button
           GestureDetector(
             onTap: () {
-              final newZoom = (_currentZoom - 0.5).clamp(minZoom, maxZoom);
+              final newZoom = 0.5.clamp(minZoom, maxZoom);
               setState(() => _currentZoom = newZoom);
               cameraNotifier.setZoomLevel(newZoom);
             },
             child: _buildZoomButton(
               label: '.5x',
-              isSelected: _currentZoom < 1.5,
+              isSelected: selectedZoom == '.5x',
+              enabled: minZoom <= 0.5,
             ),
           ),
           const SizedBox(width: 8),
@@ -386,7 +398,7 @@ class _CameraScreenState extends ConsumerState<CameraScreen> {
             },
             child: _buildZoomButton(
               label: '1x',
-              isSelected: _currentZoom >= 1.0 && _currentZoom < 2.0,
+              isSelected: selectedZoom == '1x',
             ),
           ),
           const SizedBox(width: 8),
@@ -400,7 +412,7 @@ class _CameraScreenState extends ConsumerState<CameraScreen> {
             },
             child: _buildZoomButton(
               label: '2x',
-              isSelected: _currentZoom >= 2.0,
+              isSelected: selectedZoom == '2x',
               enabled: maxZoom >= 2.0,
             ),
           ),
@@ -456,6 +468,162 @@ class _CameraScreenState extends ConsumerState<CameraScreen> {
           ),
         ],
       ),
+    );
+  }
+
+  void _showBarcodeInfo() {
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: Colors.transparent,
+      isScrollControlled: true,
+      builder: (context) => Container(
+        decoration: const BoxDecoration(
+          color: Color(0xFF2C2C2E),
+          borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+        ),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            // Handle
+            Container(
+              margin: const EdgeInsets.only(top: 12),
+              width: 40,
+              height: 4,
+              decoration: BoxDecoration(
+                color: Colors.white24,
+                borderRadius: BorderRadius.circular(2),
+              ),
+            ),
+            // Header
+            Padding(
+              padding: const EdgeInsets.all(16),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  GestureDetector(
+                    onTap: () => Navigator.pop(context),
+                    child: const Icon(Icons.close, color: Colors.white, size: 24),
+                  ),
+                  const Spacer(),
+                  GestureDetector(
+                    onTap: () => _showHelpDialog(AppLocalizations.of(context)!),
+                    child: const Icon(Icons.help_outline, color: Colors.white, size: 24),
+                  ),
+                ],
+              ),
+            ),
+            // Barcode illustration
+            Container(
+              margin: const EdgeInsets.symmetric(horizontal: 48),
+              padding: const EdgeInsets.all(24),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: Column(
+                children: [
+                  const Icon(
+                    Icons.qr_code_scanner,
+                    size: 80,
+                    color: Colors.black87,
+                  ),
+                  const SizedBox(height: 16),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: List.generate(
+                      12,
+                      (index) => Container(
+                        width: index % 3 == 0 ? 4 : 2,
+                        height: 40,
+                        margin: const EdgeInsets.symmetric(horizontal: 1),
+                        color: Colors.black,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            const SizedBox(height: 24),
+            // Title
+            const Text(
+              'Barcode Scanner',
+              style: TextStyle(
+                fontSize: 22,
+                fontWeight: FontWeight.bold,
+                color: Colors.white,
+              ),
+            ),
+            const SizedBox(height: 8),
+            const Padding(
+              padding: EdgeInsets.symmetric(horizontal: 32),
+              child: Text(
+                'Point your camera at a barcode on any food package to instantly get nutrition information.',
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  fontSize: 14,
+                  color: Colors.white70,
+                ),
+              ),
+            ),
+            const SizedBox(height: 16),
+            // Tips
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 32),
+              child: Column(
+                children: [
+                  _buildBarcodeTip(Icons.lightbulb_outline, 'Make sure the barcode is well-lit'),
+                  const SizedBox(height: 8),
+                  _buildBarcodeTip(Icons.center_focus_strong, 'Center the barcode in the frame'),
+                  const SizedBox(height: 8),
+                  _buildBarcodeTip(Icons.straighten, 'Hold your phone steady'),
+                ],
+              ),
+            ),
+            const SizedBox(height: 24),
+            // Got it button
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 48),
+              child: ElevatedButton(
+                onPressed: () => Navigator.pop(context),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.white,
+                  foregroundColor: Colors.black,
+                  minimumSize: const Size(double.infinity, 48),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(24),
+                  ),
+                ),
+                child: const Text(
+                  'Got it',
+                  style: TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+              ),
+            ),
+            const SizedBox(height: 32),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildBarcodeTip(IconData icon, String text) {
+    return Row(
+      children: [
+        Icon(icon, color: Colors.white54, size: 20),
+        const SizedBox(width: 12),
+        Expanded(
+          child: Text(
+            text,
+            style: const TextStyle(
+              fontSize: 13,
+              color: Colors.white70,
+            ),
+          ),
+        ),
+      ],
     );
   }
 
@@ -611,45 +779,6 @@ class _CameraScreenState extends ConsumerState<CameraScreen> {
                   ),
                 ),
               ),
-            ),
-            const SizedBox(height: 16),
-            // Premium badge
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                const Text(
-                  '3 free scans left',
-                  style: TextStyle(
-                    fontSize: 14,
-                    color: Colors.white70,
-                  ),
-                ),
-                const SizedBox(width: 12),
-                Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                  decoration: BoxDecoration(
-                    gradient: const LinearGradient(
-                      colors: [Color(0xFFD4AF37), Color(0xFFC9A227)],
-                    ),
-                    borderRadius: BorderRadius.circular(20),
-                  ),
-                  child: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: const [
-                      Icon(Icons.workspace_premium, size: 16, color: Colors.black),
-                      SizedBox(width: 4),
-                      Text(
-                        'Premium',
-                        style: TextStyle(
-                          fontSize: 14,
-                          fontWeight: FontWeight.w600,
-                          color: Colors.black,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ],
             ),
             const SizedBox(height: 32),
           ],

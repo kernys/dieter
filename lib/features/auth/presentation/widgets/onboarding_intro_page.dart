@@ -34,7 +34,7 @@ class OnboardingIntroPage extends StatelessWidget {
           ),
           const SizedBox(height: 48),
           const Text(
-            'Welcome to Dieter',
+            'Welcome to Diet AI',
             style: TextStyle(
               fontSize: 32,
               fontWeight: FontWeight.bold,

@@ -170,17 +170,6 @@ class _MainScaffoldState extends State<MainScaffold>
                 ),
                 const SizedBox(width: 56), // Space for FAB
                 _NavItem(
-                  icon: Icons.groups_outlined,
-                  activeIcon: Icons.groups,
-                  label: l10n.groups,
-                  isSelected: false,
-                  onTap: () {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(content: Text(l10n.groupsComingSoon)),
-                    );
-                  },
-                ),
-                _NavItem(
                   icon: Icons.person_outline,
                   activeIcon: Icons.person,
                   label: l10n.profile,
@@ -208,9 +197,7 @@ class _MainScaffoldState extends State<MainScaffold>
                   label: 'Log exercise',
                   onTap: () {
                     _closeFabMenu();
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(content: Text('Exercise logging coming soon')),
-                    );
+                    context.push('/log-exercise');
                   },
                 ),
               ),
@@ -245,7 +232,6 @@ class _MainScaffoldState extends State<MainScaffold>
                 child: _FabMenuItem(
                   icon: Icons.camera_alt,
                   label: 'Scan food',
-                  isPremium: true,
                   onTap: () {
                     _closeFabMenu();
                     context.push('/camera');
@@ -264,13 +250,11 @@ class _FabMenuItem extends StatelessWidget {
   final IconData icon;
   final String label;
   final VoidCallback onTap;
-  final bool isPremium;
 
   const _FabMenuItem({
     required this.icon,
     required this.label,
     required this.onTap,
-    this.isPremium = false,
   });
 
   @override
@@ -290,43 +274,22 @@ class _FabMenuItem extends StatelessWidget {
             ),
           ],
         ),
-        child: Stack(
-          children: [
-            Center(
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Icon(icon, size: 28, color: AppColors.textPrimary),
-                  const SizedBox(height: 8),
-                  Text(
-                    label,
-                    style: const TextStyle(
-                      fontSize: 14,
-                      fontWeight: FontWeight.w500,
-                      color: AppColors.textPrimary,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            if (isPremium)
-              Positioned(
-                top: 0,
-                right: 8,
-                child: Container(
-                  padding: const EdgeInsets.all(4),
-                  decoration: BoxDecoration(
-                    color: const Color(0xFFD4AF37),
-                    borderRadius: BorderRadius.circular(4),
-                  ),
-                  child: const Icon(
-                    Icons.workspace_premium,
-                    size: 12,
-                    color: Colors.white,
-                  ),
+        child: Center(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Icon(icon, size: 28, color: AppColors.textPrimary),
+              const SizedBox(height: 8),
+              Text(
+                label,
+                style: const TextStyle(
+                  fontSize: 14,
+                  fontWeight: FontWeight.w500,
+                  color: AppColors.textPrimary,
                 ),
               ),
-          ],
+            ],
+          ),
         ),
       ),
     );

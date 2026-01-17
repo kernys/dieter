@@ -19,14 +19,14 @@ class _OnboardingHeightWeightPageState
 
   bool _isMetric = false;
 
-  // Imperial ranges
+  // Imperial ranges (5'7" = 170cm)
   int _selectedFeet = 5;
-  int _selectedInches = 6;
-  int _selectedWeightLbs = 120;
+  int _selectedInches = 7;
+  int _selectedWeightLbs = 150;
 
   // Metric ranges
   int _selectedHeightCm = 170;
-  int _selectedWeightKg = 55;
+  int _selectedWeightKg = 68;
 
   static const int _minFeet = 3;
   static const int _maxFeet = 8;
@@ -42,22 +42,44 @@ class _OnboardingHeightWeightPageState
     super.initState();
     final onboardingState = ref.read(onboardingProvider);
 
-    if (onboardingState.heightFeet != null) {
-      _selectedFeet = onboardingState.heightFeet!;
-    }
-    if (onboardingState.heightInches != null) {
-      _selectedInches = onboardingState.heightInches!;
-    }
-    if (onboardingState.currentWeight != null) {
-      _selectedWeightLbs = onboardingState.currentWeight!.toInt();
-    }
+    // Check if metric was previously selected
+    _isMetric = onboardingState.unitSystem == UnitSystem.metric;
 
-    _feetController =
-        FixedExtentScrollController(initialItem: _selectedFeet - _minFeet);
-    _inchesController =
-        FixedExtentScrollController(initialItem: _selectedInches);
-    _weightController = FixedExtentScrollController(
-        initialItem: _selectedWeightLbs - _minWeightLbs);
+    // Load saved values or use defaults
+    if (_isMetric) {
+      // Metric mode
+      if (onboardingState.heightCm != null) {
+        _selectedHeightCm = onboardingState.heightCm!.toInt();
+      }
+      if (onboardingState.currentWeightKg != null) {
+        _selectedWeightKg = onboardingState.currentWeightKg!.toInt();
+      }
+
+      _feetController =
+          FixedExtentScrollController(initialItem: _selectedHeightCm - _minHeightCm);
+      _inchesController =
+          FixedExtentScrollController(initialItem: 0);
+      _weightController = FixedExtentScrollController(
+          initialItem: _selectedWeightKg - _minWeightKg);
+    } else {
+      // Imperial mode
+      if (onboardingState.heightFeet != null) {
+        _selectedFeet = onboardingState.heightFeet!;
+      }
+      if (onboardingState.heightInches != null) {
+        _selectedInches = onboardingState.heightInches!;
+      }
+      if (onboardingState.currentWeight != null) {
+        _selectedWeightLbs = onboardingState.currentWeight!.toInt();
+      }
+
+      _feetController =
+          FixedExtentScrollController(initialItem: _selectedFeet - _minFeet);
+      _inchesController =
+          FixedExtentScrollController(initialItem: _selectedInches);
+      _weightController = FixedExtentScrollController(
+          initialItem: _selectedWeightLbs - _minWeightLbs);
+    }
 
     _updateValues();
   }
@@ -100,10 +122,22 @@ class _OnboardingHeightWeightPageState
       }
       _isMetric = isMetric;
 
+      // Update provider with the new unit system
+      ref.read(onboardingProvider.notifier).setUnitSystem(
+        isMetric ? UnitSystem.metric : UnitSystem.imperial,
+      );
+
+      // Dispose old controllers
+      _feetController.dispose();
+      _inchesController.dispose();
+      _weightController.dispose();
+
       // Reset controllers
       if (_isMetric) {
         _feetController =
             FixedExtentScrollController(initialItem: _selectedHeightCm - _minHeightCm);
+        _inchesController =
+            FixedExtentScrollController(initialItem: 0);
         _weightController =
             FixedExtentScrollController(initialItem: _selectedWeightKg - _minWeightKg);
       } else {

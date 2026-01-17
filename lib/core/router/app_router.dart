@@ -14,6 +14,7 @@ import '../../features/progress/presentation/screens/progress_screen.dart';
 import '../../features/profile/presentation/screens/profile_screen.dart';
 import '../../features/profile/presentation/screens/personal_details_screen.dart';
 import '../../features/food/presentation/screens/log_food_screen.dart';
+import '../../features/exercise/presentation/screens/log_exercise_screen.dart';
 import '../../shared/widgets/main_scaffold.dart';
 
 final onboardingCompletedProvider = FutureProvider<bool>((ref) async {
@@ -114,6 +115,12 @@ final routerProvider = Provider<GoRouter>((ref) {
       GoRoute(
         path: '/log-food',
         builder: (context, state) => const LogFoodScreen(),
+      ),
+
+      // Log Exercise Route
+      GoRoute(
+        path: '/log-exercise',
+        builder: (context, state) => const LogExerciseScreen(),
       ),
     ],
     errorBuilder: (context, state) => Scaffold(

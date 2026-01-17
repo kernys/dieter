@@ -735,7 +735,7 @@ class _TimeRangeButton extends StatelessWidget {
   }
 }
 
-class _WeightChangeRow extends StatelessWidget {
+class _WeightChangeRow extends ConsumerWidget {
   final String period;
   final double change;
   final bool? isIncrease;
@@ -747,24 +747,30 @@ class _WeightChangeRow extends StatelessWidget {
   });
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final l10n = AppLocalizations.of(context)!;
+    final settings = ref.watch(settingsProvider);
+    final isMetric = settings.unitSystem == UnitSystem.metric;
+    final weightUnit = isMetric ? l10n.kg : l10n.lbs;
+    final displayChange = isMetric ? change * 0.453592 : change;
+
     String changeText;
     String statusText;
     Color statusColor;
     IconData? statusIcon;
 
     if (isIncrease == null || change == 0) {
-      changeText = '0.0 lbs';
+      changeText = '0.0 $weightUnit';
       statusText = 'No change';
       statusColor = AppColors.textSecondary;
       statusIcon = Icons.arrow_forward;
     } else if (isIncrease!) {
-      changeText = '${change.toStringAsFixed(0)} lbs';
+      changeText = '${displayChange.toStringAsFixed(1)} $weightUnit';
       statusText = 'Increase';
       statusColor = AppColors.error;
       statusIcon = Icons.arrow_outward;
     } else {
-      changeText = '${change.toStringAsFixed(0)} lbs';
+      changeText = '${displayChange.toStringAsFixed(1)} $weightUnit';
       statusText = 'Decrease';
       statusColor = AppColors.success;
       statusIcon = Icons.arrow_downward;
