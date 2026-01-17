@@ -112,12 +112,26 @@ class _OnboardingGoalWeightPageState
                   ),
                 ),
                 const SizedBox(height: 8),
-                Text(
-                  '${_selectedWeight.toStringAsFixed(1)} lbs',
-                  style: const TextStyle(
-                    fontSize: 40,
-                    fontWeight: FontWeight.bold,
-                    color: AppColors.textPrimary,
+                RichText(
+                  text: TextSpan(
+                    children: [
+                      TextSpan(
+                        text: _selectedWeight.toStringAsFixed(0),
+                        style: const TextStyle(
+                          fontSize: 48,
+                          fontWeight: FontWeight.bold,
+                          color: AppColors.textPrimary,
+                        ),
+                      ),
+                      const TextSpan(
+                        text: ' lbs',
+                        style: TextStyle(
+                          fontSize: 20,
+                          fontWeight: FontWeight.w500,
+                          color: AppColors.textSecondary,
+                        ),
+                      ),
+                    ],
                   ),
                 ),
               ],

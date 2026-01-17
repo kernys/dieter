@@ -4,10 +4,13 @@ import 'package:go_router/go_router.dart';
 import '../../../../core/constants/app_colors.dart';
 import '../providers/auth_provider.dart';
 import '../providers/onboarding_provider.dart';
+import '../widgets/onboarding_intro_page.dart';
+import '../widgets/onboarding_gender_page.dart';
 import '../widgets/onboarding_birth_date_page.dart';
-import '../widgets/onboarding_goal_weight_page.dart';
 import '../widgets/onboarding_height_weight_page.dart';
+import '../widgets/onboarding_goal_weight_page.dart';
 import '../widgets/onboarding_daily_recommendation_page.dart';
+import '../widgets/onboarding_all_set_page.dart';
 
 class OnboardingScreen extends ConsumerStatefulWidget {
   const OnboardingScreen({super.key});
@@ -19,7 +22,7 @@ class OnboardingScreen extends ConsumerStatefulWidget {
 class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
   final _pageController = PageController();
 
-  static const int _totalPages = 4;
+  static const int _totalPages = 7;
 
   @override
   void dispose() {
@@ -51,6 +54,15 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
       ref.read(onboardingProvider.notifier).previousStep();
       _goToPage(currentStep - 1);
     }
+  }
+
+  String _getButtonText(int step) {
+    if (step == 0) {
+      return 'Get Started';
+    } else if (step == _totalPages - 1) {
+      return "Let's go!";
+    }
+    return 'Continue';
   }
 
   Future<void> _completeOnboarding() async {
@@ -116,12 +128,13 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
         child: Column(
           children: [
             // Header with back button and progress indicator
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
-              child: Row(
-                children: [
-                  // Back button
-                  if (currentStep > 0)
+            // Hide on intro page (step 0) and All Set page (last step)
+            if (currentStep > 0 && currentStep < _totalPages - 1)
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+                child: Row(
+                  children: [
+                    // Back button
                     GestureDetector(
                       onTap: _onBack,
                       child: Container(
@@ -137,35 +150,36 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
                           color: AppColors.textPrimary,
                         ),
                       ),
-                    )
-                  else
-                    const SizedBox(width: 40),
-                  const SizedBox(width: 16),
-                  // Progress indicator
-                  Expanded(
-                    child: Row(
-                      children: List.generate(_totalPages, (index) {
-                        final isActive = index <= currentStep;
-                        return Expanded(
-                          child: Container(
-                            margin: EdgeInsets.only(
-                              right: index < _totalPages - 1 ? 8 : 0,
-                            ),
-                            height: 4,
-                            decoration: BoxDecoration(
-                              color: isActive
-                                  ? AppColors.primary
-                                  : AppColors.progressBackground,
-                              borderRadius: BorderRadius.circular(2),
-                            ),
-                          ),
-                        );
-                      }),
                     ),
-                  ),
-                ],
-              ),
-            ),
+                    const SizedBox(width: 16),
+                    // Progress indicator (exclude intro and all set pages)
+                    Expanded(
+                      child: Row(
+                        children: List.generate(_totalPages - 2, (index) {
+                          // Offset by 1 since we're skipping intro page
+                          final isActive = index < currentStep;
+                          return Expanded(
+                            child: Container(
+                              margin: EdgeInsets.only(
+                                right: index < _totalPages - 3 ? 8 : 0,
+                              ),
+                              height: 4,
+                              decoration: BoxDecoration(
+                                color: isActive
+                                    ? AppColors.primary
+                                    : AppColors.progressBackground,
+                                borderRadius: BorderRadius.circular(2),
+                              ),
+                            ),
+                          );
+                        }),
+                      ),
+                    ),
+                  ],
+                ),
+              )
+            else
+              const SizedBox(height: 72),
 
             // Page content
             Expanded(
@@ -176,10 +190,13 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
                   ref.read(onboardingProvider.notifier).goToStep(page);
                 },
                 children: const [
+                  OnboardingIntroPage(),
+                  OnboardingGenderPage(),
                   OnboardingBirthDatePage(),
                   OnboardingHeightWeightPage(),
                   OnboardingGoalWeightPage(),
                   OnboardingDailyRecommendationPage(),
+                  OnboardingAllSetPage(),
                 ],
               ),
             ),
@@ -201,7 +218,7 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
                     elevation: 0,
                   ),
                   child: Text(
-                    currentStep == _totalPages - 1 ? "Let's get started!" : 'Continue',
+                    _getButtonText(currentStep),
                     style: const TextStyle(
                       fontSize: 16,
                       fontWeight: FontWeight.w600,
