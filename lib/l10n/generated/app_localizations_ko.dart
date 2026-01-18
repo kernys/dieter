@@ -765,6 +765,24 @@ class AppLocalizationsKo extends AppLocalizations {
   String get quote15 => '좋은 습관이 좋은 인생을 만듭니다.';
 
   @override
+  String get roleModel => '롤모델';
+
+  @override
+  String get addRoleModel => '자극 사진 추가하기';
+
+  @override
+  String get roleModelMotivation => '이게 바로 내 목표!';
+
+  @override
+  String get chooseFromGallery => '갤러리에서 선택';
+
+  @override
+  String get takePhoto => '사진 찍기';
+
+  @override
+  String get removePhoto => '사진 삭제';
+
+  @override
   String get privacyPolicy => '개인정보 처리방침';
 
   @override

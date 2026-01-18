@@ -272,6 +272,13 @@
   "quote14": "스스로를 믿으세요, 당신은 대단해요.",
   "quote15": "좋은 습관이 좋은 인생을 만듭니다.",
 
+  "roleModel": "롤모델",
+  "addRoleModel": "자극 사진 추가하기",
+  "roleModelMotivation": "이게 바로 내 목표!",
+  "chooseFromGallery": "갤러리에서 선택",
+  "takePhoto": "사진 찍기",
+  "removePhoto": "사진 삭제",
+
   "privacyPolicy": "개인정보 처리방침",
   "privacyIntroTitle": "소개",
   "privacyIntroContent": "Diet AI(이하 \"당사\")는 귀하의 개인정보 보호를 중요하게 생각합니다. 본 개인정보 처리방침은 모바일 애플리케이션 사용 시 귀하의 정보를 어떻게 수집, 사용 및 보호하는지 설명합니다.",

@@ -287,6 +287,13 @@
   "quote14": "Believe in yourself, you're amazing.",
   "quote15": "Good habits make a good life.",
 
+  "roleModel": "Role Model",
+  "addRoleModel": "Add your motivation photo",
+  "roleModelMotivation": "This is your goal!",
+  "chooseFromGallery": "Choose from gallery",
+  "takePhoto": "Take photo",
+  "removePhoto": "Remove photo",
+
   "privacyPolicy": "Privacy Policy",
   "privacyIntroTitle": "Introduction",
   "privacyIntroContent": "Diet AI (\"we\", \"our\", or \"us\") is committed to protecting your privacy. This Privacy Policy explains how we collect, use, and safeguard your information when you use our mobile application.",

@@ -1,6 +1,9 @@
+import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:image_picker/image_picker.dart';
+import 'package:path_provider/path_provider.dart';
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/constants/app_constants.dart';
 import '../../../../shared/widgets/circular_progress_indicator_widget.dart';
@@ -9,6 +12,7 @@ import '../../../../l10n/generated/app_localizations.dart';
 import '../../../../services/api_service.dart';
 import '../../../exercise/presentation/providers/exercise_log_provider.dart';
 import '../providers/home_provider.dart';
+import '../providers/role_model_provider.dart';
 import '../widgets/week_calendar.dart';
 import '../widgets/macro_card.dart';
 
@@ -22,7 +26,7 @@ class HomeScreen extends ConsumerWidget {
     final dailySummaryAsync = ref.watch(dailySummaryProvider(selectedDate));
     final userGoalsAsync = ref.watch(userGoalsProvider);
     final streakAsync = ref.watch(streakProvider);
-    final dailyQuote = _getDailyQuote(l10n);
+    final roleModelImage = ref.watch(roleModelProvider);
 
     // Get exercise logs for selected date
     final allExerciseLogs = ref.watch(exerciseLogProvider);
@@ -120,51 +124,77 @@ class HomeScreen extends ConsumerWidget {
               ),
             ),
 
-            // Motivational Quote
+            // Role Model Image
             SliverToBoxAdapter(
               child: Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 16),
-                child: Container(
-                  padding: const EdgeInsets.all(16),
-                  decoration: BoxDecoration(
-                    gradient: LinearGradient(
-                      colors: [
-                        AppColors.primary.withValues(alpha: 0.1),
-                        AppColors.primary.withValues(alpha: 0.05),
-                      ],
-                      begin: Alignment.topLeft,
-                      end: Alignment.bottomRight,
+                child: GestureDetector(
+                  onTap: () => _showRoleModelOptions(context, ref, l10n),
+                  onLongPress: roleModelImage != null
+                      ? () => _showRoleModelOptions(context, ref, l10n)
+                      : null,
+                  child: Container(
+                    height: 120,
+                    decoration: BoxDecoration(
+                      color: context.surfaceColor,
+                      borderRadius: BorderRadius.circular(16),
+                      border: Border.all(color: context.borderColor),
                     ),
-                    borderRadius: BorderRadius.circular(16),
-                  ),
-                  child: Row(
-                    children: [
-                      Container(
-                        width: 40,
-                        height: 40,
-                        decoration: BoxDecoration(
-                          color: AppColors.primary.withValues(alpha: 0.2),
-                          shape: BoxShape.circle,
-                        ),
-                        child: Icon(
-                          Icons.format_quote,
-                          color: AppColors.primary,
-                          size: 20,
-                        ),
-                      ),
-                      const SizedBox(width: 12),
-                      Expanded(
-                        child: Text(
-                          dailyQuote,
-                          style: TextStyle(
-                            fontSize: 14,
-                            fontWeight: FontWeight.w500,
-                            color: context.textPrimaryColor,
-                            height: 1.4,
+                    child: roleModelImage != null
+                        ? ClipRRect(
+                            borderRadius: BorderRadius.circular(15),
+                            child: Stack(
+                              fit: StackFit.expand,
+                              children: [
+                                Image.file(
+                                  File(roleModelImage),
+                                  fit: BoxFit.cover,
+                                ),
+                                Container(
+                                  decoration: BoxDecoration(
+                                    gradient: LinearGradient(
+                                      begin: Alignment.topCenter,
+                                      end: Alignment.bottomCenter,
+                                      colors: [
+                                        Colors.transparent,
+                                        Colors.black.withValues(alpha: 0.5),
+                                      ],
+                                    ),
+                                  ),
+                                ),
+                                Positioned(
+                                  bottom: 12,
+                                  left: 12,
+                                  child: Text(
+                                    l10n.roleModelMotivation,
+                                    style: const TextStyle(
+                                      color: Colors.white,
+                                      fontSize: 14,
+                                      fontWeight: FontWeight.w600,
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          )
+                        : Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Icon(
+                                Icons.add_photo_alternate_outlined,
+                                size: 36,
+                                color: context.textTertiaryColor,
+                              ),
+                              const SizedBox(height: 8),
+                              Text(
+                                l10n.addRoleModel,
+                                style: TextStyle(
+                                  fontSize: 14,
+                                  color: context.textSecondaryColor,
+                                ),
+                              ),
+                            ],
                           ),
-                        ),
-                      ),
-                    ],
                   ),
                 ),
               ),
@@ -432,28 +462,84 @@ class HomeScreen extends ConsumerWidget {
     );
   }
 
-  String _getDailyQuote(AppLocalizations l10n) {
-    final quotes = [
-      l10n.quote1,
-      l10n.quote2,
-      l10n.quote3,
-      l10n.quote4,
-      l10n.quote5,
-      l10n.quote6,
-      l10n.quote7,
-      l10n.quote8,
-      l10n.quote9,
-      l10n.quote10,
-      l10n.quote11,
-      l10n.quote12,
-      l10n.quote13,
-      l10n.quote14,
-      l10n.quote15,
-    ];
-    final now = DateTime.now();
-    final dayOfYear = now.difference(DateTime(now.year, 1, 1)).inDays;
-    final index = dayOfYear % quotes.length;
-    return quotes[index];
+  void _showRoleModelOptions(BuildContext context, WidgetRef ref, AppLocalizations l10n) {
+    final hasImage = ref.read(roleModelProvider) != null;
+
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: context.cardColor,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      builder: (context) => SafeArea(
+        child: Padding(
+          padding: const EdgeInsets.all(16),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Container(
+                width: 40,
+                height: 4,
+                decoration: BoxDecoration(
+                  color: context.borderColor,
+                  borderRadius: BorderRadius.circular(2),
+                ),
+              ),
+              const SizedBox(height: 20),
+              Text(
+                l10n.roleModel,
+                style: TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                  color: context.textPrimaryColor,
+                ),
+              ),
+              const SizedBox(height: 16),
+              ListTile(
+                leading: Icon(Icons.photo_library, color: AppColors.primary),
+                title: Text(l10n.chooseFromGallery),
+                onTap: () async {
+                  Navigator.pop(context);
+                  await _pickImage(context, ref, ImageSource.gallery);
+                },
+              ),
+              ListTile(
+                leading: Icon(Icons.camera_alt, color: AppColors.primary),
+                title: Text(l10n.takePhoto),
+                onTap: () async {
+                  Navigator.pop(context);
+                  await _pickImage(context, ref, ImageSource.camera);
+                },
+              ),
+              if (hasImage)
+                ListTile(
+                  leading: const Icon(Icons.delete, color: AppColors.error),
+                  title: Text(l10n.removePhoto, style: const TextStyle(color: AppColors.error)),
+                  onTap: () {
+                    Navigator.pop(context);
+                    ref.read(roleModelProvider.notifier).removeImage();
+                  },
+                ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Future<void> _pickImage(BuildContext context, WidgetRef ref, ImageSource source) async {
+    final picker = ImagePicker();
+    final pickedFile = await picker.pickImage(source: source, maxWidth: 1200, maxHeight: 1200);
+
+    if (pickedFile != null) {
+      // Copy to app documents directory for persistence
+      final appDir = await getApplicationDocumentsDirectory();
+      final fileName = 'role_model_${DateTime.now().millisecondsSinceEpoch}.jpg';
+      final savedPath = '${appDir.path}/$fileName';
+
+      await File(pickedFile.path).copy(savedPath);
+      ref.read(roleModelProvider.notifier).setImage(savedPath);
+    }
   }
 
   Widget _buildExerciseCard(BuildContext context, AppLocalizations l10n, WidgetRef ref, ExerciseLog exerciseLog) {

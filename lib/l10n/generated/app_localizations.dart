@@ -1550,6 +1550,42 @@ abstract class AppLocalizations {
   /// **'Good habits make a good life.'**
   String get quote15;
 
+  /// No description provided for @roleModel.
+  ///
+  /// In en, this message translates to:
+  /// **'Role Model'**
+  String get roleModel;
+
+  /// No description provided for @addRoleModel.
+  ///
+  /// In en, this message translates to:
+  /// **'Add your motivation photo'**
+  String get addRoleModel;
+
+  /// No description provided for @roleModelMotivation.
+  ///
+  /// In en, this message translates to:
+  /// **'This is your goal!'**
+  String get roleModelMotivation;
+
+  /// No description provided for @chooseFromGallery.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose from gallery'**
+  String get chooseFromGallery;
+
+  /// No description provided for @takePhoto.
+  ///
+  /// In en, this message translates to:
+  /// **'Take photo'**
+  String get takePhoto;
+
+  /// No description provided for @removePhoto.
+  ///
+  /// In en, this message translates to:
+  /// **'Remove photo'**
+  String get removePhoto;
+
   /// No description provided for @privacyPolicy.
   ///
   /// In en, this message translates to:

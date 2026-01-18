@@ -772,6 +772,24 @@ class AppLocalizationsEn extends AppLocalizations {
   String get quote15 => 'Good habits make a good life.';
 
   @override
+  String get roleModel => 'Role Model';
+
+  @override
+  String get addRoleModel => 'Add your motivation photo';
+
+  @override
+  String get roleModelMotivation => 'This is your goal!';
+
+  @override
+  String get chooseFromGallery => 'Choose from gallery';
+
+  @override
+  String get takePhoto => 'Take photo';
+
+  @override
+  String get removePhoto => 'Remove photo';
+
+  @override
   String get privacyPolicy => 'Privacy Policy';
 
   @override
