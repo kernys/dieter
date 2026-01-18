@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:url_launcher/url_launcher.dart';
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/constants/app_constants.dart';
 import '../../../../l10n/generated/app_localizations.dart';
@@ -248,14 +249,14 @@ class ProfileScreen extends ConsumerWidget {
                       icon: Icons.security_outlined,
                       label: l10n.privacy,
                       onTap: () {
-                        // TODO: Implement privacy settings
+                        context.push('/privacy');
                       },
                     ),
                     _SettingsTile(
                       icon: Icons.help_outline,
                       label: l10n.helpAndSupport,
                       onTap: () {
-                        // TODO: Implement help & support
+                        _sendSupportEmail(context, l10n);
                       },
                     ),
                   ],
@@ -278,16 +279,6 @@ class ProfileScreen extends ConsumerWidget {
                       ),
                     ),
                     const SizedBox(height: 12),
-                    _SettingsTile(
-                      icon: Icons.star_outline,
-                      label: l10n.rateApp,
-                      onTap: () {},
-                    ),
-                    _SettingsTile(
-                      icon: Icons.share_outlined,
-                      label: l10n.shareApp,
-                      onTap: () {},
-                    ),
                     _SettingsTile(
                       icon: Icons.info_outline,
                       label: l10n.about,
@@ -322,6 +313,32 @@ class ProfileScreen extends ConsumerWidget {
         ),
       ),
     );
+  }
+
+  void _sendSupportEmail(BuildContext context, AppLocalizations l10n) async {
+    final Uri emailUri = Uri(
+      scheme: 'mailto',
+      path: 'kernys01@gmail.com',
+      query: 'subject=Diet AI Support',
+    );
+
+    try {
+      if (await canLaunchUrl(emailUri)) {
+        await launchUrl(emailUri);
+      } else {
+        if (context.mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('kernys01@gmail.com')),
+          );
+        }
+      }
+    } catch (e) {
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('kernys01@gmail.com')),
+        );
+      }
+    }
   }
 
   void _showSignOutDialog(BuildContext context, WidgetRef ref, AppLocalizations l10n) {

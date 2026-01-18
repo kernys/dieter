@@ -270,5 +270,24 @@
   "quote12": "건강한 몸에 건강한 마음이 깃듭니다.",
   "quote13": "작심삼일? 오늘부터 다시 시작하면 됩니다!",
   "quote14": "스스로를 믿으세요, 당신은 대단해요.",
-  "quote15": "좋은 습관이 좋은 인생을 만듭니다."
+  "quote15": "좋은 습관이 좋은 인생을 만듭니다.",
+
+  "privacyPolicy": "개인정보 처리방침",
+  "privacyIntroTitle": "소개",
+  "privacyIntroContent": "Diet AI(이하 \"당사\")는 귀하의 개인정보 보호를 중요하게 생각합니다. 본 개인정보 처리방침은 모바일 애플리케이션 사용 시 귀하의 정보를 어떻게 수집, 사용 및 보호하는지 설명합니다.",
+  "privacyDataCollectionTitle": "수집하는 정보",
+  "privacyDataCollectionContent": "당사는 귀하가 직접 제공하는 정보를 수집합니다:\n\n• 계정 정보 (이메일, 이름)\n• 건강 데이터 (체중, 식사 기록, 운동 기록)\n• AI 분석을 위한 음식 사진\n• 기기 정보 및 사용 데이터\n\n당사는 귀하의 개인정보를 제3자에게 판매하지 않습니다.",
+  "privacyDataUseTitle": "정보 사용 방법",
+  "privacyDataUseContent": "당사는 귀하의 정보를 다음 목적으로 사용합니다:\n\n• 서비스 제공 및 개선\n• AI 기술을 사용한 음식 사진 분석\n• 영양 및 피트니스 진행 상황 추적\n• 알림 및 리마인더 전송 (활성화된 경우)\n• 서비스 관련 커뮤니케이션",
+  "privacyDataProtectionTitle": "데이터 보안",
+  "privacyDataProtectionContent": "당사는 귀하의 개인정보를 보호하기 위해 적절한 보안 조치를 시행합니다. 귀하의 데이터는 전송 중 암호화되며 안전하게 저장됩니다. 다만, 인터넷을 통한 전송 방법은 100% 안전하지 않습니다.",
+  "privacyUserRightsTitle": "귀하의 권리",
+  "privacyUserRightsContent": "귀하는 다음과 같은 권리가 있습니다:\n\n• 개인 데이터에 대한 접근\n• 데이터 수정 요청\n• 계정 및 데이터 삭제 요청\n• 마케팅 커뮤니케이션 수신 거부\n\n이러한 권리를 행사하려면 당사에 문의해 주세요.",
+  "privacyContactTitle": "문의하기",
+  "privacyContactContent": "본 개인정보 처리방침에 대해 질문이 있으시면 다음으로 연락해 주세요:\n\nkernys01@gmail.com",
+  "privacyLastUpdated": "최종 업데이트: 2025년 1월",
+
+  "customerSupport": "고객 지원",
+  "contactUs": "문의하기",
+  "sendEmail": "이메일 보내기"
 }

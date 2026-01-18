@@ -285,5 +285,24 @@
   "quote12": "A healthy body nurtures a healthy mind.",
   "quote13": "Three days? Start again from today!",
   "quote14": "Believe in yourself, you're amazing.",
-  "quote15": "Good habits make a good life."
+  "quote15": "Good habits make a good life.",
+
+  "privacyPolicy": "Privacy Policy",
+  "privacyIntroTitle": "Introduction",
+  "privacyIntroContent": "Diet AI (\"we\", \"our\", or \"us\") is committed to protecting your privacy. This Privacy Policy explains how we collect, use, and safeguard your information when you use our mobile application.",
+  "privacyDataCollectionTitle": "Information We Collect",
+  "privacyDataCollectionContent": "We collect information you provide directly, including:\n\n• Account information (email, name)\n• Health data (weight, food logs, exercise records)\n• Photos of food for AI analysis\n• Device information and usage data\n\nWe do not sell your personal information to third parties.",
+  "privacyDataUseTitle": "How We Use Your Information",
+  "privacyDataUseContent": "We use your information to:\n\n• Provide and improve our services\n• Analyze food photos using AI technology\n• Track your nutrition and fitness progress\n• Send you reminders and notifications (if enabled)\n• Communicate with you about our services",
+  "privacyDataProtectionTitle": "Data Security",
+  "privacyDataProtectionContent": "We implement appropriate security measures to protect your personal information. Your data is encrypted during transmission and stored securely. However, no method of transmission over the Internet is 100% secure.",
+  "privacyUserRightsTitle": "Your Rights",
+  "privacyUserRightsContent": "You have the right to:\n\n• Access your personal data\n• Request correction of your data\n• Request deletion of your account and data\n• Opt-out of marketing communications\n\nTo exercise these rights, please contact us.",
+  "privacyContactTitle": "Contact Us",
+  "privacyContactContent": "If you have any questions about this Privacy Policy, please contact us at:\n\nkernys01@gmail.com",
+  "privacyLastUpdated": "Last updated: January 2025",
+
+  "customerSupport": "Customer Support",
+  "contactUs": "Contact Us",
+  "sendEmail": "Send Email"
 }

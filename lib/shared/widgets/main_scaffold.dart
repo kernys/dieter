@@ -226,7 +226,7 @@ class _MainScaffoldState extends State<MainScaffold>
                   label: 'Saved foods',
                   onTap: () {
                     _closeFabMenu();
-                    context.push('/log-food');
+                    context.push('/log-food', extra: {'initialTabIndex': 3});
                   },
                 ),
               ),
@@ -331,13 +331,17 @@ class _NavItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final selectedColor = isDark ? AppColors.success : AppColors.primary;
+    final unselectedColor = isDark ? AppColors.textTertiaryDark : AppColors.textTertiary;
+
     return GestureDetector(
       onTap: onTap,
       behavior: HitTestBehavior.opaque,
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
         decoration: BoxDecoration(
-          color: isSelected ? AppColors.primary.withValues(alpha: 0.1) : null,
+          color: isSelected ? selectedColor.withValues(alpha: 0.15) : null,
           borderRadius: BorderRadius.circular(12),
         ),
         child: Column(
@@ -345,7 +349,7 @@ class _NavItem extends StatelessWidget {
           children: [
             Icon(
               isSelected ? activeIcon : icon,
-              color: isSelected ? AppColors.primary : AppColors.textTertiary,
+              color: isSelected ? selectedColor : unselectedColor,
               size: 24,
             ),
             const SizedBox(height: 4),
@@ -354,7 +358,7 @@ class _NavItem extends StatelessWidget {
               style: TextStyle(
                 fontSize: 12,
                 fontWeight: isSelected ? FontWeight.w600 : FontWeight.w500,
-                color: isSelected ? AppColors.primary : AppColors.textTertiary,
+                color: isSelected ? selectedColor : unselectedColor,
               ),
             ),
           ],

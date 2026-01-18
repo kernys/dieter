@@ -476,6 +476,7 @@ class _CameraScreenState extends ConsumerState<CameraScreen> {
       context: context,
       backgroundColor: Colors.transparent,
       isScrollControlled: true,
+      barrierColor: Colors.black.withValues(alpha: 0.7),
       builder: (context) => Container(
         decoration: const BoxDecoration(
           color: Color(0xFF2C2C2E),
@@ -632,6 +633,7 @@ class _CameraScreenState extends ConsumerState<CameraScreen> {
       context: context,
       backgroundColor: Colors.transparent,
       isScrollControlled: true,
+      barrierColor: Colors.black.withValues(alpha: 0.7),
       builder: (context) => Container(
         decoration: const BoxDecoration(
           color: Color(0xFF2C2C2E),

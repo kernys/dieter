@@ -7,7 +7,9 @@ import '../../../auth/presentation/providers/auth_provider.dart';
 import '../providers/saved_foods_provider.dart';
 
 class LogFoodScreen extends ConsumerStatefulWidget {
-  const LogFoodScreen({super.key});
+  final int initialTabIndex;
+
+  const LogFoodScreen({super.key, this.initialTabIndex = 0});
 
   @override
   ConsumerState<LogFoodScreen> createState() => _LogFoodScreenState();
@@ -33,7 +35,7 @@ class _LogFoodScreenState extends ConsumerState<LogFoodScreen>
   @override
   void initState() {
     super.initState();
-    _tabController = TabController(length: 4, vsync: this);
+    _tabController = TabController(length: 4, vsync: this, initialIndex: widget.initialTabIndex);
   }
 
   @override

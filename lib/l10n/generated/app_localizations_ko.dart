@@ -763,4 +763,61 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String get quote15 => '좋은 습관이 좋은 인생을 만듭니다.';
+
+  @override
+  String get privacyPolicy => '개인정보 처리방침';
+
+  @override
+  String get privacyIntroTitle => '소개';
+
+  @override
+  String get privacyIntroContent =>
+      'Diet AI(이하 \"당사\")는 귀하의 개인정보 보호를 중요하게 생각합니다. 본 개인정보 처리방침은 모바일 애플리케이션 사용 시 귀하의 정보를 어떻게 수집, 사용 및 보호하는지 설명합니다.';
+
+  @override
+  String get privacyDataCollectionTitle => '수집하는 정보';
+
+  @override
+  String get privacyDataCollectionContent =>
+      '당사는 귀하가 직접 제공하는 정보를 수집합니다:\n\n• 계정 정보 (이메일, 이름)\n• 건강 데이터 (체중, 식사 기록, 운동 기록)\n• AI 분석을 위한 음식 사진\n• 기기 정보 및 사용 데이터\n\n당사는 귀하의 개인정보를 제3자에게 판매하지 않습니다.';
+
+  @override
+  String get privacyDataUseTitle => '정보 사용 방법';
+
+  @override
+  String get privacyDataUseContent =>
+      '당사는 귀하의 정보를 다음 목적으로 사용합니다:\n\n• 서비스 제공 및 개선\n• AI 기술을 사용한 음식 사진 분석\n• 영양 및 피트니스 진행 상황 추적\n• 알림 및 리마인더 전송 (활성화된 경우)\n• 서비스 관련 커뮤니케이션';
+
+  @override
+  String get privacyDataProtectionTitle => '데이터 보안';
+
+  @override
+  String get privacyDataProtectionContent =>
+      '당사는 귀하의 개인정보를 보호하기 위해 적절한 보안 조치를 시행합니다. 귀하의 데이터는 전송 중 암호화되며 안전하게 저장됩니다. 다만, 인터넷을 통한 전송 방법은 100% 안전하지 않습니다.';
+
+  @override
+  String get privacyUserRightsTitle => '귀하의 권리';
+
+  @override
+  String get privacyUserRightsContent =>
+      '귀하는 다음과 같은 권리가 있습니다:\n\n• 개인 데이터에 대한 접근\n• 데이터 수정 요청\n• 계정 및 데이터 삭제 요청\n• 마케팅 커뮤니케이션 수신 거부\n\n이러한 권리를 행사하려면 당사에 문의해 주세요.';
+
+  @override
+  String get privacyContactTitle => '문의하기';
+
+  @override
+  String get privacyContactContent =>
+      '본 개인정보 처리방침에 대해 질문이 있으시면 다음으로 연락해 주세요:\n\nkernys01@gmail.com';
+
+  @override
+  String get privacyLastUpdated => '최종 업데이트: 2025년 1월';
+
+  @override
+  String get customerSupport => '고객 지원';
+
+  @override
+  String get contactUs => '문의하기';
+
+  @override
+  String get sendEmail => '이메일 보내기';
 }

@@ -770,4 +770,61 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get quote15 => 'Good habits make a good life.';
+
+  @override
+  String get privacyPolicy => 'Privacy Policy';
+
+  @override
+  String get privacyIntroTitle => 'Introduction';
+
+  @override
+  String get privacyIntroContent =>
+      'Diet AI (\"we\", \"our\", or \"us\") is committed to protecting your privacy. This Privacy Policy explains how we collect, use, and safeguard your information when you use our mobile application.';
+
+  @override
+  String get privacyDataCollectionTitle => 'Information We Collect';
+
+  @override
+  String get privacyDataCollectionContent =>
+      'We collect information you provide directly, including:\n\n• Account information (email, name)\n• Health data (weight, food logs, exercise records)\n• Photos of food for AI analysis\n• Device information and usage data\n\nWe do not sell your personal information to third parties.';
+
+  @override
+  String get privacyDataUseTitle => 'How We Use Your Information';
+
+  @override
+  String get privacyDataUseContent =>
+      'We use your information to:\n\n• Provide and improve our services\n• Analyze food photos using AI technology\n• Track your nutrition and fitness progress\n• Send you reminders and notifications (if enabled)\n• Communicate with you about our services';
+
+  @override
+  String get privacyDataProtectionTitle => 'Data Security';
+
+  @override
+  String get privacyDataProtectionContent =>
+      'We implement appropriate security measures to protect your personal information. Your data is encrypted during transmission and stored securely. However, no method of transmission over the Internet is 100% secure.';
+
+  @override
+  String get privacyUserRightsTitle => 'Your Rights';
+
+  @override
+  String get privacyUserRightsContent =>
+      'You have the right to:\n\n• Access your personal data\n• Request correction of your data\n• Request deletion of your account and data\n• Opt-out of marketing communications\n\nTo exercise these rights, please contact us.';
+
+  @override
+  String get privacyContactTitle => 'Contact Us';
+
+  @override
+  String get privacyContactContent =>
+      'If you have any questions about this Privacy Policy, please contact us at:\n\nkernys01@gmail.com';
+
+  @override
+  String get privacyLastUpdated => 'Last updated: January 2025';
+
+  @override
+  String get customerSupport => 'Customer Support';
+
+  @override
+  String get contactUs => 'Contact Us';
+
+  @override
+  String get sendEmail => 'Send Email';
 }

@@ -1549,6 +1549,108 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Good habits make a good life.'**
   String get quote15;
+
+  /// No description provided for @privacyPolicy.
+  ///
+  /// In en, this message translates to:
+  /// **'Privacy Policy'**
+  String get privacyPolicy;
+
+  /// No description provided for @privacyIntroTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Introduction'**
+  String get privacyIntroTitle;
+
+  /// No description provided for @privacyIntroContent.
+  ///
+  /// In en, this message translates to:
+  /// **'Diet AI (\"we\", \"our\", or \"us\") is committed to protecting your privacy. This Privacy Policy explains how we collect, use, and safeguard your information when you use our mobile application.'**
+  String get privacyIntroContent;
+
+  /// No description provided for @privacyDataCollectionTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Information We Collect'**
+  String get privacyDataCollectionTitle;
+
+  /// No description provided for @privacyDataCollectionContent.
+  ///
+  /// In en, this message translates to:
+  /// **'We collect information you provide directly, including:\n\n• Account information (email, name)\n• Health data (weight, food logs, exercise records)\n• Photos of food for AI analysis\n• Device information and usage data\n\nWe do not sell your personal information to third parties.'**
+  String get privacyDataCollectionContent;
+
+  /// No description provided for @privacyDataUseTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'How We Use Your Information'**
+  String get privacyDataUseTitle;
+
+  /// No description provided for @privacyDataUseContent.
+  ///
+  /// In en, this message translates to:
+  /// **'We use your information to:\n\n• Provide and improve our services\n• Analyze food photos using AI technology\n• Track your nutrition and fitness progress\n• Send you reminders and notifications (if enabled)\n• Communicate with you about our services'**
+  String get privacyDataUseContent;
+
+  /// No description provided for @privacyDataProtectionTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Data Security'**
+  String get privacyDataProtectionTitle;
+
+  /// No description provided for @privacyDataProtectionContent.
+  ///
+  /// In en, this message translates to:
+  /// **'We implement appropriate security measures to protect your personal information. Your data is encrypted during transmission and stored securely. However, no method of transmission over the Internet is 100% secure.'**
+  String get privacyDataProtectionContent;
+
+  /// No description provided for @privacyUserRightsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Your Rights'**
+  String get privacyUserRightsTitle;
+
+  /// No description provided for @privacyUserRightsContent.
+  ///
+  /// In en, this message translates to:
+  /// **'You have the right to:\n\n• Access your personal data\n• Request correction of your data\n• Request deletion of your account and data\n• Opt-out of marketing communications\n\nTo exercise these rights, please contact us.'**
+  String get privacyUserRightsContent;
+
+  /// No description provided for @privacyContactTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Contact Us'**
+  String get privacyContactTitle;
+
+  /// No description provided for @privacyContactContent.
+  ///
+  /// In en, this message translates to:
+  /// **'If you have any questions about this Privacy Policy, please contact us at:\n\nkernys01@gmail.com'**
+  String get privacyContactContent;
+
+  /// No description provided for @privacyLastUpdated.
+  ///
+  /// In en, this message translates to:
+  /// **'Last updated: January 2025'**
+  String get privacyLastUpdated;
+
+  /// No description provided for @customerSupport.
+  ///
+  /// In en, this message translates to:
+  /// **'Customer Support'**
+  String get customerSupport;
+
+  /// No description provided for @contactUs.
+  ///
+  /// In en, this message translates to:
+  /// **'Contact Us'**
+  String get contactUs;
+
+  /// No description provided for @sendEmail.
+  ///
+  /// In en, this message translates to:
+  /// **'Send Email'**
+  String get sendEmail;
 }
 
 class _AppLocalizationsDelegate

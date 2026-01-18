@@ -810,7 +810,7 @@ class _WeightChangeRow extends ConsumerWidget {
             width: 60,
             height: 8,
             decoration: BoxDecoration(
-              color: AppColors.progressBackground,
+              color: context.isDark ? const Color(0xFF3A3A3C) : const Color(0xFFE8E8E8),
               borderRadius: BorderRadius.circular(4),
             ),
             child: FractionallySizedBox(
@@ -818,7 +818,9 @@ class _WeightChangeRow extends ConsumerWidget {
               widthFactor: change > 0 ? 0.6 : 0.2,
               child: Container(
                 decoration: BoxDecoration(
-                  color: change > 0 ? const Color(0xFFB8D4E8) : AppColors.progressBackground,
+                  color: change > 0
+                      ? (isIncrease == true ? AppColors.error.withValues(alpha: 0.7) : AppColors.success.withValues(alpha: 0.7))
+                      : (context.isDark ? const Color(0xFF4A4A4C) : const Color(0xFFD0D0D0)),
                   borderRadius: BorderRadius.circular(4),
                 ),
               ),

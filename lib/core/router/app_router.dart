@@ -13,6 +13,7 @@ import '../../features/food_detail/presentation/screens/food_detail_screen.dart'
 import '../../features/progress/presentation/screens/progress_screen.dart';
 import '../../features/profile/presentation/screens/profile_screen.dart';
 import '../../features/profile/presentation/screens/personal_details_screen.dart';
+import '../../features/profile/presentation/screens/privacy_screen.dart';
 import '../../features/food/presentation/screens/log_food_screen.dart';
 import '../../features/exercise/presentation/screens/log_exercise_screen.dart';
 import '../../features/party/presentation/screens/party_screen.dart';
@@ -118,10 +119,20 @@ final routerProvider = Provider<GoRouter>((ref) {
         builder: (context, state) => const PersonalDetailsScreen(),
       ),
 
+      // Privacy Route
+      GoRoute(
+        path: '/privacy',
+        builder: (context, state) => const PrivacyScreen(),
+      ),
+
       // Log Food Route
       GoRoute(
         path: '/log-food',
-        builder: (context, state) => const LogFoodScreen(),
+        builder: (context, state) {
+          final extra = state.extra as Map<String, dynamic>?;
+          final initialTabIndex = extra?['initialTabIndex'] as int? ?? 0;
+          return LogFoodScreen(initialTabIndex: initialTabIndex);
+        },
       ),
 
       // Log Exercise Route
