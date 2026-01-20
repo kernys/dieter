@@ -161,45 +161,45 @@ class _PersonalDetailsScreenState extends ConsumerState<PersonalDetailsScreen> {
                 children: [
                   _DetailRow(
                     label: l10n.currentWeight,
-                    value: _formatWeight(user?.currentWeight, isImperial, l10n),
-                    onEdit: () => _editCurrentWeight(user?.currentWeight, l10n),
+                    value: _formatWeight(user.currentWeight, isImperial, l10n),
+                    onEdit: () => _editCurrentWeight(user.currentWeight, l10n),
                   ),
                   Divider(height: 1, color: context.borderColor),
                   _DetailRow(
                     label: l10n.height,
                     value: _formatHeight(
-                      user?.heightFeet,
-                      user?.heightInches,
-                      user?.heightCm,
+                      user.heightFeet,
+                      user.heightInches,
+                      user.heightCm,
                       isImperial,
                       l10n,
                     ),
                     onEdit: () => _editHeight(
-                      user?.heightFeet,
-                      user?.heightInches,
-                      user?.heightCm,
+                      user.heightFeet,
+                      user.heightInches,
+                      user.heightCm,
                       l10n,
                     ),
                   ),
                   Divider(height: 1, color: context.borderColor),
                   _DetailRow(
                     label: l10n.dateOfBirth,
-                    value: user?.birthDate != null
-                        ? DateFormat('yyyy. M. d.').format(user!.birthDate!)
+                    value: user.birthDate != null
+                        ? DateFormat('yyyy. M. d.').format(user.birthDate!)
                         : l10n.notSet,
-                    onEdit: () => _editBirthDate(user?.birthDate),
+                    onEdit: () => _editBirthDate(user.birthDate),
                   ),
                   Divider(height: 1, color: context.borderColor),
                   _DetailRow(
                     label: l10n.gender,
-                    value: user?.gender ?? l10n.notSet,
-                    onEdit: () => _editGender(user?.gender, l10n),
+                    value: user.gender ?? l10n.notSet,
+                    onEdit: () => _editGender(user.gender, l10n),
                   ),
                   Divider(height: 1, color: context.borderColor),
                   _DetailRow(
                     label: l10n.dailyStepGoal,
-                    value: '${user?.dailyStepGoal ?? 10000} ${l10n.steps}',
-                    onEdit: () => _editStepGoal(user?.dailyStepGoal ?? 10000),
+                    value: '${user.dailyStepGoal} ${l10n.steps}',
+                    onEdit: () => _editStepGoal(user.dailyStepGoal),
                     showBorder: false,
                   ),
                 ],
