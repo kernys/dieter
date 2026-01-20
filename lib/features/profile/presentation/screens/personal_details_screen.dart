@@ -22,6 +22,42 @@ class _PersonalDetailsScreenState extends ConsumerState<PersonalDetailsScreen> {
     final settings = ref.watch(settingsProvider);
     final isImperial = settings.unitSystem == UnitSystem.imperial;
 
+    // Debug: check if user is loading
+    if (user == null) {
+      return Scaffold(
+        backgroundColor: context.backgroundColor,
+        appBar: AppBar(
+          backgroundColor: context.backgroundColor,
+          elevation: 0,
+          leading: GestureDetector(
+            onTap: () => Navigator.pop(context),
+            child: Container(
+              margin: const EdgeInsets.all(8),
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                color: context.cardColor,
+              ),
+              child: Icon(
+                Icons.arrow_back,
+                color: context.textPrimaryColor,
+                size: 20,
+              ),
+            ),
+          ),
+          title: Text(
+            l10n.personalDetails,
+            style: TextStyle(
+              color: context.textPrimaryColor,
+              fontSize: 18,
+              fontWeight: FontWeight.w600,
+            ),
+          ),
+          centerTitle: true,
+        ),
+        body: const Center(child: CircularProgressIndicator()),
+      );
+    }
+
     return Scaffold(
       backgroundColor: context.backgroundColor,
       appBar: AppBar(
@@ -81,7 +117,7 @@ class _PersonalDetailsScreenState extends ConsumerState<PersonalDetailsScreen> {
                         ),
                         const SizedBox(height: 4),
                         Text(
-                          _formatWeight(user?.goalWeight, isImperial, l10n),
+                          _formatWeight(user.goalWeight, isImperial, l10n),
                           style: TextStyle(
                             fontSize: 20,
                             fontWeight: FontWeight.bold,
@@ -95,7 +131,7 @@ class _PersonalDetailsScreenState extends ConsumerState<PersonalDetailsScreen> {
                   ),
                   const SizedBox(width: 12),
                   ElevatedButton(
-                    onPressed: () => _editGoalWeight(user?.goalWeight, l10n),
+                    onPressed: () => _editGoalWeight(user.goalWeight, l10n),
                     style: ElevatedButton.styleFrom(
                       backgroundColor: AppColors.primary,
                       foregroundColor: Colors.white,
