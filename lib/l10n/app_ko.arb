@@ -329,5 +329,10 @@
 
   "customerSupport": "고객 지원",
   "contactUs": "문의하기",
-  "sendEmail": "이메일 보내기"
+  "sendEmail": "이메일 보내기",
+
+  "deleteWeightLog": "체중 기록 삭제",
+  "deleteWeightLogConfirm": "이 체중 기록을 삭제하시겠습니까?",
+  "weightLogDeleted": "체중 기록이 삭제되었습니다",
+  "errorDeletingWeightLog": "체중 기록 삭제 중 오류가 발생했습니다"
 }

@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 import '../../../../core/constants/app_colors.dart';
 import '../../../../l10n/generated/app_localizations.dart';
+import '../../../../services/api_service.dart';
 import '../../../profile/presentation/providers/settings_provider.dart';
 import '../providers/progress_provider.dart';
 
@@ -92,113 +93,169 @@ class WeightHistoryScreen extends ConsumerWidget {
                 change = weight - prevWeight;
               }
 
-              return Container(
-                margin: const EdgeInsets.only(bottom: 12),
-                padding: const EdgeInsets.all(16),
-                decoration: BoxDecoration(
-                  color: context.cardColor,
-                  borderRadius: BorderRadius.circular(12),
-                  border: Border.all(color: context.borderColor),
+              return Dismissible(
+                key: Key(log.id),
+                direction: DismissDirection.endToStart,
+                background: Container(
+                  margin: const EdgeInsets.only(bottom: 12),
+                  padding: const EdgeInsets.symmetric(horizontal: 20),
+                  decoration: BoxDecoration(
+                    color: AppColors.error,
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  alignment: Alignment.centerRight,
+                  child: const Icon(
+                    Icons.delete_outline,
+                    color: Colors.white,
+                  ),
                 ),
-                child: Row(
-                  children: [
-                    Container(
-                      width: 48,
-                      height: 48,
-                      decoration: BoxDecoration(
-                        color: AppColors.primary.withValues(alpha: 0.1),
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Text(
-                            date.day.toString(),
-                            style: TextStyle(
-                              fontSize: 18,
-                              fontWeight: FontWeight.bold,
-                              color: AppColors.primary,
-                            ),
+                confirmDismiss: (direction) async {
+                  return await showDialog<bool>(
+                    context: context,
+                    builder: (dialogContext) => AlertDialog(
+                      title: Text(l10n.deleteWeightLog),
+                      content: Text(l10n.deleteWeightLogConfirm),
+                      actions: [
+                        TextButton(
+                          onPressed: () => Navigator.pop(dialogContext, false),
+                          child: Text(l10n.cancel),
+                        ),
+                        TextButton(
+                          onPressed: () => Navigator.pop(dialogContext, true),
+                          style: TextButton.styleFrom(
+                            foregroundColor: AppColors.error,
                           ),
-                          Text(
-                            DateFormat('MMM').format(date),
-                            style: TextStyle(
-                              fontSize: 10,
-                              color: AppColors.primary,
-                            ),
-                          ),
-                        ],
-                      ),
+                          child: Text(l10n.delete),
+                        ),
+                      ],
                     ),
-                    const SizedBox(width: 16),
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            '${weight.toStringAsFixed(1)} $weightUnit',
-                            style: TextStyle(
-                              fontSize: 18,
-                              fontWeight: FontWeight.w600,
-                              color: context.textPrimaryColor,
-                            ),
-                          ),
-                          Text(
-                            DateFormat('EEEE, yyyy').format(date),
-                            style: TextStyle(
-                              fontSize: 12,
-                              color: context.textSecondaryColor,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                    if (change != null) ...[
+                  ) ?? false;
+                },
+                onDismissed: (direction) async {
+                  try {
+                    await ref.read(apiServiceProvider).deleteWeightLog(log.id);
+                    ref.invalidate(weightLogsProvider);
+                    if (context.mounted) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(content: Text(l10n.weightLogDeleted)),
+                      );
+                    }
+                  } catch (e) {
+                    if (context.mounted) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(content: Text(l10n.errorDeletingWeightLog)),
+                      );
+                    }
+                  }
+                },
+                child: Container(
+                  margin: const EdgeInsets.only(bottom: 12),
+                  padding: const EdgeInsets.all(16),
+                  decoration: BoxDecoration(
+                    color: context.cardColor,
+                    borderRadius: BorderRadius.circular(12),
+                    border: Border.all(color: context.borderColor),
+                  ),
+                  child: Row(
+                    children: [
                       Container(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 8,
-                          vertical: 4,
-                        ),
+                        width: 48,
+                        height: 48,
                         decoration: BoxDecoration(
-                          color: change < 0
-                              ? AppColors.success.withValues(alpha: 0.1)
-                              : change > 0
-                                  ? AppColors.error.withValues(alpha: 0.1)
-                                  : context.cardColor,
-                          borderRadius: BorderRadius.circular(8),
+                          color: AppColors.primary.withValues(alpha: 0.1),
+                          borderRadius: BorderRadius.circular(12),
                         ),
-                        child: Row(
-                          mainAxisSize: MainAxisSize.min,
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
                           children: [
-                            if (change != 0)
-                              Icon(
-                                change < 0
-                                    ? Icons.arrow_downward
-                                    : Icons.arrow_upward,
-                                size: 14,
-                                color: change < 0
-                                    ? AppColors.success
-                                    : AppColors.error,
-                              ),
                             Text(
-                              change == 0
-                                  ? '0'
-                                  : '${change > 0 ? '+' : ''}${change.toStringAsFixed(1)}',
+                              date.day.toString(),
                               style: TextStyle(
-                                fontSize: 12,
-                                fontWeight: FontWeight.w600,
-                                color: change < 0
-                                    ? AppColors.success
-                                    : change > 0
-                                        ? AppColors.error
-                                        : context.textSecondaryColor,
+                                fontSize: 18,
+                                fontWeight: FontWeight.bold,
+                                color: AppColors.primary,
+                              ),
+                            ),
+                            Text(
+                              DateFormat('MMM').format(date),
+                              style: TextStyle(
+                                fontSize: 10,
+                                color: AppColors.primary,
                               ),
                             ),
                           ],
                         ),
                       ),
+                      const SizedBox(width: 16),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              '${weight.toStringAsFixed(1)} $weightUnit',
+                              style: TextStyle(
+                                fontSize: 18,
+                                fontWeight: FontWeight.w600,
+                                color: context.textPrimaryColor,
+                              ),
+                            ),
+                            Text(
+                              DateFormat('EEEE, yyyy').format(date),
+                              style: TextStyle(
+                                fontSize: 12,
+                                color: context.textSecondaryColor,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      if (change != null) ...[
+                        Container(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 8,
+                            vertical: 4,
+                          ),
+                          decoration: BoxDecoration(
+                            color: change < 0
+                                ? AppColors.success.withValues(alpha: 0.1)
+                                : change > 0
+                                    ? AppColors.error.withValues(alpha: 0.1)
+                                    : context.cardColor,
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                          child: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              if (change != 0)
+                                Icon(
+                                  change < 0
+                                      ? Icons.arrow_downward
+                                      : Icons.arrow_upward,
+                                  size: 14,
+                                  color: change < 0
+                                      ? AppColors.success
+                                      : AppColors.error,
+                                ),
+                              Text(
+                                change == 0
+                                    ? '0'
+                                    : '${change > 0 ? '+' : ''}${change.toStringAsFixed(1)}',
+                                style: TextStyle(
+                                  fontSize: 12,
+                                  fontWeight: FontWeight.w600,
+                                  color: change < 0
+                                      ? AppColors.success
+                                      : change > 0
+                                          ? AppColors.error
+                                          : context.textSecondaryColor,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
                     ],
-                  ],
+                  ),
                 ),
               );
             },

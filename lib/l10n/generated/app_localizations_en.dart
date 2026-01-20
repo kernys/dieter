@@ -944,4 +944,17 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get sendEmail => 'Send Email';
+
+  @override
+  String get deleteWeightLog => 'Delete Weight Log';
+
+  @override
+  String get deleteWeightLogConfirm =>
+      'Are you sure you want to delete this weight log?';
+
+  @override
+  String get weightLogDeleted => 'Weight log deleted';
+
+  @override
+  String get errorDeletingWeightLog => 'Error deleting weight log';
 }

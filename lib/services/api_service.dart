@@ -234,6 +234,17 @@ class ApiService {
     }
   }
 
+  Future<void> deleteWeightLog(String id) async {
+    final response = await http.delete(
+      Uri.parse('$baseUrl/weight-logs/$id'),
+      headers: _headers,
+    );
+
+    if (response.statusCode != 200) {
+      throw ApiException(response.statusCode, 'Failed to delete weight log');
+    }
+  }
+
   // Streak API
   Future<StreakResponse> getStreak(String userId) async {
     final response = await http.get(

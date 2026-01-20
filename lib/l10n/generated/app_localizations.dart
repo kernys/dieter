@@ -1885,6 +1885,30 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Send Email'**
   String get sendEmail;
+
+  /// No description provided for @deleteWeightLog.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete Weight Log'**
+  String get deleteWeightLog;
+
+  /// No description provided for @deleteWeightLogConfirm.
+  ///
+  /// In en, this message translates to:
+  /// **'Are you sure you want to delete this weight log?'**
+  String get deleteWeightLogConfirm;
+
+  /// No description provided for @weightLogDeleted.
+  ///
+  /// In en, this message translates to:
+  /// **'Weight log deleted'**
+  String get weightLogDeleted;
+
+  /// No description provided for @errorDeletingWeightLog.
+  ///
+  /// In en, this message translates to:
+  /// **'Error deleting weight log'**
+  String get errorDeletingWeightLog;
 }
 
 class _AppLocalizationsDelegate

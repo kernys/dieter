@@ -937,4 +937,16 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String get sendEmail => '이메일 보내기';
+
+  @override
+  String get deleteWeightLog => '체중 기록 삭제';
+
+  @override
+  String get deleteWeightLogConfirm => '이 체중 기록을 삭제하시겠습니까?';
+
+  @override
+  String get weightLogDeleted => '체중 기록이 삭제되었습니다';
+
+  @override
+  String get errorDeletingWeightLog => '체중 기록 삭제 중 오류가 발생했습니다';
 }

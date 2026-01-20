@@ -581,7 +581,6 @@ class ProgressScreen extends ConsumerWidget {
                     weightUnit: weightUnit,
                     l10n: l10n,
                     settings: settings,
-                    onEditHeight: () => _showEditHeightDialog(context, ref, l10n, settings),
                   ),
                 ),
               ),
@@ -865,59 +864,6 @@ class ProgressScreen extends ConsumerWidget {
     );
   }
 
-  void _showEditHeightDialog(BuildContext context, WidgetRef ref, AppLocalizations l10n, AppSettings settings) {
-    final heightCm = settings.heightCm ?? 170.0;
-    final controller = TextEditingController(text: heightCm.toStringAsFixed(0));
-
-    showDialog(
-      context: context,
-      builder: (dialogContext) => AlertDialog(
-        title: Text(l10n.height),
-        content: TextField(
-          controller: controller,
-          keyboardType: const TextInputType.numberWithOptions(decimal: true),
-          decoration: InputDecoration(
-            labelText: 'cm',
-            hintText: l10n.enterYourHeight,
-          ),
-          autofocus: true,
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(dialogContext),
-            child: Text(l10n.cancel),
-          ),
-          ElevatedButton(
-            onPressed: () async {
-              final inputHeight = double.tryParse(controller.text);
-              if (inputHeight != null && inputHeight > 0) {
-                try {
-                  await ref.read(settingsProvider.notifier).setHeightCm(inputHeight);
-
-                  if (dialogContext.mounted) {
-                    Navigator.pop(dialogContext);
-                  }
-                  if (context.mounted) {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(content: Text(l10n.heightUpdated)),
-                    );
-                  }
-                } catch (e) {
-                  if (context.mounted) {
-                    final errorMessage = e.toString().replaceFirst('Exception: ', '');
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(content: Text(errorMessage)),
-                    );
-                  }
-                }
-              }
-            },
-            child: Text(l10n.save),
-          ),
-        ],
-      ),
-    );
-  }
 }
 
 class _TimeRangeButton extends StatelessWidget {
@@ -1349,14 +1295,12 @@ class _BMICard extends StatelessWidget {
   final String weightUnit;
   final AppLocalizations l10n;
   final AppSettings settings;
-  final VoidCallback? onEditHeight;
 
   const _BMICard({
     required this.currentWeight,
     required this.weightUnit,
     required this.l10n,
     required this.settings,
-    this.onEditHeight,
   });
 
   @override
@@ -1405,24 +1349,11 @@ class _BMICard extends StatelessWidget {
                 color: context.textPrimaryColor,
               ),
             ),
-            GestureDetector(
-              onTap: onEditHeight,
-              child: Row(
-                children: [
-                  Text(
-                    '${l10n.height}: ${heightCm.toInt()}cm',
-                    style: TextStyle(
-                      fontSize: 12,
-                      color: context.textSecondaryColor,
-                    ),
-                  ),
-                  const SizedBox(width: 4),
-                  Icon(
-                    Icons.edit,
-                    size: 14,
-                    color: context.textSecondaryColor,
-                  ),
-                ],
+            Text(
+              '${l10n.height}: ${heightCm.toInt()}cm',
+              style: TextStyle(
+                fontSize: 12,
+                color: context.textSecondaryColor,
               ),
             ),
           ],

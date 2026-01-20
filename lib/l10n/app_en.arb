@@ -344,5 +344,10 @@
 
   "customerSupport": "Customer Support",
   "contactUs": "Contact Us",
-  "sendEmail": "Send Email"
+  "sendEmail": "Send Email",
+
+  "deleteWeightLog": "Delete Weight Log",
+  "deleteWeightLogConfirm": "Are you sure you want to delete this weight log?",
+  "weightLogDeleted": "Weight log deleted",
+  "errorDeletingWeightLog": "Error deleting weight log"
 }
