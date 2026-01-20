@@ -153,6 +153,18 @@ class AppLocalizationsEn extends AppLocalizations {
   String get calories => 'Calories';
 
   @override
+  String get fiber => 'Fiber';
+
+  @override
+  String get sugar => 'Sugar';
+
+  @override
+  String get sodium => 'Sodium';
+
+  @override
+  String get healthScore => 'Health Score';
+
+  @override
   String get currentWeight => 'Current Weight';
 
   @override
@@ -279,6 +291,36 @@ class AppLocalizationsEn extends AppLocalizations {
   String get cancel => 'Cancel';
 
   @override
+  String get weeklyEnergy => 'Weekly Energy';
+
+  @override
+  String get burned => 'Burned';
+
+  @override
+  String get consumed => 'Consumed';
+
+  @override
+  String get energy => 'Energy';
+
+  @override
+  String get yourBMI => 'Your BMI';
+
+  @override
+  String get bmiUnderweight => 'Underweight';
+
+  @override
+  String get bmiNormal => 'Normal';
+
+  @override
+  String get bmiOverweight => 'Overweight';
+
+  @override
+  String get bmiObese => 'Obese';
+
+  @override
+  String get heightNotSet => 'Set your height in profile';
+
+  @override
   String get range90d => '90D';
 
   @override
@@ -371,6 +413,15 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get entryDeleted => 'Entry deleted';
+
+  @override
+  String get savePhotoToGallery => 'Save photo to gallery';
+
+  @override
+  String get photoSaved => 'Photo saved to gallery';
+
+  @override
+  String get failedToSavePhoto => 'Failed to save photo';
 
   @override
   String get cameraNotAvailable => 'Camera not available';

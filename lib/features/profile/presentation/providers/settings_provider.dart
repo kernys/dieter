@@ -12,6 +12,7 @@ class AppSettings {
   final bool mealReminders;
   final bool weightReminders;
   final bool weeklyReports;
+  final double? heightCm;
 
   const AppSettings({
     this.unitSystem = UnitSystem.imperial,
@@ -20,6 +21,7 @@ class AppSettings {
     this.mealReminders = true,
     this.weightReminders = true,
     this.weeklyReports = true,
+    this.heightCm,
   });
 
   AppSettings copyWith({
@@ -29,6 +31,7 @@ class AppSettings {
     bool? mealReminders,
     bool? weightReminders,
     bool? weeklyReports,
+    double? heightCm,
   }) {
     return AppSettings(
       unitSystem: unitSystem ?? this.unitSystem,
@@ -37,6 +40,7 @@ class AppSettings {
       mealReminders: mealReminders ?? this.mealReminders,
       weightReminders: weightReminders ?? this.weightReminders,
       weeklyReports: weeklyReports ?? this.weeklyReports,
+      heightCm: heightCm ?? this.heightCm,
     );
   }
 }
@@ -56,6 +60,7 @@ class SettingsNotifier extends StateNotifier<AppSettings> {
     final mealReminders = prefs.getBool('meal_reminders') ?? true;
     final weightReminders = prefs.getBool('weight_reminders') ?? true;
     final weeklyReports = prefs.getBool('weekly_reports') ?? true;
+    final heightCm = prefs.getDouble('height_cm');
 
     state = AppSettings(
       unitSystem: unitSystemStr == 'metric' ? UnitSystem.metric : UnitSystem.imperial,
@@ -64,6 +69,7 @@ class SettingsNotifier extends StateNotifier<AppSettings> {
       mealReminders: mealReminders,
       weightReminders: weightReminders,
       weeklyReports: weeklyReports,
+      heightCm: heightCm,
     );
   }
 
@@ -101,6 +107,12 @@ class SettingsNotifier extends StateNotifier<AppSettings> {
     final prefs = await SharedPreferences.getInstance();
     await prefs.setBool('weekly_reports', enabled);
     state = state.copyWith(weeklyReports: enabled);
+  }
+
+  Future<void> setHeightCm(double heightCm) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setDouble('height_cm', heightCm);
+    state = state.copyWith(heightCm: heightCm);
   }
 
   // Convert weight based on unit system

@@ -382,6 +382,10 @@ class FoodAnalysisResult {
   final double protein;
   final double carbs;
   final double fat;
+  final double fiber;
+  final double sugar;
+  final double sodium;
+  final int healthScore;
   final List<IngredientAnalysis> ingredients;
 
   FoodAnalysisResult({
@@ -390,6 +394,10 @@ class FoodAnalysisResult {
     required this.protein,
     required this.carbs,
     required this.fat,
+    required this.fiber,
+    required this.sugar,
+    required this.sodium,
+    required this.healthScore,
     required this.ingredients,
   });
 
@@ -400,6 +408,10 @@ class FoodAnalysisResult {
       protein: (json['protein'] as num?)?.toDouble() ?? 0.0,
       carbs: (json['carbs'] as num?)?.toDouble() ?? 0.0,
       fat: (json['fat'] as num?)?.toDouble() ?? 0.0,
+      fiber: (json['fiber'] as num?)?.toDouble() ?? 0.0,
+      sugar: (json['sugar'] as num?)?.toDouble() ?? 0.0,
+      sodium: (json['sodium'] as num?)?.toDouble() ?? 0.0,
+      healthScore: (json['health_score'] as num?)?.toInt() ?? 5,
       ingredients: (json['ingredients'] as List?)
           ?.map((e) => IngredientAnalysis.fromJson(e))
           .toList() ?? [],

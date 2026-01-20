@@ -151,6 +151,18 @@ class AppLocalizationsKo extends AppLocalizations {
   String get calories => '칼로리';
 
   @override
+  String get fiber => '식이섬유';
+
+  @override
+  String get sugar => '당류';
+
+  @override
+  String get sodium => '나트륨';
+
+  @override
+  String get healthScore => '건강 점수';
+
+  @override
   String get currentWeight => '현재 체중';
 
   @override
@@ -276,6 +288,36 @@ class AppLocalizationsKo extends AppLocalizations {
   String get cancel => '취소';
 
   @override
+  String get weeklyEnergy => '주간 에너지';
+
+  @override
+  String get burned => '소모';
+
+  @override
+  String get consumed => '섭취';
+
+  @override
+  String get energy => '에너지';
+
+  @override
+  String get yourBMI => '나의 BMI';
+
+  @override
+  String get bmiUnderweight => '저체중';
+
+  @override
+  String get bmiNormal => '정상';
+
+  @override
+  String get bmiOverweight => '과체중';
+
+  @override
+  String get bmiObese => '비만';
+
+  @override
+  String get heightNotSet => '프로필에서 키를 설정하세요';
+
+  @override
   String get range90d => '90일';
 
   @override
@@ -367,6 +409,15 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String get entryDeleted => '항목이 삭제되었습니다';
+
+  @override
+  String get savePhotoToGallery => '사진을 갤러리에 저장';
+
+  @override
+  String get photoSaved => '사진이 갤러리에 저장되었습니다';
+
+  @override
+  String get failedToSavePhoto => '사진 저장에 실패했습니다';
 
   @override
   String get cameraNotAvailable => '카메라를 사용할 수 없습니다';

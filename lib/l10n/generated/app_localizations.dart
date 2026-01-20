@@ -374,6 +374,30 @@ abstract class AppLocalizations {
   /// **'Calories'**
   String get calories;
 
+  /// No description provided for @fiber.
+  ///
+  /// In en, this message translates to:
+  /// **'Fiber'**
+  String get fiber;
+
+  /// No description provided for @sugar.
+  ///
+  /// In en, this message translates to:
+  /// **'Sugar'**
+  String get sugar;
+
+  /// No description provided for @sodium.
+  ///
+  /// In en, this message translates to:
+  /// **'Sodium'**
+  String get sodium;
+
+  /// No description provided for @healthScore.
+  ///
+  /// In en, this message translates to:
+  /// **'Health Score'**
+  String get healthScore;
+
   /// No description provided for @currentWeight.
   ///
   /// In en, this message translates to:
@@ -608,6 +632,66 @@ abstract class AppLocalizations {
   /// **'Cancel'**
   String get cancel;
 
+  /// No description provided for @weeklyEnergy.
+  ///
+  /// In en, this message translates to:
+  /// **'Weekly Energy'**
+  String get weeklyEnergy;
+
+  /// No description provided for @burned.
+  ///
+  /// In en, this message translates to:
+  /// **'Burned'**
+  String get burned;
+
+  /// No description provided for @consumed.
+  ///
+  /// In en, this message translates to:
+  /// **'Consumed'**
+  String get consumed;
+
+  /// No description provided for @energy.
+  ///
+  /// In en, this message translates to:
+  /// **'Energy'**
+  String get energy;
+
+  /// No description provided for @yourBMI.
+  ///
+  /// In en, this message translates to:
+  /// **'Your BMI'**
+  String get yourBMI;
+
+  /// No description provided for @bmiUnderweight.
+  ///
+  /// In en, this message translates to:
+  /// **'Underweight'**
+  String get bmiUnderweight;
+
+  /// No description provided for @bmiNormal.
+  ///
+  /// In en, this message translates to:
+  /// **'Normal'**
+  String get bmiNormal;
+
+  /// No description provided for @bmiOverweight.
+  ///
+  /// In en, this message translates to:
+  /// **'Overweight'**
+  String get bmiOverweight;
+
+  /// No description provided for @bmiObese.
+  ///
+  /// In en, this message translates to:
+  /// **'Obese'**
+  String get bmiObese;
+
+  /// No description provided for @heightNotSet.
+  ///
+  /// In en, this message translates to:
+  /// **'Set your height in profile'**
+  String get heightNotSet;
+
   /// No description provided for @range90d.
   ///
   /// In en, this message translates to:
@@ -793,6 +877,24 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Entry deleted'**
   String get entryDeleted;
+
+  /// No description provided for @savePhotoToGallery.
+  ///
+  /// In en, this message translates to:
+  /// **'Save photo to gallery'**
+  String get savePhotoToGallery;
+
+  /// No description provided for @photoSaved.
+  ///
+  /// In en, this message translates to:
+  /// **'Photo saved to gallery'**
+  String get photoSaved;
+
+  /// No description provided for @failedToSavePhoto.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to save photo'**
+  String get failedToSavePhoto;
 
   /// No description provided for @cameraNotAvailable.
   ///

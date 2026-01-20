@@ -5,6 +5,8 @@ import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:share_plus/share_plus.dart';
+import 'package:image_gallery_saver_plus/image_gallery_saver_plus.dart';
+import 'package:http/http.dart' as http;
 import '../../../../core/constants/app_colors.dart';
 import '../../../../services/api_service.dart';
 import '../../../../l10n/generated/app_localizations.dart';
@@ -42,6 +44,14 @@ class _FoodDetailScreenState extends ConsumerState<FoodDetailScreen> {
   bool _isLoading = false;
   bool _isViewMode = false;
   DateTime? _loggedAt;
+  int _currentPage = 0;
+  final PageController _pageController = PageController();
+
+  // Additional nutrition data
+  double _fiber = 0;
+  double _sugar = 0;
+  double _sodium = 0;
+  int _healthScore = 5;
 
   @override
   void initState() {
@@ -85,6 +95,10 @@ class _FoodDetailScreenState extends ConsumerState<FoodDetailScreen> {
     _carbsController = TextEditingController(text: _result?.carbs.toString() ?? '0');
     _fatController = TextEditingController(text: _result?.fat.toString() ?? '0');
     _ingredients = _result?.ingredients ?? [];
+    _fiber = _result?.fiber ?? 0;
+    _sugar = _result?.sugar ?? 0;
+    _sodium = _result?.sodium ?? 0;
+    _healthScore = _result?.healthScore ?? 5;
   }
 
   @override
@@ -94,6 +108,7 @@ class _FoodDetailScreenState extends ConsumerState<FoodDetailScreen> {
     _proteinController.dispose();
     _carbsController.dispose();
     _fatController.dispose();
+    _pageController.dispose();
     super.dispose();
   }
 
@@ -190,13 +205,11 @@ class _FoodDetailScreenState extends ConsumerState<FoodDetailScreen> {
                             icon: Icons.ios_share,
                             onPressed: () => _shareEntry(l10n),
                           ),
-                          if (_isViewMode) ...[
-                            const SizedBox(width: 8),
-                            _HeaderButton(
-                              icon: Icons.delete_outline,
-                              onPressed: () => _confirmDelete(l10n),
-                            ),
-                          ],
+                          const SizedBox(width: 8),
+                          _HeaderButton(
+                            icon: Icons.more_horiz,
+                            onPressed: () => _showMoreOptions(l10n),
+                          ),
                         ],
                       ),
                     ],
@@ -334,38 +347,100 @@ class _FoodDetailScreenState extends ConsumerState<FoodDetailScreen> {
                     ),
                     const SizedBox(height: 16),
 
-                    // Macro Row
+                    // Nutrition Pages (swipeable)
+                    SizedBox(
+                      height: 100,
+                      child: PageView(
+                        controller: _pageController,
+                        onPageChanged: (page) {
+                          setState(() => _currentPage = page);
+                        },
+                        children: [
+                          // Page 1: Protein, Carbs, Fat
+                          Row(
+                            children: [
+                              Expanded(
+                                child: _MacroCard(
+                                  label: l10n.protein,
+                                  value: '${_totalProtein.toInt()}g',
+                                  icon: Icons.egg_outlined,
+                                  color: AppColors.protein,
+                                ),
+                              ),
+                              const SizedBox(width: 12),
+                              Expanded(
+                                child: _MacroCard(
+                                  label: l10n.carbs,
+                                  value: '${_totalCarbs.toInt()}g',
+                                  icon: Icons.grass,
+                                  color: AppColors.carbs,
+                                ),
+                              ),
+                              const SizedBox(width: 12),
+                              Expanded(
+                                child: _MacroCard(
+                                  label: l10n.fats,
+                                  value: '${_totalFat.toInt()}g',
+                                  icon: Icons.water_drop_outlined,
+                                  color: AppColors.fat,
+                                ),
+                              ),
+                            ],
+                          ),
+                          // Page 2: Fiber, Sugar, Sodium, Health Score
+                          Column(
+                            children: [
+                              Row(
+                                children: [
+                                  Expanded(
+                                    child: _MacroCard(
+                                      label: l10n.fiber,
+                                      value: '${(_fiber * _servings).toInt()}g',
+                                      icon: Icons.spa_outlined,
+                                      color: const Color(0xFF9C7CF4),
+                                    ),
+                                  ),
+                                  const SizedBox(width: 8),
+                                  Expanded(
+                                    child: _MacroCard(
+                                      label: l10n.sugar,
+                                      value: '${(_sugar * _servings).toInt()}g',
+                                      icon: Icons.cookie_outlined,
+                                      color: const Color(0xFFFF6B9D),
+                                    ),
+                                  ),
+                                  const SizedBox(width: 8),
+                                  Expanded(
+                                    child: _MacroCard(
+                                      label: l10n.sodium,
+                                      value: '${(_sodium * _servings).toInt()}mg',
+                                      icon: Icons.grain,
+                                      color: const Color(0xFFFFB347),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              const SizedBox(height: 8),
+                              _HealthScoreCard(
+                                score: _healthScore,
+                                l10n: l10n,
+                              ),
+                            ],
+                          ),
+                        ],
+                      ),
+                    ),
+                    const SizedBox(height: 8),
+                    // Page indicator
                     Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        Expanded(
-                          child: _MacroCard(
-                            label: l10n.protein,
-                            value: '${_totalProtein.toInt()}g',
-                            icon: Icons.egg_outlined,
-                            color: AppColors.protein,
-                          ),
-                        ),
-                        const SizedBox(width: 12),
-                        Expanded(
-                          child: _MacroCard(
-                            label: l10n.carbs,
-                            value: '${_totalCarbs.toInt()}g',
-                            icon: Icons.grass,
-                            color: AppColors.carbs,
-                          ),
-                        ),
-                        const SizedBox(width: 12),
-                        Expanded(
-                          child: _MacroCard(
-                            label: l10n.fats,
-                            value: '${_totalFat.toInt()}g',
-                            icon: Icons.water_drop_outlined,
-                            color: AppColors.fat,
-                          ),
-                        ),
+                        _PageIndicator(isActive: _currentPage == 0),
+                        const SizedBox(width: 8),
+                        _PageIndicator(isActive: _currentPage == 1),
                       ],
                     ),
-                    const SizedBox(height: 24),
+                    const SizedBox(height: 16),
 
                     // Ingredients
                     Row(
@@ -729,6 +804,95 @@ ${l10n.sharedFromDieterAI}
     Share.share(shareText.trim());
   }
 
+  void _showMoreOptions(AppLocalizations l10n) {
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: AppColors.card,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      builder: (context) => SafeArea(
+        child: Padding(
+          padding: const EdgeInsets.all(16),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Container(
+                width: 40,
+                height: 4,
+                decoration: BoxDecoration(
+                  color: AppColors.border,
+                  borderRadius: BorderRadius.circular(2),
+                ),
+              ),
+              const SizedBox(height: 20),
+              if (_imageBytes != null || (_imageUrl != null && _imageUrl!.isNotEmpty))
+                ListTile(
+                  leading: const Icon(Icons.save_alt, color: AppColors.primary),
+                  title: Text(l10n.savePhotoToGallery),
+                  onTap: () {
+                    Navigator.pop(context);
+                    _savePhotoToGallery(l10n);
+                  },
+                ),
+              if (_isViewMode)
+                ListTile(
+                  leading: const Icon(Icons.delete_outline, color: AppColors.error),
+                  title: Text(l10n.deleteEntry, style: const TextStyle(color: AppColors.error)),
+                  onTap: () {
+                    Navigator.pop(context);
+                    _confirmDelete(l10n);
+                  },
+                ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Future<void> _savePhotoToGallery(AppLocalizations l10n) async {
+    try {
+      Uint8List? imageData;
+
+      if (_imageBytes != null) {
+        imageData = _imageBytes;
+      } else if (_imageUrl != null && _imageUrl!.isNotEmpty) {
+        // Download image from URL
+        final response = await http.get(Uri.parse(_imageUrl!));
+        if (response.statusCode == 200) {
+          imageData = response.bodyBytes;
+        }
+      }
+
+      if (imageData != null) {
+        final result = await ImageGallerySaverPlus.saveImage(
+          imageData,
+          quality: 100,
+          name: 'diet_ai_${DateTime.now().millisecondsSinceEpoch}',
+        );
+
+        if (mounted) {
+          if (result['isSuccess'] == true) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(content: Text(l10n.photoSaved)),
+            );
+          } else {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(content: Text(l10n.failedToSavePhoto)),
+            );
+          }
+        }
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(l10n.failedToSavePhoto)),
+        );
+      }
+    }
+  }
+
   void _confirmDelete(AppLocalizations l10n) {
     showDialog(
       context: context,
@@ -919,6 +1083,101 @@ class _MacroCard extends StatelessWidget {
             ),
           ),
         ],
+      ),
+    );
+  }
+}
+
+class _HealthScoreCard extends StatelessWidget {
+  final int score;
+  final AppLocalizations l10n;
+
+  const _HealthScoreCard({
+    required this.score,
+    required this.l10n,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final clampedScore = score.clamp(1, 10);
+    final scoreColor = clampedScore <= 3
+        ? const Color(0xFFFF6B6B)
+        : clampedScore <= 6
+            ? const Color(0xFFFFB347)
+            : const Color(0xFF4ECDC4);
+
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+      decoration: BoxDecoration(
+        color: AppColors.card,
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: AppColors.border),
+      ),
+      child: Row(
+        children: [
+          Icon(
+            Icons.favorite,
+            color: scoreColor,
+            size: 24,
+          ),
+          const SizedBox(width: 12),
+          Text(
+            l10n.healthScore,
+            style: const TextStyle(
+              fontSize: 14,
+              color: AppColors.textSecondary,
+            ),
+          ),
+          const Spacer(),
+          // Progress bar
+          Expanded(
+            flex: 2,
+            child: Container(
+              height: 8,
+              decoration: BoxDecoration(
+                color: AppColors.progressBackground,
+                borderRadius: BorderRadius.circular(4),
+              ),
+              child: FractionallySizedBox(
+                alignment: Alignment.centerLeft,
+                widthFactor: clampedScore / 10,
+                child: Container(
+                  decoration: BoxDecoration(
+                    color: scoreColor,
+                    borderRadius: BorderRadius.circular(4),
+                  ),
+                ),
+              ),
+            ),
+          ),
+          const SizedBox(width: 12),
+          Text(
+            '$clampedScore/10',
+            style: const TextStyle(
+              fontSize: 16,
+              fontWeight: FontWeight.bold,
+              color: AppColors.textPrimary,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _PageIndicator extends StatelessWidget {
+  final bool isActive;
+
+  const _PageIndicator({required this.isActive});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: isActive ? 24 : 8,
+      height: 8,
+      decoration: BoxDecoration(
+        color: isActive ? AppColors.primary : AppColors.border,
+        borderRadius: BorderRadius.circular(4),
       ),
     );
   }

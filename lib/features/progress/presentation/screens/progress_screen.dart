@@ -515,6 +515,63 @@ class ProgressScreen extends ConsumerWidget {
               ),
             ),
 
+            // Weekly Energy Chart
+            SliverToBoxAdapter(
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 16),
+                child: Container(
+                  padding: const EdgeInsets.all(16),
+                  decoration: BoxDecoration(
+                    color: context.cardColor,
+                    borderRadius: BorderRadius.circular(16),
+                    border: Border.all(color: context.borderColor),
+                  ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        l10n.weeklyEnergy,
+                        style: TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.w600,
+                          color: context.textPrimaryColor,
+                        ),
+                      ),
+                      const SizedBox(height: 16),
+                      _WeeklyEnergySummary(l10n: l10n, ref: ref),
+                      const SizedBox(height: 16),
+                      SizedBox(
+                        height: 200,
+                        child: _WeeklyEnergyChart(l10n: l10n, ref: ref),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+            const SliverToBoxAdapter(child: SizedBox(height: 16)),
+
+            // BMI Card
+            SliverToBoxAdapter(
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 16),
+                child: Container(
+                  padding: const EdgeInsets.all(16),
+                  decoration: BoxDecoration(
+                    color: context.cardColor,
+                    borderRadius: BorderRadius.circular(16),
+                    border: Border.all(color: context.borderColor),
+                  ),
+                  child: _BMICard(
+                    currentWeight: displayWeight,
+                    weightUnit: weightUnit,
+                    l10n: l10n,
+                    settings: settings,
+                  ),
+                ),
+              ),
+            ),
+
             // Bottom Padding
             const SliverToBoxAdapter(child: SizedBox(height: 100)),
           ],
@@ -854,6 +911,384 @@ class _WeightChangeRow extends ConsumerWidget {
           ),
         ],
       ),
+    );
+  }
+}
+
+class _WeeklyEnergySummary extends StatelessWidget {
+  final AppLocalizations l10n;
+  final WidgetRef ref;
+
+  const _WeeklyEnergySummary({required this.l10n, required this.ref});
+
+  @override
+  Widget build(BuildContext context) {
+    // Get weekly data from provider (placeholder for now)
+    const burnedCalories = 0;
+    const consumedCalories = 700;
+    const netEnergy = consumedCalories - burnedCalories;
+
+    return Row(
+      children: [
+        _EnergyStat(
+          label: l10n.burned,
+          value: burnedCalories,
+          color: AppColors.streak,
+        ),
+        const SizedBox(width: 24),
+        _EnergyStat(
+          label: l10n.consumed,
+          value: consumedCalories,
+          color: AppColors.success,
+        ),
+        const SizedBox(width: 24),
+        _EnergyStat(
+          label: l10n.energy,
+          value: netEnergy,
+          color: netEnergy >= 0 ? AppColors.success : AppColors.error,
+          showSign: true,
+        ),
+      ],
+    );
+  }
+}
+
+class _EnergyStat extends StatelessWidget {
+  final String label;
+  final int value;
+  final Color color;
+  final bool showSign;
+
+  const _EnergyStat({
+    required this.label,
+    required this.value,
+    required this.color,
+    this.showSign = false,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          label,
+          style: TextStyle(
+            fontSize: 12,
+            color: context.textSecondaryColor,
+          ),
+        ),
+        const SizedBox(height: 4),
+        Row(
+          crossAxisAlignment: CrossAxisAlignment.end,
+          children: [
+            Text(
+              showSign && value > 0 ? '+$value' : '$value',
+              style: TextStyle(
+                fontSize: 20,
+                fontWeight: FontWeight.bold,
+                color: context.textPrimaryColor,
+              ),
+            ),
+            const SizedBox(width: 2),
+            Padding(
+              padding: const EdgeInsets.only(bottom: 2),
+              child: Text(
+                'cal',
+                style: TextStyle(
+                  fontSize: 12,
+                  color: context.textSecondaryColor,
+                ),
+              ),
+            ),
+          ],
+        ),
+      ],
+    );
+  }
+}
+
+class _WeeklyEnergyChart extends StatelessWidget {
+  final AppLocalizations l10n;
+  final WidgetRef ref;
+
+  const _WeeklyEnergyChart({required this.l10n, required this.ref});
+
+  @override
+  Widget build(BuildContext context) {
+    // Placeholder data - would come from provider
+    final weekDays = ['일', '월', '화', '수', '목', '금', '토'];
+    final burnedData = [0, 0, 0, 0, 0, 0, 0];
+    final consumedData = [0, 0, 700, 0, 0, 0, 0];
+
+    return Column(
+      children: [
+        Expanded(
+          child: BarChart(
+            BarChartData(
+              alignment: BarChartAlignment.spaceAround,
+              maxY: 1000,
+              barTouchData: BarTouchData(enabled: false),
+              titlesData: FlTitlesData(
+                show: true,
+                bottomTitles: AxisTitles(
+                  sideTitles: SideTitles(
+                    showTitles: true,
+                    getTitlesWidget: (value, meta) {
+                      final index = value.toInt();
+                      if (index >= 0 && index < weekDays.length) {
+                        return Padding(
+                          padding: const EdgeInsets.only(top: 8),
+                          child: Text(
+                            weekDays[index],
+                            style: TextStyle(
+                              fontSize: 12,
+                              color: context.textSecondaryColor,
+                            ),
+                          ),
+                        );
+                      }
+                      return const SizedBox.shrink();
+                    },
+                    reservedSize: 30,
+                  ),
+                ),
+                leftTitles: AxisTitles(
+                  sideTitles: SideTitles(
+                    showTitles: true,
+                    reservedSize: 40,
+                    interval: 250,
+                    getTitlesWidget: (value, meta) {
+                      return Text(
+                        value.toInt().toString(),
+                        style: TextStyle(
+                          fontSize: 10,
+                          color: context.textTertiaryColor,
+                        ),
+                      );
+                    },
+                  ),
+                ),
+                topTitles: const AxisTitles(sideTitles: SideTitles(showTitles: false)),
+                rightTitles: const AxisTitles(sideTitles: SideTitles(showTitles: false)),
+              ),
+              gridData: FlGridData(
+                show: true,
+                drawVerticalLine: false,
+                horizontalInterval: 250,
+                getDrawingHorizontalLine: (value) {
+                  return FlLine(
+                    color: context.borderColor,
+                    strokeWidth: 1,
+                    dashArray: [5, 5],
+                  );
+                },
+              ),
+              borderData: FlBorderData(show: false),
+              barGroups: List.generate(7, (index) {
+                return BarChartGroupData(
+                  x: index,
+                  barRods: [
+                    BarChartRodData(
+                      toY: burnedData[index].toDouble(),
+                      color: AppColors.streak,
+                      width: 8,
+                      borderRadius: const BorderRadius.vertical(top: Radius.circular(4)),
+                    ),
+                    BarChartRodData(
+                      toY: consumedData[index].toDouble(),
+                      color: AppColors.success,
+                      width: 8,
+                      borderRadius: const BorderRadius.vertical(top: Radius.circular(4)),
+                    ),
+                  ],
+                );
+              }),
+            ),
+          ),
+        ),
+        const SizedBox(height: 12),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            _LegendItem(color: AppColors.streak, label: l10n.burned),
+            const SizedBox(width: 24),
+            _LegendItem(color: AppColors.success, label: l10n.consumed),
+          ],
+        ),
+      ],
+    );
+  }
+}
+
+class _LegendItem extends StatelessWidget {
+  final Color color;
+  final String label;
+
+  const _LegendItem({required this.color, required this.label});
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      children: [
+        Container(
+          width: 12,
+          height: 12,
+          decoration: BoxDecoration(
+            color: color,
+            shape: BoxShape.circle,
+          ),
+        ),
+        const SizedBox(width: 6),
+        Text(
+          label,
+          style: TextStyle(
+            fontSize: 12,
+            color: context.textSecondaryColor,
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+class _BMICard extends StatelessWidget {
+  final double currentWeight;
+  final String weightUnit;
+  final AppLocalizations l10n;
+  final AppSettings settings;
+
+  const _BMICard({
+    required this.currentWeight,
+    required this.weightUnit,
+    required this.l10n,
+    required this.settings,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    // Get height from settings (default 170cm if not set)
+    final heightCm = settings.heightCm ?? 170.0;
+    final heightM = heightCm / 100;
+
+    // Calculate BMI: weight(kg) / height(m)^2
+    final weightKg = settings.unitSystem == UnitSystem.metric
+        ? currentWeight
+        : currentWeight * 0.453592;
+    final bmi = weightKg / (heightM * heightM);
+
+    String bmiCategory;
+    Color bmiColor;
+
+    if (bmi < 18.5) {
+      bmiCategory = l10n.bmiUnderweight;
+      bmiColor = AppColors.warning;
+    } else if (bmi < 25) {
+      bmiCategory = l10n.bmiNormal;
+      bmiColor = AppColors.success;
+    } else if (bmi < 30) {
+      bmiCategory = l10n.bmiOverweight;
+      bmiColor = AppColors.warning;
+    } else {
+      bmiCategory = l10n.bmiObese;
+      bmiColor = AppColors.error;
+    }
+
+    // Calculate position on scale (BMI 15-40 range)
+    final bmiPosition = ((bmi - 15) / 25).clamp(0.0, 1.0);
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          l10n.yourBMI,
+          style: TextStyle(
+            fontSize: 18,
+            fontWeight: FontWeight.w600,
+            color: context.textPrimaryColor,
+          ),
+        ),
+        const SizedBox(height: 16),
+        Row(
+          children: [
+            Text(
+              bmi.toStringAsFixed(1),
+              style: TextStyle(
+                fontSize: 36,
+                fontWeight: FontWeight.bold,
+                color: context.textPrimaryColor,
+              ),
+            ),
+            const SizedBox(width: 12),
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+              decoration: BoxDecoration(
+                color: bmiColor.withValues(alpha: 0.1),
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: Text(
+                bmiCategory,
+                style: TextStyle(
+                  fontSize: 14,
+                  fontWeight: FontWeight.w600,
+                  color: bmiColor,
+                ),
+              ),
+            ),
+          ],
+        ),
+        const SizedBox(height: 16),
+        // BMI Scale
+        Stack(
+          children: [
+            Container(
+              height: 8,
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(4),
+                gradient: const LinearGradient(
+                  colors: [
+                    Color(0xFF64B5F6), // Underweight
+                    Color(0xFF4CAF50), // Normal
+                    Color(0xFFFFB74D), // Overweight
+                    Color(0xFFE57373), // Obese
+                  ],
+                  stops: [0.0, 0.35, 0.6, 1.0],
+                ),
+              ),
+            ),
+            Positioned(
+              left: bmiPosition * (MediaQuery.of(context).size.width - 64) - 6,
+              top: -4,
+              child: Container(
+                width: 16,
+                height: 16,
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  shape: BoxShape.circle,
+                  border: Border.all(color: bmiColor, width: 3),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withValues(alpha: 0.2),
+                      blurRadius: 4,
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ],
+        ),
+        const SizedBox(height: 8),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Text('15', style: TextStyle(fontSize: 10, color: context.textTertiaryColor)),
+            Text('18.5', style: TextStyle(fontSize: 10, color: context.textTertiaryColor)),
+            Text('25', style: TextStyle(fontSize: 10, color: context.textTertiaryColor)),
+            Text('30', style: TextStyle(fontSize: 10, color: context.textTertiaryColor)),
+            Text('40', style: TextStyle(fontSize: 10, color: context.textTertiaryColor)),
+          ],
+        ),
+      ],
     );
   }
 }
