@@ -40,18 +40,27 @@ function toSnakeCase(updates: z.infer<typeof updateUserSchema>): Partial<User> {
   return result;
 }
 
+// Safely format birth_date from DB (can be Date, string, or null)
+function formatBirthDate(birthDate: Date | string | null | undefined): string | null {
+  if (!birthDate) return null;
+  try {
+    // If it's already a string in YYYY-MM-DD format, return it
+    if (typeof birthDate === 'string') {
+      return birthDate.split('T')[0];
+    }
+    // If it's a Date object
+    if (birthDate instanceof Date && !isNaN(birthDate.getTime())) {
+      return birthDate.toISOString().split('T')[0];
+    }
+    // Try to convert to string as fallback
+    return String(birthDate).split('T')[0];
+  } catch {
+    return null;
+  }
+}
+
 // Format user for API response (snake_case to camelCase)
 function formatUserResponse(user: User) {
-  let birthDateStr: string | null = null;
-  if (user.birth_date) {
-    // Handle both Date object and string from DB
-    if (user.birth_date instanceof Date) {
-      birthDateStr = user.birth_date.toISOString().split('T')[0];
-    } else {
-      birthDateStr = String(user.birth_date).split('T')[0];
-    }
-  }
-
   return {
     id: user.id,
     email: user.email,
@@ -66,7 +75,7 @@ function formatUserResponse(user: User) {
     heightFeet: user.height_feet ? Number(user.height_feet) : null,
     heightInches: user.height_inches ? Number(user.height_inches) : null,
     heightCm: user.height_cm ? Number(user.height_cm) : null,
-    birthDate: birthDateStr,
+    birthDate: formatBirthDate(user.birth_date as Date | string | null),
     gender: user.gender,
     dailyStepGoal: Number(user.daily_step_goal ?? 10000),
     onboardingCompleted: user.onboarding_completed,
