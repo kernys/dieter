@@ -20,6 +20,10 @@ export interface FoodAnalysisResult {
   protein: number;
   carbs: number;
   fat: number;
+  fiber: number;
+  sugar: number;
+  sodium: number;
+  health_score: number;
   ingredients: IngredientAnalysis[];
 }
 
@@ -46,6 +50,10 @@ Please respond in the following JSON format only, without any markdown formattin
   "protein": protein in grams (number),
   "carbs": carbohydrates in grams (number),
   "fat": fat in grams (number),
+  "fiber": fiber in grams (number),
+  "sugar": sugar in grams (number),
+  "sodium": sodium in milligrams (number),
+  "health_score": health score from 1-10 (integer, 10 being healthiest),
   "ingredients": [
     {
       "name": "ingredient name",
@@ -63,6 +71,7 @@ Important:
 - Provide realistic nutritional values
 - List all visible ingredients
 - If you cannot identify the food, make your best guess
+- health_score: Consider factors like whole foods, vegetables, processed ingredients, sodium, sugar content. 1 = very unhealthy (junk food), 10 = very healthy (fresh vegetables, lean protein)
 - Return ONLY the JSON object, no other text
 `;
 
@@ -132,6 +141,10 @@ Important:
       protein: 0,
       carbs: 0,
       fat: 0,
+      fiber: 0,
+      sugar: 0,
+      sodium: 0,
+      health_score: 5,
       ingredients: [],
     };
   }
