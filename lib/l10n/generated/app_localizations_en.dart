@@ -171,10 +171,37 @@ class AppLocalizationsEn extends AppLocalizations {
   String get goalWeight => 'Goal Weight';
 
   @override
+  String get changeGoal => 'Change Goal';
+
+  @override
   String get enterYourWeight => 'Enter your weight';
 
   @override
   String get enterGoalWeight => 'Enter your goal weight';
+
+  @override
+  String get dateOfBirth => 'Date of birth';
+
+  @override
+  String get gender => 'Gender';
+
+  @override
+  String get male => 'Male';
+
+  @override
+  String get female => 'Female';
+
+  @override
+  String get other => 'Other';
+
+  @override
+  String get dailyStepGoal => 'Daily step goal';
+
+  @override
+  String get steps => 'steps';
+
+  @override
+  String get notSet => 'Not set';
 
   @override
   String get lbs => 'lbs';
@@ -285,6 +312,18 @@ class AppLocalizationsEn extends AppLocalizations {
   String get weightLogged => 'Weight logged!';
 
   @override
+  String get goalWeightUpdated => 'Goal weight updated!';
+
+  @override
+  String get height => 'Height';
+
+  @override
+  String get enterYourHeight => 'Enter your height';
+
+  @override
+  String get heightUpdated => 'Height updated!';
+
+  @override
   String get save => 'Save';
 
   @override
@@ -376,6 +415,15 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get helpAndSupport => 'Help & Support';
+
+  @override
+  String get goalsAndTracking => 'Goals & Tracking';
+
+  @override
+  String get personalDetails => 'Personal Details';
+
+  @override
+  String get weightHistory => 'Weight History';
 
   @override
   String get app => 'App';

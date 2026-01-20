@@ -29,24 +29,16 @@ class ProfileScreen extends ConsumerWidget {
               // Header
               Padding(
                 padding: const EdgeInsets.all(16),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Text(
-                      l10n.profile,
-                      style: TextStyle(
-                        fontSize: 28,
-                        fontWeight: FontWeight.bold,
-                        color: context.textPrimaryColor,
-                      ),
+                child: Align(
+                  alignment: Alignment.centerLeft,
+                  child: Text(
+                    l10n.profile,
+                    style: TextStyle(
+                      fontSize: 28,
+                      fontWeight: FontWeight.bold,
+                      color: context.textPrimaryColor,
                     ),
-                    IconButton(
-                      icon: const Icon(Icons.settings_outlined),
-                      onPressed: () {
-                        // TODO: Navigate to settings
-                      },
-                    ),
-                  ],
+                  ),
                 ),
               ),
 
@@ -205,6 +197,40 @@ class ProfileScreen extends ConsumerWidget {
               ),
               const SizedBox(height: 24),
 
+              // Goals & Tracking Section
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 16),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      l10n.goalsAndTracking,
+                      style: TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.w600,
+                        color: context.textPrimaryColor,
+                      ),
+                    ),
+                    const SizedBox(height: 12),
+                    _SettingsTile(
+                      icon: Icons.person_outline,
+                      label: l10n.personalDetails,
+                      onTap: () {
+                        context.push('/personal-details');
+                      },
+                    ),
+                    _SettingsTile(
+                      icon: Icons.history,
+                      label: l10n.weightHistory,
+                      onTap: () {
+                        context.push('/weight-history');
+                      },
+                    ),
+                  ],
+                ),
+              ),
+              const SizedBox(height: 24),
+
               // Settings Section
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 16),
@@ -236,14 +262,6 @@ class ProfileScreen extends ConsumerWidget {
                       label: l10n.units,
                       trailing: settings.unitSystem == UnitSystem.metric ? l10n.metric : l10n.imperial,
                       onTap: () => _showUnitsDialog(context, ref, l10n, settings),
-                    ),
-                    _SettingsTile(
-                      icon: Icons.dark_mode_outlined,
-                      label: l10n.darkMode,
-                      trailing: settings.darkMode ? l10n.on : l10n.off,
-                      onTap: () {
-                        ref.read(settingsProvider.notifier).setDarkMode(!settings.darkMode);
-                      },
                     ),
                     _SettingsTile(
                       icon: Icons.security_outlined,
@@ -279,11 +297,10 @@ class ProfileScreen extends ConsumerWidget {
                       ),
                     ),
                     const SizedBox(height: 12),
-                    _SettingsTile(
+                    _AppInfoTile(
                       icon: Icons.info_outline,
                       label: l10n.about,
-                      trailing: 'v${AppConstants.appVersion}',
-                      onTap: () {},
+                      version: 'v${AppConstants.appVersion}',
                     ),
                   ],
                 ),
@@ -784,6 +801,54 @@ class _SettingsTile extends StatelessWidget {
             ),
           ],
         ),
+      ),
+    );
+  }
+}
+
+class _AppInfoTile extends StatelessWidget {
+  final IconData icon;
+  final String label;
+  final String version;
+
+  const _AppInfoTile({
+    required this.icon,
+    required this.label,
+    required this.version,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      margin: const EdgeInsets.only(bottom: 8),
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: context.cardColor,
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: context.borderColor),
+      ),
+      child: Row(
+        children: [
+          Icon(icon, color: context.textSecondaryColor, size: 22),
+          const SizedBox(width: 12),
+          Expanded(
+            child: Text(
+              label,
+              style: TextStyle(
+                fontSize: 14,
+                fontWeight: FontWeight.w500,
+                color: context.textPrimaryColor,
+              ),
+            ),
+          ),
+          Text(
+            version,
+            style: TextStyle(
+              fontSize: 14,
+              color: context.textSecondaryColor,
+            ),
+          ),
+        ],
       ),
     );
   }

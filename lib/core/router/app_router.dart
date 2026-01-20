@@ -11,6 +11,7 @@ import '../../features/home/presentation/screens/home_screen.dart';
 import '../../features/camera/presentation/screens/camera_screen.dart';
 import '../../features/food_detail/presentation/screens/food_detail_screen.dart';
 import '../../features/progress/presentation/screens/progress_screen.dart';
+import '../../features/progress/presentation/screens/weight_history_screen.dart';
 import '../../features/profile/presentation/screens/profile_screen.dart';
 import '../../features/profile/presentation/screens/personal_details_screen.dart';
 import '../../features/profile/presentation/screens/privacy_screen.dart';
@@ -36,12 +37,30 @@ final routerProvider = Provider<GoRouter>((ref) {
       final prefs = await SharedPreferences.getInstance();
       final onboardingCompleted = prefs.getBool('onboarding_completed') ?? false;
       final isOnboardingRoute = state.matchedLocation == '/onboarding';
+      final isAuthRoute = state.matchedLocation == '/login' || state.matchedLocation == '/signup';
 
+      // Check if user is authenticated
+      final userId = prefs.getString('user_id');
+      final accessToken = prefs.getString('access_token');
+      final isAuthenticated = userId != null && accessToken != null && userId != 'guest-user';
+
+      // If not onboarding completed, go to onboarding
       if (!onboardingCompleted && !isOnboardingRoute) {
         return '/onboarding';
       }
 
+      // If onboarding completed but on onboarding route, redirect
       if (onboardingCompleted && isOnboardingRoute) {
+        return isAuthenticated ? '/home' : '/login';
+      }
+
+      // If not authenticated and trying to access protected routes
+      if (!isAuthenticated && !isAuthRoute && !isOnboardingRoute) {
+        return '/login';
+      }
+
+      // If authenticated and on auth routes, go to home
+      if (isAuthenticated && isAuthRoute) {
         return '/home';
       }
 
@@ -117,6 +136,12 @@ final routerProvider = Provider<GoRouter>((ref) {
       GoRoute(
         path: '/personal-details',
         builder: (context, state) => const PersonalDetailsScreen(),
+      ),
+
+      // Weight History Route
+      GoRoute(
+        path: '/weight-history',
+        builder: (context, state) => const WeightHistoryScreen(),
       ),
 
       // Privacy Route

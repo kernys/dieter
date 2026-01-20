@@ -410,6 +410,12 @@ abstract class AppLocalizations {
   /// **'Goal Weight'**
   String get goalWeight;
 
+  /// No description provided for @changeGoal.
+  ///
+  /// In en, this message translates to:
+  /// **'Change Goal'**
+  String get changeGoal;
+
   /// No description provided for @enterYourWeight.
   ///
   /// In en, this message translates to:
@@ -421,6 +427,54 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Enter your goal weight'**
   String get enterGoalWeight;
+
+  /// No description provided for @dateOfBirth.
+  ///
+  /// In en, this message translates to:
+  /// **'Date of birth'**
+  String get dateOfBirth;
+
+  /// No description provided for @gender.
+  ///
+  /// In en, this message translates to:
+  /// **'Gender'**
+  String get gender;
+
+  /// No description provided for @male.
+  ///
+  /// In en, this message translates to:
+  /// **'Male'**
+  String get male;
+
+  /// No description provided for @female.
+  ///
+  /// In en, this message translates to:
+  /// **'Female'**
+  String get female;
+
+  /// No description provided for @other.
+  ///
+  /// In en, this message translates to:
+  /// **'Other'**
+  String get other;
+
+  /// No description provided for @dailyStepGoal.
+  ///
+  /// In en, this message translates to:
+  /// **'Daily step goal'**
+  String get dailyStepGoal;
+
+  /// No description provided for @steps.
+  ///
+  /// In en, this message translates to:
+  /// **'steps'**
+  String get steps;
+
+  /// No description provided for @notSet.
+  ///
+  /// In en, this message translates to:
+  /// **'Not set'**
+  String get notSet;
 
   /// No description provided for @lbs.
   ///
@@ -620,6 +674,30 @@ abstract class AppLocalizations {
   /// **'Weight logged!'**
   String get weightLogged;
 
+  /// No description provided for @goalWeightUpdated.
+  ///
+  /// In en, this message translates to:
+  /// **'Goal weight updated!'**
+  String get goalWeightUpdated;
+
+  /// No description provided for @height.
+  ///
+  /// In en, this message translates to:
+  /// **'Height'**
+  String get height;
+
+  /// No description provided for @enterYourHeight.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter your height'**
+  String get enterYourHeight;
+
+  /// No description provided for @heightUpdated.
+  ///
+  /// In en, this message translates to:
+  /// **'Height updated!'**
+  String get heightUpdated;
+
   /// No description provided for @save.
   ///
   /// In en, this message translates to:
@@ -805,6 +883,24 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Help & Support'**
   String get helpAndSupport;
+
+  /// No description provided for @goalsAndTracking.
+  ///
+  /// In en, this message translates to:
+  /// **'Goals & Tracking'**
+  String get goalsAndTracking;
+
+  /// No description provided for @personalDetails.
+  ///
+  /// In en, this message translates to:
+  /// **'Personal Details'**
+  String get personalDetails;
+
+  /// No description provided for @weightHistory.
+  ///
+  /// In en, this message translates to:
+  /// **'Weight History'**
+  String get weightHistory;
 
   /// No description provided for @app.
   ///

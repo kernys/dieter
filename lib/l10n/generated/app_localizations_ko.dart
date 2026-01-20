@@ -169,10 +169,37 @@ class AppLocalizationsKo extends AppLocalizations {
   String get goalWeight => '목표 체중';
 
   @override
+  String get changeGoal => '목표 변경';
+
+  @override
   String get enterYourWeight => '체중을 입력하세요';
 
   @override
   String get enterGoalWeight => '목표 체중을 입력하세요';
+
+  @override
+  String get dateOfBirth => '생년월일';
+
+  @override
+  String get gender => '성별';
+
+  @override
+  String get male => '남성';
+
+  @override
+  String get female => '여성';
+
+  @override
+  String get other => '기타';
+
+  @override
+  String get dailyStepGoal => '일일 걸음 목표';
+
+  @override
+  String get steps => '걸음';
+
+  @override
+  String get notSet => '미설정';
 
   @override
   String get lbs => 'lb';
@@ -282,6 +309,18 @@ class AppLocalizationsKo extends AppLocalizations {
   String get weightLogged => '체중이 기록되었습니다!';
 
   @override
+  String get goalWeightUpdated => '목표 체중이 업데이트되었습니다!';
+
+  @override
+  String get height => '키';
+
+  @override
+  String get enterYourHeight => '키를 입력하세요';
+
+  @override
+  String get heightUpdated => '키가 업데이트되었습니다!';
+
+  @override
   String get save => '저장';
 
   @override
@@ -373,6 +412,15 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String get helpAndSupport => '도움말 및 지원';
+
+  @override
+  String get goalsAndTracking => '목표 및 추적';
+
+  @override
+  String get personalDetails => '개인 정보';
+
+  @override
+  String get weightHistory => '체중 기록';
 
   @override
   String get app => '앱';

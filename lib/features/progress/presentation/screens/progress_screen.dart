@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:fl_chart/fl_chart.dart';
 import '../../../../core/constants/app_colors.dart';
 import '../../../../l10n/generated/app_localizations.dart';
+import '../../../auth/presentation/providers/auth_provider.dart';
 import '../../../profile/presentation/providers/settings_provider.dart';
 import '../providers/progress_provider.dart';
 
@@ -119,13 +120,26 @@ class ProgressScreen extends ConsumerWidget {
                               ],
                             ),
                             const SizedBox(height: 4),
-                            Text(
-                              settings.unitSystem == UnitSystem.metric
-                                  ? l10n.goalKg(displayGoalWeight.toInt())
-                                  : l10n.goal(goalWeight.toInt()),
-                              style: const TextStyle(
-                                fontSize: 12,
-                                color: AppColors.textTertiary,
+                            GestureDetector(
+                              onTap: () => _showEditGoalWeightDialog(context, ref, l10n, settings, goalWeight),
+                              child: Row(
+                                children: [
+                                  Text(
+                                    settings.unitSystem == UnitSystem.metric
+                                        ? l10n.goalKg(displayGoalWeight.toInt())
+                                        : l10n.goal(goalWeight.toInt()),
+                                    style: const TextStyle(
+                                      fontSize: 12,
+                                      color: AppColors.textTertiary,
+                                    ),
+                                  ),
+                                  const SizedBox(width: 4),
+                                  Icon(
+                                    Icons.edit,
+                                    size: 12,
+                                    color: AppColors.textTertiary,
+                                  ),
+                                ],
                               ),
                             ),
                             const SizedBox(height: 12),
@@ -538,11 +552,11 @@ class ProgressScreen extends ConsumerWidget {
                         ),
                       ),
                       const SizedBox(height: 16),
-                      _WeeklyEnergySummary(l10n: l10n, ref: ref),
+                      _WeeklyEnergySummary(l10n: l10n),
                       const SizedBox(height: 16),
                       SizedBox(
                         height: 200,
-                        child: _WeeklyEnergyChart(l10n: l10n, ref: ref),
+                        child: _WeeklyEnergyChart(l10n: l10n),
                       ),
                     ],
                   ),
@@ -567,6 +581,7 @@ class ProgressScreen extends ConsumerWidget {
                     weightUnit: weightUnit,
                     l10n: l10n,
                     settings: settings,
+                    onEditHeight: () => _showEditHeightDialog(context, ref, l10n, settings),
                   ),
                 ),
               ),
@@ -600,22 +615,22 @@ class ProgressScreen extends ConsumerWidget {
     }
 
     // Add padding to min/max
-    final padding = (maxWeight - minWeight) * 0.1;
+    final padding = (maxWeight - minWeight) * 0.2;
     final chartMinY = (minWeight - padding).clamp(0.0, double.infinity);
     final chartMaxY = maxWeight + padding;
     final interval = ((chartMaxY - chartMinY) / 4).ceilToDouble().clamp(1.0, double.infinity);
 
     return LineChart(
       LineChartData(
+        backgroundColor: Colors.transparent,
         gridData: FlGridData(
           show: true,
           drawVerticalLine: false,
           horizontalInterval: interval,
           getDrawingHorizontalLine: (value) {
             return FlLine(
-              color: AppColors.border,
+              color: AppColors.border.withValues(alpha: 0.3),
               strokeWidth: 1,
-              dashArray: [5, 5],
             );
           },
         ),
@@ -623,14 +638,21 @@ class ProgressScreen extends ConsumerWidget {
           leftTitles: AxisTitles(
             sideTitles: SideTitles(
               showTitles: true,
-              reservedSize: 40,
+              reservedSize: 45,
               interval: interval,
               getTitlesWidget: (value, meta) {
-                return Text(
-                  value.toInt().toString(),
-                  style: const TextStyle(
-                    fontSize: 10,
-                    color: AppColors.textTertiary,
+                // Avoid showing the first/last value if it's at the edge
+                if (value == meta.min || value == meta.max) {
+                  return const SizedBox.shrink();
+                }
+                return Padding(
+                  padding: const EdgeInsets.only(right: 8),
+                  child: Text(
+                    value.toInt().toString(),
+                    style: const TextStyle(
+                      fontSize: 11,
+                      color: AppColors.textTertiary,
+                    ),
                   ),
                 );
               },
@@ -647,11 +669,14 @@ class ProgressScreen extends ConsumerWidget {
                   final log = logs[logs.length - 1 - index];
                   final date = log.recordedAt;
                   final monthNames = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
-                  return Text(
-                    monthNames[date.month - 1],
-                    style: const TextStyle(
-                      fontSize: 10,
-                      color: AppColors.textTertiary,
+                  return Padding(
+                    padding: const EdgeInsets.only(top: 8),
+                    child: Text(
+                      monthNames[date.month - 1],
+                      style: const TextStyle(
+                        fontSize: 11,
+                        color: AppColors.textTertiary,
+                      ),
                     ),
                   );
                 }
@@ -667,39 +692,48 @@ class ProgressScreen extends ConsumerWidget {
           ),
         ),
         borderData: FlBorderData(show: false),
+        clipData: const FlClipData.all(),
         lineBarsData: [
           LineChartBarData(
             spots: spots,
             isCurved: true,
-            color: AppColors.success,
-            barWidth: 3,
+            curveSmoothness: 0.3,
+            color: AppColors.primary,
+            barWidth: 2.5,
             isStrokeCapRound: true,
             dotData: FlDotData(
-              show: spots.length <= 10, // Only show dots if 10 or fewer points
+              show: true,
               getDotPainter: (spot, percent, barData, index) {
+                // Show larger dot for last point (most recent)
+                final isLast = index == spots.length - 1;
                 return FlDotCirclePainter(
-                  radius: 4,
-                  color: AppColors.success,
-                  strokeWidth: 2,
+                  radius: isLast ? 5 : 3,
+                  color: AppColors.primary,
+                  strokeWidth: isLast ? 2 : 1.5,
                   strokeColor: Colors.white,
                 );
               },
             ),
-            belowBarData: BarAreaData(
-              show: true,
-              color: AppColors.success.withValues(alpha: 0.1),
-            ),
+            belowBarData: BarAreaData(show: false),
           ),
         ],
         lineTouchData: LineTouchData(
           touchTooltipData: LineTouchTooltipData(
+            tooltipRoundedRadius: 8,
+            tooltipPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
             getTooltipItems: (touchedSpots) {
               return touchedSpots.map((spot) {
+                final index = spot.spotIndex;
+                final logIndex = logs.length - 1 - index;
+                final log = logs[logIndex];
+                final date = log.recordedAt;
+                final monthNames = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
                 return LineTooltipItem(
-                  '${spot.y.toStringAsFixed(1)} $weightUnit',
+                  '${spot.y.toStringAsFixed(1)} $weightUnit\n${monthNames[date.month - 1]} ${date.day}',
                   const TextStyle(
                     color: Colors.white,
-                    fontWeight: FontWeight.bold,
+                    fontWeight: FontWeight.w600,
+                    fontSize: 13,
                   ),
                 );
               }).toList();
@@ -752,6 +786,120 @@ class ProgressScreen extends ConsumerWidget {
                   if (context.mounted) {
                     ScaffoldMessenger.of(context).showSnackBar(
                       SnackBar(content: Text(l10n.weightLogged)),
+                    );
+                  }
+                } catch (e) {
+                  if (context.mounted) {
+                    final errorMessage = e.toString().replaceFirst('Exception: ', '');
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(content: Text(errorMessage)),
+                    );
+                  }
+                }
+              }
+            },
+            child: Text(l10n.save),
+          ),
+        ],
+      ),
+    );
+  }
+
+  void _showEditGoalWeightDialog(BuildContext context, WidgetRef ref, AppLocalizations l10n, AppSettings settings, double currentGoalWeight) {
+    final controller = TextEditingController();
+    final isMetric = settings.unitSystem == UnitSystem.metric;
+    final displayWeight = isMetric ? currentGoalWeight * 0.453592 : currentGoalWeight;
+    controller.text = displayWeight.toStringAsFixed(1);
+
+    showDialog(
+      context: context,
+      builder: (dialogContext) => AlertDialog(
+        title: Text(l10n.goalWeight),
+        content: TextField(
+          controller: controller,
+          keyboardType: const TextInputType.numberWithOptions(decimal: true),
+          decoration: InputDecoration(
+            labelText: isMetric ? l10n.weightKg : l10n.weightLbs,
+            hintText: l10n.enterGoalWeight,
+          ),
+          autofocus: true,
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(dialogContext),
+            child: Text(l10n.cancel),
+          ),
+          ElevatedButton(
+            onPressed: () async {
+              final inputWeight = double.tryParse(controller.text);
+              if (inputWeight != null && inputWeight > 0) {
+                // Convert to lbs if input is in kg (API stores in lbs)
+                final weightInLbs = isMetric ? inputWeight / 0.453592 : inputWeight;
+                try {
+                  await ref.read(authStateProvider.notifier).updateUser({
+                    'goal_weight': weightInLbs,
+                  });
+
+                  if (dialogContext.mounted) {
+                    Navigator.pop(dialogContext);
+                  }
+                  if (context.mounted) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(content: Text(l10n.goalWeightUpdated)),
+                    );
+                  }
+                } catch (e) {
+                  if (context.mounted) {
+                    final errorMessage = e.toString().replaceFirst('Exception: ', '');
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(content: Text(errorMessage)),
+                    );
+                  }
+                }
+              }
+            },
+            child: Text(l10n.save),
+          ),
+        ],
+      ),
+    );
+  }
+
+  void _showEditHeightDialog(BuildContext context, WidgetRef ref, AppLocalizations l10n, AppSettings settings) {
+    final heightCm = settings.heightCm ?? 170.0;
+    final controller = TextEditingController(text: heightCm.toStringAsFixed(0));
+
+    showDialog(
+      context: context,
+      builder: (dialogContext) => AlertDialog(
+        title: Text(l10n.height),
+        content: TextField(
+          controller: controller,
+          keyboardType: const TextInputType.numberWithOptions(decimal: true),
+          decoration: InputDecoration(
+            labelText: 'cm',
+            hintText: l10n.enterYourHeight,
+          ),
+          autofocus: true,
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(dialogContext),
+            child: Text(l10n.cancel),
+          ),
+          ElevatedButton(
+            onPressed: () async {
+              final inputHeight = double.tryParse(controller.text);
+              if (inputHeight != null && inputHeight > 0) {
+                try {
+                  await ref.read(settingsProvider.notifier).setHeightCm(inputHeight);
+
+                  if (dialogContext.mounted) {
+                    Navigator.pop(dialogContext);
+                  }
+                  if (context.mounted) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(content: Text(l10n.heightUpdated)),
                     );
                   }
                 } catch (e) {
@@ -915,40 +1063,70 @@ class _WeightChangeRow extends ConsumerWidget {
   }
 }
 
-class _WeeklyEnergySummary extends StatelessWidget {
+class _WeeklyEnergySummary extends ConsumerWidget {
   final AppLocalizations l10n;
-  final WidgetRef ref;
 
-  const _WeeklyEnergySummary({required this.l10n, required this.ref});
+  const _WeeklyEnergySummary({required this.l10n});
 
   @override
-  Widget build(BuildContext context) {
-    // Get weekly data from provider (placeholder for now)
-    const burnedCalories = 0;
-    const consumedCalories = 700;
-    const netEnergy = consumedCalories - burnedCalories;
+  Widget build(BuildContext context, WidgetRef ref) {
+    final weeklyEnergyAsync = ref.watch(weeklyEnergyDataProvider);
 
-    return Row(
-      children: [
-        _EnergyStat(
-          label: l10n.burned,
-          value: burnedCalories,
-          color: AppColors.streak,
-        ),
-        const SizedBox(width: 24),
-        _EnergyStat(
-          label: l10n.consumed,
-          value: consumedCalories,
-          color: AppColors.success,
-        ),
-        const SizedBox(width: 24),
-        _EnergyStat(
-          label: l10n.energy,
-          value: netEnergy,
-          color: netEnergy >= 0 ? AppColors.success : AppColors.error,
-          showSign: true,
-        ),
-      ],
+    return weeklyEnergyAsync.when(
+      data: (data) {
+        final burnedCalories = data.totalBurned;
+        final consumedCalories = data.totalConsumed;
+        final netEnergy = consumedCalories - burnedCalories;
+
+        return Row(
+          children: [
+            _EnergyStat(
+              label: l10n.burned,
+              value: burnedCalories,
+              color: AppColors.streak,
+            ),
+            const SizedBox(width: 24),
+            _EnergyStat(
+              label: l10n.consumed,
+              value: consumedCalories,
+              color: AppColors.success,
+            ),
+            const SizedBox(width: 24),
+            _EnergyStat(
+              label: l10n.energy,
+              value: netEnergy,
+              color: netEnergy >= 0 ? AppColors.success : AppColors.error,
+              showSign: true,
+            ),
+          ],
+        );
+      },
+      loading: () => const SizedBox(
+        height: 50,
+        child: Center(child: CircularProgressIndicator(strokeWidth: 2)),
+      ),
+      error: (_, __) => Row(
+        children: [
+          _EnergyStat(
+            label: l10n.burned,
+            value: 0,
+            color: AppColors.streak,
+          ),
+          const SizedBox(width: 24),
+          _EnergyStat(
+            label: l10n.consumed,
+            value: 0,
+            color: AppColors.success,
+          ),
+          const SizedBox(width: 24),
+          _EnergyStat(
+            label: l10n.energy,
+            value: 0,
+            color: AppColors.success,
+            showSign: true,
+          ),
+        ],
+      ),
     );
   }
 }
@@ -1008,115 +1186,129 @@ class _EnergyStat extends StatelessWidget {
   }
 }
 
-class _WeeklyEnergyChart extends StatelessWidget {
+class _WeeklyEnergyChart extends ConsumerWidget {
   final AppLocalizations l10n;
-  final WidgetRef ref;
 
-  const _WeeklyEnergyChart({required this.l10n, required this.ref});
+  const _WeeklyEnergyChart({required this.l10n});
 
   @override
-  Widget build(BuildContext context) {
-    // Placeholder data - would come from provider
-    final weekDays = ['일', '월', '화', '수', '목', '금', '토'];
-    final burnedData = [0, 0, 0, 0, 0, 0, 0];
-    final consumedData = [0, 0, 700, 0, 0, 0, 0];
+  Widget build(BuildContext context, WidgetRef ref) {
+    final weeklyEnergyAsync = ref.watch(weeklyEnergyDataProvider);
+    final weekDays = ['S', 'M', 'T', 'W', 'T', 'F', 'S'];
 
-    return Column(
-      children: [
-        Expanded(
-          child: BarChart(
-            BarChartData(
-              alignment: BarChartAlignment.spaceAround,
-              maxY: 1000,
-              barTouchData: BarTouchData(enabled: false),
-              titlesData: FlTitlesData(
-                show: true,
-                bottomTitles: AxisTitles(
-                  sideTitles: SideTitles(
-                    showTitles: true,
-                    getTitlesWidget: (value, meta) {
-                      final index = value.toInt();
-                      if (index >= 0 && index < weekDays.length) {
-                        return Padding(
-                          padding: const EdgeInsets.only(top: 8),
-                          child: Text(
-                            weekDays[index],
+    return weeklyEnergyAsync.when(
+      data: (data) {
+        final burnedData = data.burnedData;
+        final consumedData = data.consumedData;
+        final maxY = consumedData.reduce((a, b) => a > b ? a : b).toDouble();
+        final chartMaxY = maxY > 0 ? (maxY * 1.2).ceilToDouble() : 1000.0;
+        final interval = (chartMaxY / 4).ceilToDouble().clamp(100.0, double.infinity);
+
+        return Column(
+          children: [
+            Expanded(
+              child: BarChart(
+                BarChartData(
+                  alignment: BarChartAlignment.spaceAround,
+                  maxY: chartMaxY,
+                  barTouchData: BarTouchData(enabled: false),
+                  titlesData: FlTitlesData(
+                    show: true,
+                    bottomTitles: AxisTitles(
+                      sideTitles: SideTitles(
+                        showTitles: true,
+                        getTitlesWidget: (value, meta) {
+                          final index = value.toInt();
+                          if (index >= 0 && index < weekDays.length) {
+                            return Padding(
+                              padding: const EdgeInsets.only(top: 8),
+                              child: Text(
+                                weekDays[index],
+                                style: TextStyle(
+                                  fontSize: 12,
+                                  color: context.textSecondaryColor,
+                                ),
+                              ),
+                            );
+                          }
+                          return const SizedBox.shrink();
+                        },
+                        reservedSize: 30,
+                      ),
+                    ),
+                    leftTitles: AxisTitles(
+                      sideTitles: SideTitles(
+                        showTitles: true,
+                        reservedSize: 40,
+                        interval: interval,
+                        getTitlesWidget: (value, meta) {
+                          return Text(
+                            value.toInt().toString(),
                             style: TextStyle(
-                              fontSize: 12,
-                              color: context.textSecondaryColor,
+                              fontSize: 10,
+                              color: context.textTertiaryColor,
                             ),
-                          ),
-                        );
-                      }
-                      return const SizedBox.shrink();
-                    },
-                    reservedSize: 30,
+                          );
+                        },
+                      ),
+                    ),
+                    topTitles: const AxisTitles(sideTitles: SideTitles(showTitles: false)),
+                    rightTitles: const AxisTitles(sideTitles: SideTitles(showTitles: false)),
                   ),
-                ),
-                leftTitles: AxisTitles(
-                  sideTitles: SideTitles(
-                    showTitles: true,
-                    reservedSize: 40,
-                    interval: 250,
-                    getTitlesWidget: (value, meta) {
-                      return Text(
-                        value.toInt().toString(),
-                        style: TextStyle(
-                          fontSize: 10,
-                          color: context.textTertiaryColor,
-                        ),
+                  gridData: FlGridData(
+                    show: true,
+                    drawVerticalLine: false,
+                    horizontalInterval: interval,
+                    getDrawingHorizontalLine: (value) {
+                      return FlLine(
+                        color: context.borderColor,
+                        strokeWidth: 1,
+                        dashArray: [5, 5],
                       );
                     },
                   ),
+                  borderData: FlBorderData(show: false),
+                  barGroups: List.generate(7, (index) {
+                    return BarChartGroupData(
+                      x: index,
+                      barRods: [
+                        BarChartRodData(
+                          toY: burnedData[index].toDouble(),
+                          color: AppColors.streak,
+                          width: 8,
+                          borderRadius: const BorderRadius.vertical(top: Radius.circular(4)),
+                        ),
+                        BarChartRodData(
+                          toY: consumedData[index].toDouble(),
+                          color: AppColors.success,
+                          width: 8,
+                          borderRadius: const BorderRadius.vertical(top: Radius.circular(4)),
+                        ),
+                      ],
+                    );
+                  }),
                 ),
-                topTitles: const AxisTitles(sideTitles: SideTitles(showTitles: false)),
-                rightTitles: const AxisTitles(sideTitles: SideTitles(showTitles: false)),
               ),
-              gridData: FlGridData(
-                show: true,
-                drawVerticalLine: false,
-                horizontalInterval: 250,
-                getDrawingHorizontalLine: (value) {
-                  return FlLine(
-                    color: context.borderColor,
-                    strokeWidth: 1,
-                    dashArray: [5, 5],
-                  );
-                },
-              ),
-              borderData: FlBorderData(show: false),
-              barGroups: List.generate(7, (index) {
-                return BarChartGroupData(
-                  x: index,
-                  barRods: [
-                    BarChartRodData(
-                      toY: burnedData[index].toDouble(),
-                      color: AppColors.streak,
-                      width: 8,
-                      borderRadius: const BorderRadius.vertical(top: Radius.circular(4)),
-                    ),
-                    BarChartRodData(
-                      toY: consumedData[index].toDouble(),
-                      color: AppColors.success,
-                      width: 8,
-                      borderRadius: const BorderRadius.vertical(top: Radius.circular(4)),
-                    ),
-                  ],
-                );
-              }),
             ),
-          ),
-        ),
-        const SizedBox(height: 12),
-        Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            _LegendItem(color: AppColors.streak, label: l10n.burned),
-            const SizedBox(width: 24),
-            _LegendItem(color: AppColors.success, label: l10n.consumed),
+            const SizedBox(height: 12),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                _LegendItem(color: AppColors.streak, label: l10n.burned),
+                const SizedBox(width: 24),
+                _LegendItem(color: AppColors.success, label: l10n.consumed),
+              ],
+            ),
           ],
+        );
+      },
+      loading: () => const Center(child: CircularProgressIndicator()),
+      error: (_, __) => Center(
+        child: Text(
+          l10n.errorLoadingDataSimple,
+          style: TextStyle(color: context.textSecondaryColor),
         ),
-      ],
+      ),
     );
   }
 }
@@ -1157,12 +1349,14 @@ class _BMICard extends StatelessWidget {
   final String weightUnit;
   final AppLocalizations l10n;
   final AppSettings settings;
+  final VoidCallback? onEditHeight;
 
   const _BMICard({
     required this.currentWeight,
     required this.weightUnit,
     required this.l10n,
     required this.settings,
+    this.onEditHeight,
   });
 
   @override
@@ -1200,13 +1394,38 @@ class _BMICard extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(
-          l10n.yourBMI,
-          style: TextStyle(
-            fontSize: 18,
-            fontWeight: FontWeight.w600,
-            color: context.textPrimaryColor,
-          ),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Text(
+              l10n.yourBMI,
+              style: TextStyle(
+                fontSize: 18,
+                fontWeight: FontWeight.w600,
+                color: context.textPrimaryColor,
+              ),
+            ),
+            GestureDetector(
+              onTap: onEditHeight,
+              child: Row(
+                children: [
+                  Text(
+                    '${l10n.height}: ${heightCm.toInt()}cm',
+                    style: TextStyle(
+                      fontSize: 12,
+                      color: context.textSecondaryColor,
+                    ),
+                  ),
+                  const SizedBox(width: 4),
+                  Icon(
+                    Icons.edit,
+                    size: 14,
+                    color: context.textSecondaryColor,
+                  ),
+                ],
+              ),
+            ),
+          ],
         ),
         const SizedBox(height: 16),
         Row(

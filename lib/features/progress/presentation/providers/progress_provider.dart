@@ -58,9 +58,10 @@ final currentWeightProvider = Provider<double>((ref) {
   );
 });
 
-// Goal weight provider - could be fetched from user settings
-final goalWeightProvider = StateProvider<double>((ref) {
-  return 140.0;
+// Goal weight provider - fetched from user settings
+final goalWeightProvider = Provider<double>((ref) {
+  final authState = ref.watch(authStateProvider);
+  return authState.user?.goalWeight ?? 140.0;
 });
 
 // Progress percentage provider
@@ -109,23 +110,58 @@ final streakDataProvider = FutureProvider<StreakData>((ref) async {
   }
 });
 
-// Daily average calories provider
-final dailyAverageCaloriesProvider = FutureProvider<DailyAverageData>((ref) async {
-  // This would need an additional API endpoint to calculate average calories
-  // For now, we'll calculate from the weight stats or return default
-  final response = await ref.watch(weightLogsResponseProvider.future);
+// Weekly energy data provider
+final weeklyEnergyDataProvider = FutureProvider<WeeklyEnergyData>((ref) async {
+  final apiService = ref.watch(apiServiceProvider);
+  final authState = ref.watch(authStateProvider);
 
-  if (response == null) {
-    return DailyAverageData(
-      calories: 0,
-      changePercentage: 0,
-      isIncrease: false,
-    );
+  final userId = authState.userId;
+  if (userId == null) {
+    return WeeklyEnergyData.empty();
   }
 
-  // Placeholder - in real implementation, this would come from an API
+  try {
+    final now = DateTime.now();
+    // Get Sunday of current week
+    final sunday = now.subtract(Duration(days: now.weekday % 7));
+
+    final List<int> consumedData = [];
+    int totalConsumed = 0;
+
+    for (int i = 0; i < 7; i++) {
+      final date = sunday.add(Duration(days: i));
+      try {
+        final response = await apiService.getFoodEntries(userId, date);
+        final dayCalories = response.summary.totalCalories;
+        consumedData.add(dayCalories);
+        totalConsumed += dayCalories;
+      } catch (e) {
+        consumedData.add(0);
+      }
+    }
+
+    // Calculate daily average (only count days with data)
+    final daysWithData = consumedData.where((c) => c > 0).length;
+    final dailyAverage = daysWithData > 0 ? totalConsumed ~/ daysWithData : 0;
+
+    return WeeklyEnergyData(
+      consumedData: consumedData,
+      burnedData: List.filled(7, 0), // No burned data for now
+      totalConsumed: totalConsumed,
+      totalBurned: 0,
+      dailyAverage: dailyAverage,
+    );
+  } catch (e) {
+    return WeeklyEnergyData.empty();
+  }
+});
+
+// Daily average calories provider
+final dailyAverageCaloriesProvider = FutureProvider<DailyAverageData>((ref) async {
+  final weeklyData = await ref.watch(weeklyEnergyDataProvider.future);
+
   return DailyAverageData(
-    calories: 2000,
+    calories: weeklyData.dailyAverage,
     changePercentage: 0,
     isIncrease: false,
   );
@@ -192,4 +228,30 @@ class AddWeightLogParams {
     required this.weight,
     this.note,
   });
+}
+
+class WeeklyEnergyData {
+  final List<int> consumedData;
+  final List<int> burnedData;
+  final int totalConsumed;
+  final int totalBurned;
+  final int dailyAverage;
+
+  WeeklyEnergyData({
+    required this.consumedData,
+    required this.burnedData,
+    required this.totalConsumed,
+    required this.totalBurned,
+    required this.dailyAverage,
+  });
+
+  factory WeeklyEnergyData.empty() {
+    return WeeklyEnergyData(
+      consumedData: List.filled(7, 0),
+      burnedData: List.filled(7, 0),
+      totalConsumed: 0,
+      totalBurned: 0,
+      dailyAverage: 0,
+    );
+  }
 }

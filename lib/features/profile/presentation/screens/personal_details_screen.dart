@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 import '../../../../core/constants/app_colors.dart';
+import '../../../../l10n/generated/app_localizations.dart';
 import '../../../auth/presentation/providers/auth_provider.dart';
 import '../providers/settings_provider.dart';
 
@@ -16,14 +17,15 @@ class PersonalDetailsScreen extends ConsumerStatefulWidget {
 class _PersonalDetailsScreenState extends ConsumerState<PersonalDetailsScreen> {
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final user = ref.watch(currentUserProvider);
     final settings = ref.watch(settingsProvider);
     final isImperial = settings.unitSystem == UnitSystem.imperial;
 
     return Scaffold(
-      backgroundColor: AppColors.background,
+      backgroundColor: context.backgroundColor,
       appBar: AppBar(
-        backgroundColor: AppColors.background,
+        backgroundColor: context.backgroundColor,
         elevation: 0,
         leading: GestureDetector(
           onTap: () => Navigator.pop(context),
@@ -31,19 +33,19 @@ class _PersonalDetailsScreenState extends ConsumerState<PersonalDetailsScreen> {
             margin: const EdgeInsets.all(8),
             decoration: BoxDecoration(
               shape: BoxShape.circle,
-              color: AppColors.surface,
+              color: context.cardColor,
             ),
-            child: const Icon(
+            child: Icon(
               Icons.arrow_back,
-              color: AppColors.textPrimary,
+              color: context.textPrimaryColor,
               size: 20,
             ),
           ),
         ),
-        title: const Text(
-          'Personal Details',
+        title: Text(
+          l10n.personalDetails,
           style: TextStyle(
-            color: AppColors.textPrimary,
+            color: context.textPrimaryColor,
             fontSize: 18,
             fontWeight: FontWeight.w600,
           ),
@@ -58,9 +60,9 @@ class _PersonalDetailsScreenState extends ConsumerState<PersonalDetailsScreen> {
             Container(
               padding: const EdgeInsets.all(16),
               decoration: BoxDecoration(
-                color: Colors.white,
+                color: context.cardColor,
                 borderRadius: BorderRadius.circular(16),
-                border: Border.all(color: AppColors.border),
+                border: Border.all(color: context.borderColor),
               ),
               child: Row(
                 children: [
@@ -68,27 +70,27 @@ class _PersonalDetailsScreenState extends ConsumerState<PersonalDetailsScreen> {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        const Text(
-                          'Goal Weight',
+                        Text(
+                          l10n.goalWeight,
                           style: TextStyle(
                             fontSize: 14,
-                            color: AppColors.textSecondary,
+                            color: context.textSecondaryColor,
                           ),
                         ),
                         const SizedBox(height: 4),
                         Text(
-                          _formatWeight(user?.goalWeight, isImperial),
-                          style: const TextStyle(
+                          _formatWeight(user?.goalWeight, isImperial, l10n),
+                          style: TextStyle(
                             fontSize: 20,
                             fontWeight: FontWeight.bold,
-                            color: AppColors.textPrimary,
+                            color: context.textPrimaryColor,
                           ),
                         ),
                       ],
                     ),
                   ),
                   ElevatedButton(
-                    onPressed: () => _editGoalWeight(user?.goalWeight),
+                    onPressed: () => _editGoalWeight(user?.goalWeight, l10n),
                     style: ElevatedButton.styleFrom(
                       backgroundColor: AppColors.primary,
                       foregroundColor: Colors.white,
@@ -100,7 +102,7 @@ class _PersonalDetailsScreenState extends ConsumerState<PersonalDetailsScreen> {
                         vertical: 10,
                       ),
                     ),
-                    child: const Text('Change Goal'),
+                    child: Text(l10n.changeGoal),
                   ),
                 ],
               ),
@@ -110,50 +112,52 @@ class _PersonalDetailsScreenState extends ConsumerState<PersonalDetailsScreen> {
             // Details Card
             Container(
               decoration: BoxDecoration(
-                color: Colors.white,
+                color: context.cardColor,
                 borderRadius: BorderRadius.circular(16),
-                border: Border.all(color: AppColors.border),
+                border: Border.all(color: context.borderColor),
               ),
               child: Column(
                 children: [
                   _DetailRow(
-                    label: 'Current weight',
-                    value: _formatWeight(user?.currentWeight, isImperial),
-                    onEdit: () => _editCurrentWeight(user?.currentWeight),
+                    label: l10n.currentWeight,
+                    value: _formatWeight(user?.currentWeight, isImperial, l10n),
+                    onEdit: () => _editCurrentWeight(user?.currentWeight, l10n),
                   ),
-                  const Divider(height: 1),
+                  Divider(height: 1, color: context.borderColor),
                   _DetailRow(
-                    label: 'Height',
+                    label: l10n.height,
                     value: _formatHeight(
                       user?.heightFeet,
                       user?.heightInches,
                       user?.heightCm,
                       isImperial,
+                      l10n,
                     ),
                     onEdit: () => _editHeight(
                       user?.heightFeet,
                       user?.heightInches,
                       user?.heightCm,
+                      l10n,
                     ),
                   ),
-                  const Divider(height: 1),
+                  Divider(height: 1, color: context.borderColor),
                   _DetailRow(
-                    label: 'Date of birth',
+                    label: l10n.dateOfBirth,
                     value: user?.birthDate != null
                         ? DateFormat('yyyy. M. d.').format(user!.birthDate!)
-                        : 'Not set',
+                        : l10n.notSet,
                     onEdit: () => _editBirthDate(user?.birthDate),
                   ),
-                  const Divider(height: 1),
+                  Divider(height: 1, color: context.borderColor),
                   _DetailRow(
-                    label: 'Gender',
-                    value: user?.gender ?? 'Not set',
-                    onEdit: () => _editGender(user?.gender),
+                    label: l10n.gender,
+                    value: user?.gender ?? l10n.notSet,
+                    onEdit: () => _editGender(user?.gender, l10n),
                   ),
-                  const Divider(height: 1),
+                  Divider(height: 1, color: context.borderColor),
                   _DetailRow(
-                    label: 'Daily step goal',
-                    value: '${user?.dailyStepGoal ?? 10000} steps',
+                    label: l10n.dailyStepGoal,
+                    value: '${user?.dailyStepGoal ?? 10000} ${l10n.steps}',
                     onEdit: () => _editStepGoal(user?.dailyStepGoal ?? 10000),
                     showBorder: false,
                   ),
@@ -166,18 +170,18 @@ class _PersonalDetailsScreenState extends ConsumerState<PersonalDetailsScreen> {
     );
   }
 
-  String _formatWeight(double? weight, bool isImperial) {
-    if (weight == null) return 'Not set';
+  String _formatWeight(double? weight, bool isImperial, AppLocalizations l10n) {
+    if (weight == null || weight == 0) return l10n.notSet;
     if (isImperial) {
-      return '${weight.toStringAsFixed(1)} lbs';
+      return '${weight.toStringAsFixed(1)} ${l10n.lbs}';
     } else {
       final kg = weight * 0.453592;
-      return '${kg.toStringAsFixed(1)} kg';
+      return '${kg.toStringAsFixed(1)} ${l10n.kg}';
     }
   }
 
   String _formatHeight(
-      double? feet, double? inches, double? cm, bool isImperial) {
+      double? feet, double? inches, double? cm, bool isImperial, AppLocalizations l10n) {
     if (isImperial) {
       if (feet != null && inches != null) {
         return '${feet.toInt()} ft ${inches.toInt()} in';
@@ -197,60 +201,139 @@ class _PersonalDetailsScreenState extends ConsumerState<PersonalDetailsScreen> {
         return '${totalCm.toInt()} cm';
       }
     }
-    return 'Not set';
+    return l10n.notSet;
   }
 
-  void _editGoalWeight(double? currentValue) {
+  void _editGoalWeight(double? currentValue, AppLocalizations l10n) {
+    final settings = ref.read(settingsProvider);
+    final isImperial = settings.unitSystem == UnitSystem.imperial;
+
+    // Convert stored lbs to display unit
+    String displayValue = '';
+    if (currentValue != null && currentValue > 0) {
+      if (isImperial) {
+        displayValue = currentValue.toStringAsFixed(1);
+      } else {
+        displayValue = (currentValue * 0.453592).toStringAsFixed(1);
+      }
+    }
+
     _showEditDialog(
-      title: 'Goal Weight',
-      currentValue: currentValue?.toString() ?? '',
-      suffix: 'lbs',
+      title: l10n.goalWeight,
+      currentValue: displayValue,
+      suffix: isImperial ? l10n.lbs : l10n.kg,
       onSave: (value) {
-        final weight = double.tryParse(value);
-        if (weight != null) {
+        final inputWeight = double.tryParse(value);
+        if (inputWeight != null && inputWeight > 0) {
+          // Convert to lbs if input is in kg (API stores in lbs)
+          final weightInLbs = isImperial ? inputWeight : inputWeight / 0.453592;
           ref.read(authStateProvider.notifier).updateUser({
-            'goal_weight': weight,
+            'goalWeight': weightInLbs,
           });
         }
       },
     );
   }
 
-  void _editCurrentWeight(double? currentValue) {
+  void _editCurrentWeight(double? currentValue, AppLocalizations l10n) {
+    final settings = ref.read(settingsProvider);
+    final isImperial = settings.unitSystem == UnitSystem.imperial;
+
+    // Convert stored lbs to display unit
+    String displayValue = '';
+    if (currentValue != null && currentValue > 0) {
+      if (isImperial) {
+        displayValue = currentValue.toStringAsFixed(1);
+      } else {
+        displayValue = (currentValue * 0.453592).toStringAsFixed(1);
+      }
+    }
+
     _showEditDialog(
-      title: 'Current Weight',
-      currentValue: currentValue?.toString() ?? '',
-      suffix: 'lbs',
+      title: l10n.currentWeight,
+      currentValue: displayValue,
+      suffix: isImperial ? l10n.lbs : l10n.kg,
       onSave: (value) {
-        final weight = double.tryParse(value);
-        if (weight != null) {
+        final inputWeight = double.tryParse(value);
+        if (inputWeight != null && inputWeight > 0) {
+          // Convert to lbs if input is in kg (API stores in lbs)
+          final weightInLbs = isImperial ? inputWeight : inputWeight / 0.453592;
           ref.read(authStateProvider.notifier).updateUser({
-            'current_weight': weight,
+            'currentWeight': weightInLbs,
           });
         }
       },
     );
   }
 
-  void _editHeight(double? feet, double? inches, double? cm) {
-    showModalBottomSheet(
-      context: context,
-      backgroundColor: Colors.white,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
-      ),
-      builder: (context) => _HeightEditSheet(
-        initialFeet: feet?.toInt() ?? 5,
-        initialInches: inches?.toInt() ?? 6,
-        onSave: (ft, inch) {
-          ref.read(authStateProvider.notifier).updateUser({
-            'height_feet': ft.toDouble(),
-            'height_inches': inch.toDouble(),
-          });
-          Navigator.pop(context);
+  void _editHeight(double? feet, double? inches, double? cm, AppLocalizations l10n) {
+    final settings = ref.read(settingsProvider);
+    final isImperial = settings.unitSystem == UnitSystem.imperial;
+
+    if (isImperial) {
+      // Use ft/in picker
+      int initialFeet = 5;
+      int initialInches = 6;
+
+      if (feet != null && inches != null) {
+        initialFeet = feet.toInt();
+        initialInches = inches.toInt();
+      } else if (cm != null) {
+        final totalInches = cm / 2.54;
+        initialFeet = (totalInches / 12).floor();
+        initialInches = (totalInches % 12).round();
+      }
+
+      showModalBottomSheet(
+        context: context,
+        backgroundColor: context.cardColor,
+        shape: const RoundedRectangleBorder(
+          borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+        ),
+        builder: (sheetContext) => _HeightEditSheet(
+          initialFeet: initialFeet,
+          initialInches: initialInches,
+          l10n: l10n,
+          onSave: (ft, inch) {
+            ref.read(authStateProvider.notifier).updateUser({
+              'heightFeet': ft.toDouble(),
+              'heightInches': inch.toDouble(),
+              'heightCm': (ft * 12 + inch) * 2.54, // Also store in cm
+            });
+            Navigator.pop(sheetContext);
+          },
+        ),
+      );
+    } else {
+      // Use cm input
+      int initialCm = 170;
+
+      if (cm != null) {
+        initialCm = cm.toInt();
+      } else if (feet != null && inches != null) {
+        initialCm = ((feet * 12 + inches) * 2.54).round();
+      }
+
+      _showEditDialog(
+        title: l10n.height,
+        currentValue: initialCm.toString(),
+        suffix: 'cm',
+        onSave: (value) {
+          final inputCm = double.tryParse(value);
+          if (inputCm != null && inputCm > 0) {
+            // Also calculate feet/inches for storage
+            final totalInches = inputCm / 2.54;
+            final ft = (totalInches / 12).floor();
+            final inch = (totalInches % 12).round();
+            ref.read(authStateProvider.notifier).updateUser({
+              'heightCm': inputCm,
+              'heightFeet': ft.toDouble(),
+              'heightInches': inch.toDouble(),
+            });
+          }
         },
-      ),
-    );
+      );
+    }
   }
 
   void _editBirthDate(DateTime? currentDate) async {
@@ -262,63 +345,63 @@ class _PersonalDetailsScreenState extends ConsumerState<PersonalDetailsScreen> {
     );
     if (date != null) {
       ref.read(authStateProvider.notifier).updateUser({
-        'birth_date': date.toIso8601String(),
+        'birthDate': date.toIso8601String(),
       });
     }
   }
 
-  void _editGender(String? currentGender) {
+  void _editGender(String? currentGender, AppLocalizations l10n) {
     showModalBottomSheet(
       context: context,
-      backgroundColor: Colors.white,
+      backgroundColor: context.cardColor,
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
       ),
-      builder: (context) => Padding(
+      builder: (sheetContext) => Padding(
         padding: const EdgeInsets.all(24),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Text(
-              'Select Gender',
+            Text(
+              l10n.gender,
               style: TextStyle(
                 fontSize: 20,
                 fontWeight: FontWeight.bold,
-                color: AppColors.textPrimary,
+                color: sheetContext.textPrimaryColor,
               ),
             ),
             const SizedBox(height: 20),
             _GenderOption(
-              label: 'Male',
+              label: l10n.male,
               isSelected: currentGender == 'Male',
               onTap: () {
                 ref.read(authStateProvider.notifier).updateUser({
                   'gender': 'Male',
                 });
-                Navigator.pop(context);
+                Navigator.pop(sheetContext);
               },
             ),
             const SizedBox(height: 12),
             _GenderOption(
-              label: 'Female',
+              label: l10n.female,
               isSelected: currentGender == 'Female',
               onTap: () {
                 ref.read(authStateProvider.notifier).updateUser({
                   'gender': 'Female',
                 });
-                Navigator.pop(context);
+                Navigator.pop(sheetContext);
               },
             ),
             const SizedBox(height: 12),
             _GenderOption(
-              label: 'Other',
+              label: l10n.other,
               isSelected: currentGender == 'Other',
               onTap: () {
                 ref.read(authStateProvider.notifier).updateUser({
                   'gender': 'Other',
                 });
-                Navigator.pop(context);
+                Navigator.pop(sheetContext);
               },
             ),
             const SizedBox(height: 20),
@@ -337,7 +420,7 @@ class _PersonalDetailsScreenState extends ConsumerState<PersonalDetailsScreen> {
         final steps = int.tryParse(value);
         if (steps != null) {
           ref.read(authStateProvider.notifier).updateUser({
-            'daily_step_goal': steps,
+            'dailyStepGoal': steps,
           });
         }
       },
@@ -354,27 +437,27 @@ class _PersonalDetailsScreenState extends ConsumerState<PersonalDetailsScreen> {
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
-      backgroundColor: Colors.white,
+      backgroundColor: context.cardColor,
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
       ),
-      builder: (context) => Padding(
+      builder: (sheetContext) => Padding(
         padding: EdgeInsets.only(
           left: 24,
           right: 24,
           top: 24,
-          bottom: MediaQuery.of(context).viewInsets.bottom + 24,
+          bottom: MediaQuery.of(sheetContext).viewInsets.bottom + 24,
         ),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              'Edit $title',
-              style: const TextStyle(
+              title,
+              style: TextStyle(
                 fontSize: 20,
                 fontWeight: FontWeight.bold,
-                color: AppColors.textPrimary,
+                color: sheetContext.textPrimaryColor,
               ),
             ),
             const SizedBox(height: 20),
@@ -383,10 +466,20 @@ class _PersonalDetailsScreenState extends ConsumerState<PersonalDetailsScreen> {
               keyboardType:
                   const TextInputType.numberWithOptions(decimal: true),
               autofocus: true,
+              style: TextStyle(color: sheetContext.textPrimaryColor),
               decoration: InputDecoration(
+                hintText: '0',
                 suffixText: suffix,
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(12),
+                ),
+                enabledBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(12),
+                  borderSide: BorderSide(color: sheetContext.borderColor),
+                ),
+                focusedBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(12),
+                  borderSide: const BorderSide(color: AppColors.primary),
                 ),
               ),
             ),
@@ -397,7 +490,7 @@ class _PersonalDetailsScreenState extends ConsumerState<PersonalDetailsScreen> {
               child: ElevatedButton(
                 onPressed: () {
                   onSave(controller.text);
-                  Navigator.pop(context);
+                  Navigator.pop(sheetContext);
                 },
                 style: ElevatedButton.styleFrom(
                   backgroundColor: AppColors.primary,
@@ -518,11 +611,13 @@ class _HeightEditSheet extends StatefulWidget {
   final int initialFeet;
   final int initialInches;
   final Function(int feet, int inches) onSave;
+  final AppLocalizations l10n;
 
   const _HeightEditSheet({
     required this.initialFeet,
     required this.initialInches,
     required this.onSave,
+    required this.l10n,
   });
 
   @override

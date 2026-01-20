@@ -539,14 +539,40 @@ class _LogFoodScreenState extends ConsumerState<LogFoodScreen>
     );
   }
 
-  void _addFood(_FoodSuggestion suggestion, AppLocalizations l10n) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text(l10n.addedFood(suggestion.name)),
-        behavior: SnackBarBehavior.floating,
-      ),
-    );
-    // TODO: Actually add the food entry via API
+  Future<void> _addFood(_FoodSuggestion suggestion, AppLocalizations l10n) async {
+    final authState = ref.read(authStateProvider);
+    if (authState.userId == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(l10n.pleaseSignInToLogFood)),
+      );
+      return;
+    }
+
+    try {
+      await ref.read(addFoodEntryProvider(AddFoodEntryParams(
+        name: suggestion.name,
+        calories: suggestion.calories,
+        protein: 0,
+        carbs: 0,
+        fat: 0,
+      )).future);
+
+      if (mounted) {
+        Navigator.pop(context);
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(l10n.addedFood(suggestion.name)),
+            behavior: SnackBarBehavior.floating,
+          ),
+        );
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(l10n.failedToLogFood(e.toString()))),
+        );
+      }
+    }
   }
 
   void _showManualAddSheet(AppLocalizations l10n) {
