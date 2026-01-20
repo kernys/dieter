@@ -12,6 +12,13 @@ export interface User {
   daily_fat_goal: number;
   current_weight: number | null;
   goal_weight: number | null;
+  height_feet: number | null;
+  height_inches: number | null;
+  height_cm: number | null;
+  birth_date: Date | null;
+  gender: string | null;
+  daily_step_goal: number;
+  onboarding_completed: boolean | null;
   created_at: Date;
 }
 
@@ -68,6 +75,41 @@ export const UserEntity = new EntitySchema<User>({
       type: 'decimal',
       precision: 5,
       scale: 2,
+      nullable: true,
+    },
+    height_feet: {
+      type: 'decimal',
+      precision: 3,
+      scale: 1,
+      nullable: true,
+    },
+    height_inches: {
+      type: 'decimal',
+      precision: 4,
+      scale: 2,
+      nullable: true,
+    },
+    height_cm: {
+      type: 'decimal',
+      precision: 5,
+      scale: 2,
+      nullable: true,
+    },
+    birth_date: {
+      type: 'date',
+      nullable: true,
+    },
+    gender: {
+      type: 'varchar',
+      length: 20,
+      nullable: true,
+    },
+    daily_step_goal: {
+      type: 'int',
+      default: 10000,
+    },
+    onboarding_completed: {
+      type: 'boolean',
       nullable: true,
     },
     created_at: {

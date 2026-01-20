@@ -5,13 +5,64 @@ import { UserEntity, type User } from '@/entities';
 
 const updateUserSchema = z.object({
   name: z.string().optional(),
-  daily_calorie_goal: z.number().optional(),
-  daily_protein_goal: z.number().optional(),
-  daily_carbs_goal: z.number().optional(),
-  daily_fat_goal: z.number().optional(),
-  current_weight: z.number().optional(),
-  goal_weight: z.number().optional(),
+  dailyCalorieGoal: z.number().optional(),
+  dailyProteinGoal: z.number().optional(),
+  dailyCarbsGoal: z.number().optional(),
+  dailyFatGoal: z.number().optional(),
+  currentWeight: z.number().optional(),
+  goalWeight: z.number().optional(),
+  heightFeet: z.number().optional(),
+  heightInches: z.number().optional(),
+  heightCm: z.number().optional(),
+  birthDate: z.string().optional(),
+  gender: z.string().optional(),
+  dailyStepGoal: z.number().optional(),
+  onboardingCompleted: z.boolean().optional(),
 });
+
+// Convert camelCase to snake_case for database
+function toSnakeCase(updates: z.infer<typeof updateUserSchema>): Partial<User> {
+  const result: Partial<User> = {};
+  if (updates.name !== undefined) result.name = updates.name;
+  if (updates.dailyCalorieGoal !== undefined) result.daily_calorie_goal = updates.dailyCalorieGoal;
+  if (updates.dailyProteinGoal !== undefined) result.daily_protein_goal = updates.dailyProteinGoal;
+  if (updates.dailyCarbsGoal !== undefined) result.daily_carbs_goal = updates.dailyCarbsGoal;
+  if (updates.dailyFatGoal !== undefined) result.daily_fat_goal = updates.dailyFatGoal;
+  if (updates.currentWeight !== undefined) result.current_weight = updates.currentWeight;
+  if (updates.goalWeight !== undefined) result.goal_weight = updates.goalWeight;
+  if (updates.heightFeet !== undefined) result.height_feet = updates.heightFeet;
+  if (updates.heightInches !== undefined) result.height_inches = updates.heightInches;
+  if (updates.heightCm !== undefined) result.height_cm = updates.heightCm;
+  if (updates.birthDate !== undefined) result.birth_date = updates.birthDate ? new Date(updates.birthDate) : null;
+  if (updates.gender !== undefined) result.gender = updates.gender;
+  if (updates.dailyStepGoal !== undefined) result.daily_step_goal = updates.dailyStepGoal;
+  if (updates.onboardingCompleted !== undefined) result.onboarding_completed = updates.onboardingCompleted;
+  return result;
+}
+
+// Format user for API response (snake_case to camelCase)
+function formatUserResponse(user: User) {
+  return {
+    id: user.id,
+    email: user.email,
+    name: user.name,
+    avatarUrl: user.avatar_url,
+    dailyCalorieGoal: Number(user.daily_calorie_goal),
+    dailyProteinGoal: Number(user.daily_protein_goal),
+    dailyCarbsGoal: Number(user.daily_carbs_goal),
+    dailyFatGoal: Number(user.daily_fat_goal),
+    currentWeight: user.current_weight ? Number(user.current_weight) : null,
+    goalWeight: user.goal_weight ? Number(user.goal_weight) : null,
+    heightFeet: user.height_feet ? Number(user.height_feet) : null,
+    heightInches: user.height_inches ? Number(user.height_inches) : null,
+    heightCm: user.height_cm ? Number(user.height_cm) : null,
+    birthDate: user.birth_date ? user.birth_date.toISOString().split('T')[0] : null,
+    gender: user.gender,
+    dailyStepGoal: Number(user.daily_step_goal),
+    onboardingCompleted: user.onboarding_completed,
+    createdAt: user.created_at,
+  };
+}
 
 export async function GET(
   request: NextRequest,
@@ -30,19 +81,7 @@ export async function GET(
       );
     }
 
-    return NextResponse.json({
-      id: user.id,
-      email: user.email,
-      name: user.name,
-      avatarUrl: user.avatar_url,
-      dailyCalorieGoal: Number(user.daily_calorie_goal),
-      dailyProteinGoal: Number(user.daily_protein_goal),
-      dailyCarbsGoal: Number(user.daily_carbs_goal),
-      dailyFatGoal: Number(user.daily_fat_goal),
-      currentWeight: user.current_weight ? Number(user.current_weight) : null,
-      goalWeight: user.goal_weight ? Number(user.goal_weight) : null,
-      createdAt: user.created_at,
-    });
+    return NextResponse.json(formatUserResponse(user));
   } catch (error) {
     console.error('Get user error:', error);
     return NextResponse.json(
@@ -71,22 +110,11 @@ export async function PATCH(
       );
     }
 
-    Object.assign(user, updates);
+    const snakeCaseUpdates = toSnakeCase(updates);
+    Object.assign(user, snakeCaseUpdates);
     await userRepo.save(user);
 
-    return NextResponse.json({
-      id: user.id,
-      email: user.email,
-      name: user.name,
-      avatarUrl: user.avatar_url,
-      dailyCalorieGoal: Number(user.daily_calorie_goal),
-      dailyProteinGoal: Number(user.daily_protein_goal),
-      dailyCarbsGoal: Number(user.daily_carbs_goal),
-      dailyFatGoal: Number(user.daily_fat_goal),
-      currentWeight: user.current_weight ? Number(user.current_weight) : null,
-      goalWeight: user.goal_weight ? Number(user.goal_weight) : null,
-      createdAt: user.created_at,
-    });
+    return NextResponse.json(formatUserResponse(user));
   } catch (error) {
     if (error instanceof z.ZodError) {
       return NextResponse.json(

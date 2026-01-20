@@ -76,6 +76,8 @@ class _PersonalDetailsScreenState extends ConsumerState<PersonalDetailsScreen> {
                             fontSize: 14,
                             color: context.textSecondaryColor,
                           ),
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
                         ),
                         const SizedBox(height: 4),
                         Text(
@@ -85,10 +87,13 @@ class _PersonalDetailsScreenState extends ConsumerState<PersonalDetailsScreen> {
                             fontWeight: FontWeight.bold,
                             color: context.textPrimaryColor,
                           ),
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
                         ),
                       ],
                     ),
                   ),
+                  const SizedBox(width: 12),
                   ElevatedButton(
                     onPressed: () => _editGoalWeight(user?.goalWeight, l10n),
                     style: ElevatedButton.styleFrom(
