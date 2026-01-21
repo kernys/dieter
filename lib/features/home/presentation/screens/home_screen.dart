@@ -200,10 +200,16 @@ class HomeScreen extends ConsumerWidget {
 
             // Week Calendar
             SliverToBoxAdapter(
-              child: WeekCalendar(
-                selectedDate: selectedDate,
-                onDateSelected: (date) {
-                  ref.read(selectedDateProvider.notifier).state = date;
+              child: Builder(
+                builder: (context) {
+                  final weekDatesWithData = ref.watch(weekDatesWithDataProvider);
+                  return WeekCalendar(
+                    selectedDate: selectedDate,
+                    onDateSelected: (date) {
+                      ref.read(selectedDateProvider.notifier).state = date;
+                    },
+                    datesWithData: weekDatesWithData.valueOrNull,
+                  );
                 },
               ),
             ),

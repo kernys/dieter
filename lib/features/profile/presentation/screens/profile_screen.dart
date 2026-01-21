@@ -406,6 +406,7 @@ class ProfileScreen extends ConsumerWidget {
           controller: nameController,
           decoration: InputDecoration(labelText: l10n.name),
         ),
+        actionsAlignment: MainAxisAlignment.spaceBetween,
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),

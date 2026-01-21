@@ -624,7 +624,7 @@ class LogExerciseScreen extends ConsumerWidget {
                             ],
                           )
                         : Text(
-                            analysisResult != null ? l10n.logExercise : l10n.analyzing,
+                            analysisResult != null ? l10n.logExercise : l10n.analyzeExercise,
                             style: const TextStyle(
                               fontSize: 16,
                               fontWeight: FontWeight.w600,

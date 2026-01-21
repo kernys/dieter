@@ -723,6 +723,9 @@ class AppLocalizationsKo extends AppLocalizations {
   String get analyzingExercise => '운동 분석 중...';
 
   @override
+  String get analyzeExercise => '분석하기';
+
+  @override
   String get exerciseAnalysisFailed => '운동 분석에 실패했습니다';
 
   @override

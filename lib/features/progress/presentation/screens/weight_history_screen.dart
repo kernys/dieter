@@ -209,7 +209,7 @@ class WeightHistoryScreen extends ConsumerWidget {
                           ],
                         ),
                       ),
-                      if (change != null) ...[
+                      if (change != null && change != 0) ...[
                         Container(
                           padding: const EdgeInsets.symmetric(
                             horizontal: 8,
@@ -218,36 +218,29 @@ class WeightHistoryScreen extends ConsumerWidget {
                           decoration: BoxDecoration(
                             color: change < 0
                                 ? AppColors.success.withValues(alpha: 0.1)
-                                : change > 0
-                                    ? AppColors.error.withValues(alpha: 0.1)
-                                    : context.cardColor,
+                                : AppColors.error.withValues(alpha: 0.1),
                             borderRadius: BorderRadius.circular(8),
                           ),
                           child: Row(
                             mainAxisSize: MainAxisSize.min,
                             children: [
-                              if (change != 0)
-                                Icon(
-                                  change < 0
-                                      ? Icons.arrow_downward
-                                      : Icons.arrow_upward,
-                                  size: 14,
-                                  color: change < 0
-                                      ? AppColors.success
-                                      : AppColors.error,
-                                ),
+                              Icon(
+                                change < 0
+                                    ? Icons.arrow_downward
+                                    : Icons.arrow_upward,
+                                size: 14,
+                                color: change < 0
+                                    ? AppColors.success
+                                    : AppColors.error,
+                              ),
                               Text(
-                                change == 0
-                                    ? '0'
-                                    : '${change > 0 ? '+' : ''}${change.toStringAsFixed(1)}',
+                                '${change > 0 ? '+' : ''}${change.toStringAsFixed(1)}',
                                 style: TextStyle(
                                   fontSize: 12,
                                   fontWeight: FontWeight.w600,
                                   color: change < 0
                                       ? AppColors.success
-                                      : change > 0
-                                          ? AppColors.error
-                                          : context.textSecondaryColor,
+                                      : AppColors.error,
                                 ),
                               ),
                             ],

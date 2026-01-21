@@ -254,6 +254,7 @@
   "heavyWeights": "무거움",
   "weightLiftingLogged": "웨이트 트레이닝 기록됨: {duration}분 ({intensity} 강도)",
   "analyzingExercise": "운동 분석 중...",
+  "analyzeExercise": "분석하기",
   "exerciseAnalysisFailed": "운동 분석에 실패했습니다",
 
   "logFood": "음식 기록",

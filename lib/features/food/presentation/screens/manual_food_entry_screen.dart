@@ -66,29 +66,6 @@ class _ManualFoodEntryScreenState extends ConsumerState<ManualFoodEntryScreen> {
           ),
         ),
         centerTitle: true,
-        actions: [
-          PopupMenuButton<String>(
-            icon: Container(
-              margin: const EdgeInsets.all(8),
-              padding: const EdgeInsets.all(8),
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                color: context.cardColor,
-              ),
-              child: Icon(
-                Icons.more_horiz,
-                color: context.textPrimaryColor,
-                size: 20,
-              ),
-            ),
-            onSelected: (value) {
-              // Handle menu actions
-            },
-            itemBuilder: (context) => [
-              PopupMenuItem(value: 'delete', child: Text(l10n.delete)),
-            ],
-          ),
-        ],
       ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16),

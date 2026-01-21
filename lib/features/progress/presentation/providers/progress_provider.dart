@@ -76,13 +76,20 @@ final progressPercentageProvider = Provider<double>((ref) {
       final startWeight = data.stats.startWeight;
       final currentWeight = data.stats.currentWeight;
 
-      if (goal == 0) return 0;
+      if (goal == 0 || startWeight == 0) return 0;
 
-      final totalToGain = goal - startWeight;
-      final gained = currentWeight - startWeight;
+      final totalChange = (goal - startWeight).abs();
+      if (totalChange == 0) return 100; // Already at goal
 
-      if (totalToGain <= 0) return 0;
-      return (gained / totalToGain * 100).clamp(0, 100);
+      // Check direction: weight loss or weight gain
+      final isLosingWeight = goal < startWeight;
+      final actualProgress = isLosingWeight
+          ? startWeight - currentWeight  // Weight loss
+          : currentWeight - startWeight; // Weight gain
+
+      if (actualProgress < 0) return 0; // Moving wrong direction
+
+      return (actualProgress / totalChange * 100).clamp(0, 100);
     },
     loading: () => 0.0,
     error: (_, __) => 0.0,

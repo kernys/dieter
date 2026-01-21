@@ -254,8 +254,10 @@ class ApiService {
 
   // Streak API
   Future<StreakResponse> getStreak(String userId) async {
+    // Send timezone offset in minutes (e.g., Asia/Seoul = +540)
+    final tzOffset = DateTime.now().timeZoneOffset.inMinutes;
     final response = await http.get(
-      Uri.parse('$baseUrl/stats/streak?userId=$userId'),
+      Uri.parse('$baseUrl/stats/streak?userId=$userId&tzOffset=$tzOffset'),
       headers: _headers,
     );
 

@@ -3,10 +3,23 @@ import { getRepository } from '@/lib/database';
 import { FoodEntryEntity, type FoodEntry } from '@/entities';
 import { MoreThanOrEqual } from 'typeorm';
 
+// Helper to get date in specific timezone
+function getDateInTimezone(date: Date, offsetMinutes: number): Date {
+  const utc = date.getTime() + (date.getTimezoneOffset() * 60000);
+  return new Date(utc + (offsetMinutes * 60000));
+}
+
+// Format date as YYYY-MM-DD for comparison
+function formatDateKey(date: Date): string {
+  return `${date.getFullYear()}-${date.getMonth()}-${date.getDate()}`;
+}
+
 export async function GET(request: NextRequest) {
   try {
     const { searchParams } = new URL(request.url);
     const userId = searchParams.get('userId');
+    // Timezone offset in minutes (e.g., Asia/Seoul = +540)
+    const tzOffset = parseInt(searchParams.get('tzOffset') || '0', 10);
 
     if (!userId) {
       return NextResponse.json(
@@ -28,22 +41,23 @@ export async function GET(request: NextRequest) {
       order: { logged_at: 'DESC' },
     });
 
+    // Convert dates to user's timezone
     const loggedDates = new Set(
       entries.map(entry => {
-        const date = new Date(entry.logged_at);
-        return `${date.getFullYear()}-${date.getMonth()}-${date.getDate()}`;
+        const date = getDateInTimezone(new Date(entry.logged_at), tzOffset);
+        return formatDateKey(date);
       })
     );
 
     let currentStreak = 0;
     let maxStreak = 0;
-    const today = new Date();
+    const today = getDateInTimezone(new Date(), tzOffset);
     today.setHours(0, 0, 0, 0);
 
     for (let i = 0; i < 365; i++) {
       const checkDate = new Date(today);
       checkDate.setDate(checkDate.getDate() - i);
-      const dateKey = `${checkDate.getFullYear()}-${checkDate.getMonth()}-${checkDate.getDate()}`;
+      const dateKey = formatDateKey(checkDate);
 
       if (loggedDates.has(dateKey)) {
         currentStreak++;
@@ -61,7 +75,7 @@ export async function GET(request: NextRequest) {
     for (let i = 0; i < 7; i++) {
       const checkDate = new Date(startOfWeek);
       checkDate.setDate(startOfWeek.getDate() + i);
-      const dateKey = `${checkDate.getFullYear()}-${checkDate.getMonth()}-${checkDate.getDate()}`;
+      const dateKey = formatDateKey(checkDate);
       weekData.push(loggedDates.has(dateKey));
     }
 

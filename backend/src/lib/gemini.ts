@@ -3,12 +3,12 @@ const OPENROUTER_API_KEY = process.env.OPENROUTER_API_KEY!;
 
 function getLanguageInstruction(locale: string): string {
   const languageMap: Record<string, string> = {
-    'ko': 'Respond with food names and ingredient names in Korean (한국어).',
-    'ja': 'Respond with food names and ingredient names in Japanese (日本語).',
-    'zh': 'Respond with food names and ingredient names in Chinese (中文).',
-    'es': 'Respond with food names and ingredient names in Spanish (Español).',
-    'fr': 'Respond with food names and ingredient names in French (Français).',
-    'de': 'Respond with food names and ingredient names in German (Deutsch).',
+    'ko': 'IMPORTANT: ALL text responses including food names, ingredient names, and descriptions MUST be in Korean (한국어) ONLY. Do NOT include any English text.',
+    'ja': 'IMPORTANT: ALL text responses including food names, ingredient names, and descriptions MUST be in Japanese (日本語) ONLY. Do NOT include any English text.',
+    'zh': 'IMPORTANT: ALL text responses including food names, ingredient names, and descriptions MUST be in Chinese (中文) ONLY. Do NOT include any English text.',
+    'es': 'IMPORTANT: ALL text responses including food names, ingredient names, and descriptions MUST be in Spanish (Español) ONLY. Do NOT include any English text.',
+    'fr': 'IMPORTANT: ALL text responses including food names, ingredient names, and descriptions MUST be in French (Français) ONLY. Do NOT include any English text.',
+    'de': 'IMPORTANT: ALL text responses including food names, ingredient names, and descriptions MUST be in German (Deutsch) ONLY. Do NOT include any English text.',
   };
 
   return languageMap[locale] || '';

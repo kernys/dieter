@@ -727,6 +727,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get analyzingExercise => 'Analyzing exercise...';
 
   @override
+  String get analyzeExercise => 'Analyze';
+
+  @override
   String get exerciseAnalysisFailed => 'Failed to analyze exercise';
 
   @override

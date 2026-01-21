@@ -1472,6 +1472,12 @@ abstract class AppLocalizations {
   /// **'Analyzing exercise...'**
   String get analyzingExercise;
 
+  /// No description provided for @analyzeExercise.
+  ///
+  /// In en, this message translates to:
+  /// **'Analyze'**
+  String get analyzeExercise;
+
   /// No description provided for @exerciseAnalysisFailed.
   ///
   /// In en, this message translates to:

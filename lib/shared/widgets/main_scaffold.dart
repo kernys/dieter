@@ -208,7 +208,7 @@ class _MainScaffoldState extends ConsumerState<MainScaffold>
                   child: _NavItem(
                     icon: Icons.celebration_outlined,
                     activeIcon: Icons.celebration,
-                    label: 'Party',
+                    label: l10n.party,
                     isSelected: selectedIndex == 2,
                     onTap: () => _onItemTapped(context, 2),
                   ),

@@ -109,6 +109,34 @@ final streakProvider = FutureProvider<int>((ref) async {
   }
 });
 
+// Dates with food data for the current week
+final weekDatesWithDataProvider = FutureProvider<Set<DateTime>>((ref) async {
+  final authState = ref.watch(authStateProvider);
+  final userId = authState.userId;
+  if (userId == null) return {};
+
+  final today = DateTime.now();
+  final startOfWeek = today.subtract(Duration(days: today.weekday % 7));
+  final datesWithData = <DateTime>{};
+
+  // Check each day of the week
+  for (int i = 0; i < 7; i++) {
+    final date = startOfWeek.add(Duration(days: i));
+    if (date.isAfter(today)) continue;
+
+    try {
+      final summary = await ref.watch(dailySummaryProvider(date).future);
+      if (summary.entries.isNotEmpty) {
+        datesWithData.add(DateTime(date.year, date.month, date.day));
+      }
+    } catch (_) {
+      // Ignore errors for individual days
+    }
+  }
+
+  return datesWithData;
+});
+
 // Add food entry action
 final addFoodEntryProvider = FutureProvider.family<FoodEntryModel?, AddFoodEntryParams>((ref, params) async {
   final apiService = ref.watch(apiServiceProvider);

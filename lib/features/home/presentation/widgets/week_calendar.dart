@@ -5,11 +5,13 @@ import '../../../../core/constants/app_colors.dart';
 class WeekCalendar extends StatelessWidget {
   final DateTime selectedDate;
   final ValueChanged<DateTime> onDateSelected;
+  final Set<DateTime>? datesWithData;
 
   const WeekCalendar({
     super.key,
     required this.selectedDate,
     required this.onDateSelected,
+    this.datesWithData,
   });
 
   @override
@@ -50,6 +52,8 @@ class WeekCalendar extends StatelessWidget {
                 final isToday = _isSameDay(date, today);
                 final isFuture = date.isAfter(today);
 
+                final hasData = datesWithData?.any((d) => _isSameDay(d, date)) ?? false;
+
                 return GestureDetector(
                   onTap: isFuture ? null : () => onDateSelected(date),
                   child: Container(
@@ -89,6 +93,18 @@ class WeekCalendar extends StatelessWidget {
                                     : context.textPrimaryColor,
                           ),
                         ),
+                        const SizedBox(height: 2),
+                        if (hasData && !isSelected)
+                          Container(
+                            width: 6,
+                            height: 6,
+                            decoration: const BoxDecoration(
+                              color: AppColors.success,
+                              shape: BoxShape.circle,
+                            ),
+                          )
+                        else
+                          const SizedBox(height: 6),
                       ],
                     ),
                   ),

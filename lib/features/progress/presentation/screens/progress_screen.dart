@@ -485,42 +485,44 @@ class ProgressScreen extends ConsumerWidget {
                               ),
                             ),
                           ),
-                          const SizedBox(width: 8),
-                          Container(
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: 8,
-                              vertical: 4,
-                            ),
-                            decoration: BoxDecoration(
-                              color: dailyAverage.isIncrease
-                                  ? AppColors.success.withValues(alpha: 0.1)
-                                  : AppColors.error.withValues(alpha: 0.1),
-                              borderRadius: BorderRadius.circular(4),
-                            ),
-                            child: Row(
-                              children: [
-                                Icon(
-                                  dailyAverage.isIncrease
-                                      ? Icons.arrow_upward
-                                      : Icons.arrow_downward,
-                                  size: 12,
-                                  color: dailyAverage.isIncrease
-                                      ? AppColors.success
-                                      : AppColors.error,
-                                ),
-                                Text(
-                                  '${dailyAverage.changePercentage}%',
-                                  style: TextStyle(
-                                    fontSize: 12,
-                                    fontWeight: FontWeight.w600,
+                          if (dailyAverage.changePercentage != 0) ...[
+                            const SizedBox(width: 8),
+                            Container(
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 8,
+                                vertical: 4,
+                              ),
+                              decoration: BoxDecoration(
+                                color: dailyAverage.isIncrease
+                                    ? AppColors.success.withValues(alpha: 0.1)
+                                    : AppColors.error.withValues(alpha: 0.1),
+                                borderRadius: BorderRadius.circular(4),
+                              ),
+                              child: Row(
+                                children: [
+                                  Icon(
+                                    dailyAverage.isIncrease
+                                        ? Icons.arrow_upward
+                                        : Icons.arrow_downward,
+                                    size: 12,
                                     color: dailyAverage.isIncrease
                                         ? AppColors.success
                                         : AppColors.error,
                                   ),
-                                ),
-                              ],
+                                  Text(
+                                    '${dailyAverage.changePercentage}%',
+                                    style: TextStyle(
+                                      fontSize: 12,
+                                      fontWeight: FontWeight.w600,
+                                      color: dailyAverage.isIncrease
+                                          ? AppColors.success
+                                          : AppColors.error,
+                                    ),
+                                  ),
+                                ],
+                              ),
                             ),
-                          ),
+                          ],
                         ],
                       ),
                     ],
