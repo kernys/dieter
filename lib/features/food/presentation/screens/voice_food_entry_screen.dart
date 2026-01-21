@@ -312,10 +312,12 @@ class _VoiceFoodEntryScreenState extends ConsumerState<VoiceFoodEntryScreen> {
         ),
         centerTitle: true,
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(24),
-        child: Column(
-          children: [
+      body: SizedBox.expand(
+        child: Padding(
+          padding: const EdgeInsets.all(24),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
             const Spacer(),
 
             // Microphone button
@@ -445,6 +447,7 @@ class _VoiceFoodEntryScreenState extends ConsumerState<VoiceFoodEntryScreen> {
 
             const Spacer(),
           ],
+        ),
         ),
       ),
       bottomNavigationBar: _analysisResult != null

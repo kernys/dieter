@@ -695,7 +695,7 @@ class ProgressScreen extends ConsumerWidget {
                 final index = value.toInt();
                 if (index >= 0 && index < logs.length) {
                   final log = logs[logs.length - 1 - index];
-                  final date = log.recordedAt;
+                  final date = log.loggedAt;
                   final monthNames = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
                   return Padding(
                     padding: const EdgeInsets.only(top: 8),
@@ -754,7 +754,7 @@ class ProgressScreen extends ConsumerWidget {
                 final index = spot.spotIndex;
                 final logIndex = logs.length - 1 - index;
                 final log = logs[logIndex];
-                final date = log.recordedAt;
+                final date = log.loggedAt;
                 final monthNames = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
                 return LineTooltipItem(
                   '${spot.y.toStringAsFixed(1)} $weightUnit\n${monthNames[date.month - 1]} ${date.day}',
