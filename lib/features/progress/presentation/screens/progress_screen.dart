@@ -601,6 +601,9 @@ class ProgressScreen extends ConsumerWidget {
     }
 
     final isMetric = settings.unitSystem == UnitSystem.metric;
+    final goalWeightRaw = ref.watch(goalWeightProvider);
+    final goalWeight = isMetric ? goalWeightRaw * 0.453592 : goalWeightRaw;
+
     final spots = <FlSpot>[];
     double minWeight = double.infinity;
     double maxWeight = double.negativeInfinity;
@@ -614,6 +617,10 @@ class ProgressScreen extends ConsumerWidget {
       if (weight > maxWeight) maxWeight = weight;
     }
 
+    // Include goal weight in min/max calculation
+    if (goalWeight < minWeight) minWeight = goalWeight;
+    if (goalWeight > maxWeight) maxWeight = goalWeight;
+
     // Add padding to min/max
     final padding = (maxWeight - minWeight) * 0.2;
     final chartMinY = (minWeight - padding).clamp(0.0, double.infinity);
@@ -623,6 +630,27 @@ class ProgressScreen extends ConsumerWidget {
     return LineChart(
       LineChartData(
         backgroundColor: Colors.transparent,
+        extraLinesData: ExtraLinesData(
+          horizontalLines: [
+            HorizontalLine(
+              y: goalWeight,
+              color: AppColors.success,
+              strokeWidth: 2,
+              dashArray: [8, 4],
+              label: HorizontalLineLabel(
+                show: true,
+                alignment: Alignment.topRight,
+                padding: const EdgeInsets.only(right: 4, bottom: 4),
+                style: const TextStyle(
+                  fontSize: 10,
+                  fontWeight: FontWeight.w600,
+                  color: AppColors.success,
+                ),
+                labelResolver: (line) => '${l10n.goal}: ${goalWeight.toStringAsFixed(1)}',
+              ),
+            ),
+          ],
+        ),
         gridData: FlGridData(
           show: true,
           drawVerticalLine: false,
@@ -839,6 +867,9 @@ class ProgressScreen extends ConsumerWidget {
                   await ref.read(authStateProvider.notifier).updateUser({
                     'goal_weight': weightInLbs,
                   });
+
+                  // Refresh providers
+                  ref.invalidate(weightLogsResponseProvider);
 
                   if (dialogContext.mounted) {
                     Navigator.pop(dialogContext);
@@ -1390,43 +1421,48 @@ class _BMICard extends StatelessWidget {
         ),
         const SizedBox(height: 16),
         // BMI Scale
-        Stack(
-          children: [
-            Container(
-              height: 8,
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(4),
-                gradient: const LinearGradient(
-                  colors: [
-                    Color(0xFF64B5F6), // Underweight
-                    Color(0xFF4CAF50), // Normal
-                    Color(0xFFFFB74D), // Overweight
-                    Color(0xFFE57373), // Obese
-                  ],
-                  stops: [0.0, 0.35, 0.6, 1.0],
-                ),
-              ),
-            ),
-            Positioned(
-              left: bmiPosition * (MediaQuery.of(context).size.width - 64) - 6,
-              top: -4,
-              child: Container(
-                width: 16,
-                height: 16,
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  shape: BoxShape.circle,
-                  border: Border.all(color: bmiColor, width: 3),
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.black.withValues(alpha: 0.2),
-                      blurRadius: 4,
+        LayoutBuilder(
+          builder: (context, constraints) {
+            final scaleWidth = constraints.maxWidth;
+            return Stack(
+              children: [
+                Container(
+                  height: 8,
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(4),
+                    gradient: const LinearGradient(
+                      colors: [
+                        Color(0xFF64B5F6), // Underweight
+                        Color(0xFF4CAF50), // Normal
+                        Color(0xFFFFB74D), // Overweight
+                        Color(0xFFE57373), // Obese
+                      ],
+                      stops: [0.0, 0.35, 0.6, 1.0],
                     ),
-                  ],
+                  ),
                 ),
-              ),
-            ),
-          ],
+                Positioned(
+                  left: (bmiPosition * scaleWidth - 8).clamp(0.0, scaleWidth - 16),
+                  top: -4,
+                  child: Container(
+                    width: 16,
+                    height: 16,
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      shape: BoxShape.circle,
+                      border: Border.all(color: bmiColor, width: 3),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black.withValues(alpha: 0.2),
+                          blurRadius: 4,
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ],
+            );
+          },
         ),
         const SizedBox(height: 8),
         Row(

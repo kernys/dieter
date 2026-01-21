@@ -38,20 +38,21 @@ export async function GET(request: NextRequest) {
     const data = await response.json();
 
     // Transform the response to a consistent format
-    const foods = Array.isArray(data) ? data : (data.foods || []);
+    // apiFood.php returns { dishes: [...] } with fields like caloric, carbon, etc.
+    const foods = Array.isArray(data) ? data : (data.dishes || data.foods || []);
 
     const transformedFoods = foods.map((food: Record<string, unknown>) => ({
       id: food.id || String(Math.random()),
       name: food.name || food.food_name || 'Unknown',
-      calories: Number(food.calories || food.kcal || 0),
-      protein: Number(food.protein || 0),
-      carbs: Number(food.carbs || food.carbohydrates || 0),
-      fat: Number(food.fat || food.fats || 0),
-      fiber: Number(food.fiber || 0),
-      sugar: Number(food.sugar || 0),
+      calories: Number(food.calories || food.caloric || food.kcal || 0),
+      protein: Number(food.protein || food.proteins || 0),
+      carbs: Number(food.carbs || food.carbohydrates || food.carbon || 0),
+      fat: Number(food.fat || food.fats || food.lippieds || 0),
+      fiber: Number(food.fiber || food.fibers || 0),
+      sugar: Number(food.sugar || food.sugars || 0),
       sodium: Number(food.sodium || 0),
-      servingSize: food.serving_size || food.servingSize || '100g',
-      imageUrl: food.image || food.imageUrl || null,
+      servingSize: food.serving_size || food.servingSize || food.portion || '100g',
+      imageUrl: food.image || food.imageUrl || food.photo || null,
     }));
 
     return NextResponse.json({

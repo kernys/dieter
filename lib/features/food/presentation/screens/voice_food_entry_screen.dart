@@ -16,10 +16,12 @@ class VoiceFoodEntryScreen extends ConsumerStatefulWidget {
 }
 
 class _VoiceFoodEntryScreenState extends ConsumerState<VoiceFoodEntryScreen> {
-  final stt.SpeechToText _speech = stt.SpeechToText();
+  stt.SpeechToText? _speech;
   bool _isListening = false;
   bool _isAnalyzing = false;
   bool _speechAvailable = false;
+  bool _isInitializing = false;
+  bool _disposed = false;
   String _transcribedText = '';
   FoodAnalysisResult? _analysisResult;
 
@@ -30,11 +32,16 @@ class _VoiceFoodEntryScreenState extends ConsumerState<VoiceFoodEntryScreen> {
   }
 
   Future<void> _initSpeech() async {
+    if (_disposed || _isInitializing) return;
+    _isInitializing = true;
+
     try {
-      _speechAvailable = await _speech.initialize(
+      _speech = stt.SpeechToText();
+      _speechAvailable = await _speech!.initialize(
         onStatus: (status) {
+          if (_disposed || !mounted) return;
           if (status == 'done' || status == 'notListening') {
-            if (_isListening && mounted) {
+            if (_isListening) {
               setState(() => _isListening = false);
               if (_transcribedText.isNotEmpty) {
                 _analyzeFood();
@@ -43,25 +50,27 @@ class _VoiceFoodEntryScreenState extends ConsumerState<VoiceFoodEntryScreen> {
           }
         },
         onError: (error) {
-          if (mounted) {
-            setState(() => _isListening = false);
-          }
+          if (_disposed || !mounted) return;
+          setState(() => _isListening = false);
         },
       );
-      if (mounted) {
+      if (!_disposed && mounted) {
         setState(() {});
       }
     } catch (e) {
       _speechAvailable = false;
-      if (mounted) {
+      _speech = null;
+      if (!_disposed && mounted) {
         setState(() {});
       }
+    } finally {
+      _isInitializing = false;
     }
   }
 
   Future<void> _startListening() async {
-    if (!_speechAvailable) {
-      if (mounted) {
+    if (!_speechAvailable || _speech == null || _disposed) {
+      if (!_disposed && mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text('Speech recognition not available')),
         );
@@ -76,20 +85,19 @@ class _VoiceFoodEntryScreenState extends ConsumerState<VoiceFoodEntryScreen> {
     });
 
     try {
-      await _speech.listen(
+      await _speech?.listen(
         onResult: (result) {
-          if (mounted) {
-            setState(() {
-              _transcribedText = result.recognizedWords;
-            });
-          }
+          if (_disposed || !mounted) return;
+          setState(() {
+            _transcribedText = result.recognizedWords;
+          });
         },
         localeId: Localizations.localeOf(context).languageCode,
         listenFor: const Duration(seconds: 30),
         pauseFor: const Duration(seconds: 3),
       );
     } catch (e) {
-      if (mounted) {
+      if (!_disposed && mounted) {
         setState(() => _isListening = false);
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text('Failed to start listening: $e')),
@@ -100,11 +108,11 @@ class _VoiceFoodEntryScreenState extends ConsumerState<VoiceFoodEntryScreen> {
 
   Future<void> _stopListening() async {
     try {
-      await _speech.stop();
+      await _speech?.stop();
     } catch (e) {
       // Ignore stop errors
     }
-    if (mounted) {
+    if (!_disposed && mounted) {
       setState(() => _isListening = false);
       if (_transcribedText.isNotEmpty) {
         _analyzeFood();
@@ -113,21 +121,25 @@ class _VoiceFoodEntryScreenState extends ConsumerState<VoiceFoodEntryScreen> {
   }
 
   Future<void> _analyzeFood() async {
-    if (_transcribedText.isEmpty) return;
+    if (_transcribedText.isEmpty || _disposed) return;
 
-    setState(() => _isAnalyzing = true);
+    if (mounted) {
+      setState(() => _isAnalyzing = true);
+    }
 
     try {
       // Use the text to create a food entry with estimated values
       // In a real app, you'd call an AI API to analyze the text
       final result = await _estimateFoodFromText(_transcribedText);
-      setState(() {
-        _analysisResult = result;
-        _isAnalyzing = false;
-      });
+      if (!_disposed && mounted) {
+        setState(() {
+          _analysisResult = result;
+          _isAnalyzing = false;
+        });
+      }
     } catch (e) {
-      setState(() => _isAnalyzing = false);
-      if (mounted) {
+      if (!_disposed && mounted) {
+        setState(() => _isAnalyzing = false);
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text('Error analyzing: $e')),
         );
@@ -255,11 +267,14 @@ class _VoiceFoodEntryScreenState extends ConsumerState<VoiceFoodEntryScreen> {
 
   @override
   void dispose() {
+    _disposed = true;
     try {
-      _speech.stop();
+      _speech?.stop();
+      _speech?.cancel();
     } catch (e) {
       // Ignore dispose errors
     }
+    _speech = null;
     super.dispose();
   }
 
