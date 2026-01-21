@@ -7,6 +7,7 @@ import 'package:image_picker/image_picker.dart';
 import 'package:mobile_scanner/mobile_scanner.dart';
 import '../../../../services/api_service.dart';
 import '../../../../l10n/generated/app_localizations.dart';
+import '../../../auth/presentation/providers/auth_provider.dart';
 import '../providers/camera_provider.dart';
 
 class CameraScreen extends ConsumerStatefulWidget {
@@ -671,10 +672,18 @@ class _CameraScreenState extends ConsumerState<CameraScreen> {
   }
 
   Future<void> _logBarcodeFood(BarcodeSearchResult result, AppLocalizations l10n) async {
+    final authState = ref.read(authStateProvider);
+    if (authState.userId == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(l10n.pleaseSignInToLogFood)),
+      );
+      return;
+    }
+
     try {
       final apiService = ref.read(apiServiceProvider);
       await apiService.createFoodEntry(
-        userId: ref.read(capturedImageProvider.notifier).state != null ? '' : '', // Will need proper user ID
+        userId: authState.userId!,
         name: result.name ?? 'Unknown',
         calories: result.calories ?? 0,
         protein: result.protein ?? 0,
