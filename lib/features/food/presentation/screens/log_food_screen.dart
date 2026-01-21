@@ -1,7 +1,9 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../../core/constants/app_colors.dart';
 import '../../../../l10n/generated/app_localizations.dart';
+import '../../../../services/api_service.dart';
 import '../../../home/presentation/providers/home_provider.dart';
 import '../../../auth/presentation/providers/auth_provider.dart';
 import '../providers/saved_foods_provider.dart';
@@ -22,8 +24,11 @@ class _LogFoodScreenState extends ConsumerState<LogFoodScreen>
   late TabController _tabController;
   final TextEditingController _searchController = TextEditingController();
   String _searchQuery = '';
+  List<FoodSearchItem> _searchResults = [];
+  bool _isSearching = false;
+  Timer? _debounceTimer;
 
-  final List<_FoodSuggestion> _suggestions = [
+  final List<_FoodSuggestion> _defaultSuggestions = [
     _FoodSuggestion(name: 'Peanut Butter', calories: 94, unit: 'tbsp'),
     _FoodSuggestion(name: 'Avocado', calories: 130, unit: 'serving'),
     _FoodSuggestion(name: 'Chicken Breast', calories: 165, unit: '100g'),
@@ -44,14 +49,49 @@ class _LogFoodScreenState extends ConsumerState<LogFoodScreen>
   void dispose() {
     _tabController.dispose();
     _searchController.dispose();
+    _debounceTimer?.cancel();
     super.dispose();
   }
 
-  List<_FoodSuggestion> get _filteredSuggestions {
-    if (_searchQuery.isEmpty) return _suggestions;
-    return _suggestions
-        .where((s) => s.name.toLowerCase().contains(_searchQuery.toLowerCase()))
-        .toList();
+  void _onSearchChanged(String query) {
+    setState(() => _searchQuery = query);
+
+    _debounceTimer?.cancel();
+
+    if (query.isEmpty) {
+      setState(() {
+        _searchResults = [];
+        _isSearching = false;
+      });
+      return;
+    }
+
+    _debounceTimer = Timer(const Duration(milliseconds: 500), () {
+      _performSearch(query);
+    });
+  }
+
+  Future<void> _performSearch(String query) async {
+    if (query.isEmpty) return;
+
+    setState(() => _isSearching = true);
+
+    try {
+      final locale = Localizations.localeOf(context).languageCode;
+      final apiService = ref.read(apiServiceProvider);
+      final response = await apiService.searchFood(query, lang: locale);
+
+      if (mounted) {
+        setState(() {
+          _searchResults = response.foods;
+          _isSearching = false;
+        });
+      }
+    } catch (e) {
+      if (mounted) {
+        setState(() => _isSearching = false);
+      }
+    }
   }
 
   @override
@@ -194,32 +234,199 @@ class _LogFoodScreenState extends ConsumerState<LogFoodScreen>
                       isDense: true,
                       contentPadding: EdgeInsets.zero,
                     ),
-                    onChanged: (value) {
-                      setState(() => _searchQuery = value);
+                    onChanged: _onSearchChanged,
+                    textInputAction: TextInputAction.search,
+                    onSubmitted: (value) {
+                      if (value.isNotEmpty) {
+                        _performSearch(value);
+                      }
                     },
                   ),
                 ),
+                if (_isSearching)
+                  const SizedBox(
+                    width: 20,
+                    height: 20,
+                    child: CircularProgressIndicator(strokeWidth: 2),
+                  )
+                else if (_searchQuery.isNotEmpty)
+                  GestureDetector(
+                    onTap: () {
+                      _searchController.clear();
+                      setState(() {
+                        _searchQuery = '';
+                        _searchResults = [];
+                      });
+                    },
+                    child: Icon(Icons.close, color: AppColors.textTertiary, size: 20),
+                  ),
               ],
             ),
           ),
           const SizedBox(height: 24),
 
-          // Suggestions
-          Text(
-            l10n.suggestions,
-            style: const TextStyle(
-              fontSize: 16,
-              fontWeight: FontWeight.bold,
-              color: AppColors.textPrimary,
+          // Search results or suggestions
+          if (_searchQuery.isNotEmpty && _searchResults.isNotEmpty) ...[
+            Text(
+              l10n.searchResults,
+              style: const TextStyle(
+                fontSize: 16,
+                fontWeight: FontWeight.bold,
+                color: AppColors.textPrimary,
+              ),
             ),
-          ),
-          const SizedBox(height: 12),
-
-          // Suggestion items
-          ..._filteredSuggestions.map((suggestion) => _buildSuggestionItem(suggestion, l10n)),
+            const SizedBox(height: 12),
+            ..._searchResults.map((food) => _buildSearchResultItem(food, l10n)),
+          ] else if (_searchQuery.isNotEmpty && !_isSearching && _searchResults.isEmpty) ...[
+            Center(
+              child: Padding(
+                padding: const EdgeInsets.all(32),
+                child: Column(
+                  children: [
+                    Icon(Icons.search_off, size: 48, color: AppColors.textTertiary),
+                    const SizedBox(height: 16),
+                    Text(
+                      l10n.noSearchResults,
+                      style: TextStyle(
+                        fontSize: 16,
+                        color: AppColors.textSecondary,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ] else ...[
+            // Default suggestions
+            Text(
+              l10n.suggestions,
+              style: const TextStyle(
+                fontSize: 16,
+                fontWeight: FontWeight.bold,
+                color: AppColors.textPrimary,
+              ),
+            ),
+            const SizedBox(height: 12),
+            ..._defaultSuggestions.map((suggestion) => _buildSuggestionItem(suggestion, l10n)),
+          ],
         ],
       ),
     );
+  }
+
+  Widget _buildSearchResultItem(FoodSearchItem food, AppLocalizations l10n) {
+    return Container(
+      margin: const EdgeInsets.only(bottom: 8),
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: AppColors.border),
+      ),
+      child: Row(
+        children: [
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  food.name,
+                  style: const TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.w600,
+                    color: AppColors.textPrimary,
+                  ),
+                ),
+                const SizedBox(height: 4),
+                Row(
+                  children: [
+                    Icon(Icons.local_fire_department,
+                        size: 14, color: AppColors.textTertiary),
+                    const SizedBox(width: 4),
+                    Text(
+                      '${food.calories} ${l10n.cal}',
+                      style: const TextStyle(
+                        fontSize: 14,
+                        color: AppColors.textSecondary,
+                      ),
+                    ),
+                    const SizedBox(width: 8),
+                    Text(
+                      '· ${food.servingSize}',
+                      style: const TextStyle(
+                        fontSize: 14,
+                        color: AppColors.textTertiary,
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 4),
+                Text(
+                  'P: ${food.protein.toStringAsFixed(0)}g · C: ${food.carbs.toStringAsFixed(0)}g · F: ${food.fat.toStringAsFixed(0)}g',
+                  style: const TextStyle(
+                    fontSize: 12,
+                    color: AppColors.textTertiary,
+                  ),
+                ),
+              ],
+            ),
+          ),
+          GestureDetector(
+            onTap: () => _addSearchResult(food, l10n),
+            child: Container(
+              width: 32,
+              height: 32,
+              decoration: BoxDecoration(
+                color: AppColors.surface,
+                borderRadius: BorderRadius.circular(8),
+              ),
+              child: const Icon(
+                Icons.add,
+                size: 20,
+                color: AppColors.textPrimary,
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Future<void> _addSearchResult(FoodSearchItem food, AppLocalizations l10n) async {
+    final authState = ref.read(authStateProvider);
+    if (authState.userId == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(l10n.pleaseSignInToLogFood)),
+      );
+      return;
+    }
+
+    try {
+      await ref.read(addFoodEntryProvider(AddFoodEntryParams(
+        name: food.name,
+        calories: food.calories,
+        protein: food.protein,
+        carbs: food.carbs,
+        fat: food.fat,
+        imageUrl: food.imageUrl,
+      )).future);
+
+      if (mounted) {
+        Navigator.pop(context);
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(l10n.addedFood(food.name)),
+            behavior: SnackBarBehavior.floating,
+          ),
+        );
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(l10n.failedToLogFood(e.toString()))),
+        );
+      }
+    }
   }
 
   Widget _buildSuggestionItem(_FoodSuggestion suggestion, AppLocalizations l10n) {

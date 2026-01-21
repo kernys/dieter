@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:camera/camera.dart';
 import 'package:go_router/go_router.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:mobile_scanner/mobile_scanner.dart';
 import '../../../../services/api_service.dart';
 import '../../../../l10n/generated/app_localizations.dart';
 import '../providers/camera_provider.dart';
@@ -19,6 +20,8 @@ class _CameraScreenState extends ConsumerState<CameraScreen> {
   final ImagePicker _picker = ImagePicker();
   double _baseZoom = 1.0;
   double _currentZoom = 1.0;
+  MobileScannerController? _barcodeScannerController;
+  bool _isProcessingBarcode = false;
 
   @override
   Widget build(BuildContext context) {
@@ -31,71 +34,74 @@ class _CameraScreenState extends ConsumerState<CameraScreen> {
       backgroundColor: Colors.black,
       body: Stack(
         children: [
-          // Camera Preview
-          cameraAsync.when(
-            data: (controller) {
-              if (controller == null || !controller.value.isInitialized) {
-                return Center(
-                  child: Text(
-                    l10n.cameraNotAvailable,
-                    style: const TextStyle(color: Colors.white),
-                  ),
-                );
-              }
-              return GestureDetector(
-                onScaleStart: (details) {
-                  _baseZoom = _currentZoom;
-                },
-                onScaleUpdate: (details) {
-                  final cameraNotifier = ref.read(cameraControllerProvider.notifier);
-                  final newZoom = (_baseZoom * details.scale).clamp(
-                    cameraNotifier.minZoom,
-                    cameraNotifier.maxZoom,
+          // Camera Preview - switch between regular camera and barcode scanner
+          if (scanMode == ScanMode.barcode)
+            _buildBarcodeScanner(l10n)
+          else
+            cameraAsync.when(
+              data: (controller) {
+                if (controller == null || !controller.value.isInitialized) {
+                  return Center(
+                    child: Text(
+                      l10n.cameraNotAvailable,
+                      style: const TextStyle(color: Colors.white),
+                    ),
                   );
-                  setState(() {
-                    _currentZoom = newZoom;
-                  });
-                  cameraNotifier.setZoomLevel(newZoom);
-                },
-                child: SizedBox.expand(
-                  child: FittedBox(
-                    fit: BoxFit.cover,
-                    child: SizedBox(
-                      width: controller.value.previewSize?.height ?? 0,
-                      height: controller.value.previewSize?.width ?? 0,
-                      child: CameraPreview(controller),
+                }
+                return GestureDetector(
+                  onScaleStart: (details) {
+                    _baseZoom = _currentZoom;
+                  },
+                  onScaleUpdate: (details) {
+                    final cameraNotifier = ref.read(cameraControllerProvider.notifier);
+                    final newZoom = (_baseZoom * details.scale).clamp(
+                      cameraNotifier.minZoom,
+                      cameraNotifier.maxZoom,
+                    );
+                    setState(() {
+                      _currentZoom = newZoom;
+                    });
+                    cameraNotifier.setZoomLevel(newZoom);
+                  },
+                  child: SizedBox.expand(
+                    child: FittedBox(
+                      fit: BoxFit.cover,
+                      child: SizedBox(
+                        width: controller.value.previewSize?.height ?? 0,
+                        height: controller.value.previewSize?.width ?? 0,
+                        child: CameraPreview(controller),
+                      ),
                     ),
                   ),
+                );
+              },
+              loading: () => const Center(
+                child: CircularProgressIndicator(color: Colors.white),
+              ),
+              error: (error, stack) => Center(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    const Icon(
+                      Icons.camera_alt_outlined,
+                      size: 64,
+                      color: Colors.white54,
+                    ),
+                    const SizedBox(height: 16),
+                    Text(
+                      l10n.cameraError(error.toString()),
+                      style: const TextStyle(color: Colors.white),
+                      textAlign: TextAlign.center,
+                    ),
+                    const SizedBox(height: 24),
+                    ElevatedButton(
+                      onPressed: () => _pickFromGallery(),
+                      child: Text(l10n.pickFromGallery),
+                    ),
+                  ],
                 ),
-              );
-            },
-            loading: () => const Center(
-              child: CircularProgressIndicator(color: Colors.white),
-            ),
-            error: (error, stack) => Center(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  const Icon(
-                    Icons.camera_alt_outlined,
-                    size: 64,
-                    color: Colors.white54,
-                  ),
-                  const SizedBox(height: 16),
-                  Text(
-                    l10n.cameraError(error.toString()),
-                    style: const TextStyle(color: Colors.white),
-                    textAlign: TextAlign.center,
-                  ),
-                  const SizedBox(height: 24),
-                  ElevatedButton(
-                    onPressed: () => _pickFromGallery(),
-                    child: Text(l10n.pickFromGallery),
-                  ),
-                ],
               ),
             ),
-          ),
 
           // Overlay UI
           SafeArea(
@@ -469,6 +475,232 @@ class _CameraScreenState extends ConsumerState<CameraScreen> {
         ],
       ),
     );
+  }
+
+  Widget _buildBarcodeScanner(AppLocalizations l10n) {
+    _barcodeScannerController ??= MobileScannerController(
+      detectionSpeed: DetectionSpeed.normal,
+      facing: CameraFacing.back,
+    );
+
+    return MobileScanner(
+      controller: _barcodeScannerController!,
+      onDetect: (capture) {
+        if (_isProcessingBarcode) return;
+
+        final List<Barcode> barcodes = capture.barcodes;
+        for (final barcode in barcodes) {
+          if (barcode.rawValue != null) {
+            _handleBarcodeDetected(barcode.rawValue!, l10n);
+            break;
+          }
+        }
+      },
+    );
+  }
+
+  Future<void> _handleBarcodeDetected(String barcodeValue, AppLocalizations l10n) async {
+    if (_isProcessingBarcode) return;
+
+    setState(() => _isProcessingBarcode = true);
+    ref.read(analysisStateProvider.notifier).state = AnalysisState.analyzing;
+
+    try {
+      final apiService = ref.read(apiServiceProvider);
+      final result = await apiService.searchBarcode(barcodeValue);
+
+      if (result.found && result.name != null) {
+        // Show result dialog
+        if (mounted) {
+          _showBarcodeResultDialog(result, l10n);
+        }
+      } else {
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text(l10n.noSearchResults)),
+          );
+        }
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(l10n.analysisFailed(e.toString()))),
+        );
+      }
+    } finally {
+      ref.read(analysisStateProvider.notifier).state = AnalysisState.idle;
+      // Allow scanning again after a delay
+      Future.delayed(const Duration(seconds: 2), () {
+        if (mounted) {
+          setState(() => _isProcessingBarcode = false);
+        }
+      });
+    }
+  }
+
+  void _showBarcodeResultDialog(BarcodeSearchResult result, AppLocalizations l10n) {
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: Colors.transparent,
+      isScrollControlled: true,
+      builder: (context) => Container(
+        decoration: const BoxDecoration(
+          color: Color(0xFF2C2C2E),
+          borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+        ),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Container(
+              margin: const EdgeInsets.only(top: 12),
+              width: 40,
+              height: 4,
+              decoration: BoxDecoration(
+                color: Colors.white24,
+                borderRadius: BorderRadius.circular(2),
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.all(24),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    result.name ?? 'Unknown Product',
+                    style: const TextStyle(
+                      fontSize: 22,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.white,
+                    ),
+                  ),
+                  if (result.brand != null) ...[
+                    const SizedBox(height: 4),
+                    Text(
+                      result.brand!,
+                      style: const TextStyle(
+                        fontSize: 14,
+                        color: Colors.white70,
+                      ),
+                    ),
+                  ],
+                  const SizedBox(height: 16),
+                  Container(
+                    padding: const EdgeInsets.all(16),
+                    decoration: BoxDecoration(
+                      color: Colors.white.withValues(alpha: 0.1),
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    child: Column(
+                      children: [
+                        _buildNutrientRowBarcode(l10n.calories, '${result.calories ?? 0}', l10n.cal),
+                        const SizedBox(height: 8),
+                        _buildNutrientRowBarcode(l10n.protein, '${result.protein?.toStringAsFixed(1) ?? 0}', 'g'),
+                        const SizedBox(height: 8),
+                        _buildNutrientRowBarcode(l10n.carbs, '${result.carbs?.toStringAsFixed(1) ?? 0}', 'g'),
+                        const SizedBox(height: 8),
+                        _buildNutrientRowBarcode(l10n.fat, '${result.fat?.toStringAsFixed(1) ?? 0}', 'g'),
+                      ],
+                    ),
+                  ),
+                  if (result.servingSize != null) ...[
+                    const SizedBox(height: 8),
+                    Text(
+                      '${l10n.servings}: ${result.servingSize}',
+                      style: const TextStyle(
+                        fontSize: 12,
+                        color: Colors.white54,
+                      ),
+                    ),
+                  ],
+                  const SizedBox(height: 24),
+                  SizedBox(
+                    width: double.infinity,
+                    child: ElevatedButton(
+                      onPressed: () {
+                        Navigator.pop(context);
+                        _logBarcodeFood(result, l10n);
+                      },
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.white,
+                        foregroundColor: Colors.black,
+                        padding: const EdgeInsets.symmetric(vertical: 16),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(24),
+                        ),
+                      ),
+                      child: Text(
+                        l10n.log,
+                        style: const TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            const SizedBox(height: 16),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildNutrientRowBarcode(String label, String value, String unit) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: [
+        Text(
+          label,
+          style: const TextStyle(
+            fontSize: 14,
+            color: Colors.white70,
+          ),
+        ),
+        Text(
+          '$value $unit',
+          style: const TextStyle(
+            fontSize: 14,
+            fontWeight: FontWeight.w600,
+            color: Colors.white,
+          ),
+        ),
+      ],
+    );
+  }
+
+  Future<void> _logBarcodeFood(BarcodeSearchResult result, AppLocalizations l10n) async {
+    try {
+      final apiService = ref.read(apiServiceProvider);
+      await apiService.createFoodEntry(
+        userId: ref.read(capturedImageProvider.notifier).state != null ? '' : '', // Will need proper user ID
+        name: result.name ?? 'Unknown',
+        calories: result.calories ?? 0,
+        protein: result.protein ?? 0,
+        carbs: result.carbs ?? 0,
+        fat: result.fat ?? 0,
+      );
+
+      if (mounted) {
+        context.pop();
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(l10n.foodLogged)),
+        );
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(l10n.errorLoggingFood)),
+        );
+      }
+    }
+  }
+
+  @override
+  void dispose() {
+    _barcodeScannerController?.dispose();
+    super.dispose();
   }
 
   void _showBarcodeInfo() {

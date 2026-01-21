@@ -258,6 +258,36 @@ class ApiService {
       throw ApiException(response.statusCode, 'Failed to get streak');
     }
   }
+
+  // Food Search API
+  Future<FoodSearchResponse> searchFood(String query, {String lang = 'en'}) async {
+    final response = await http.get(
+      Uri.parse('$baseUrl/food-search?name=${Uri.encodeComponent(query)}&lang=$lang'),
+      headers: _headers,
+    );
+
+    if (response.statusCode == 200) {
+      return FoodSearchResponse.fromJson(jsonDecode(response.body));
+    } else {
+      throw ApiException(response.statusCode, 'Failed to search food');
+    }
+  }
+
+  // Barcode Search API
+  Future<BarcodeSearchResult> searchBarcode(String barcode) async {
+    final response = await http.get(
+      Uri.parse('$baseUrl/barcode-search?barcode=${Uri.encodeComponent(barcode)}'),
+      headers: _headers,
+    );
+
+    if (response.statusCode == 200) {
+      return BarcodeSearchResult.fromJson(jsonDecode(response.body));
+    } else if (response.statusCode == 404) {
+      return BarcodeSearchResult(found: false, barcode: barcode);
+    } else {
+      throw ApiException(response.statusCode, 'Failed to search barcode');
+    }
+  }
 }
 
 // Response Models
@@ -383,6 +413,116 @@ class StreakResponse {
       maxStreak: json['maxStreak'],
       weekData: (json['weekData'] as List).map((e) => e as bool).toList(),
       totalDaysLogged: json['totalDaysLogged'],
+    );
+  }
+}
+
+class FoodSearchResponse {
+  final List<FoodSearchItem> foods;
+  final String query;
+
+  FoodSearchResponse({required this.foods, required this.query});
+
+  factory FoodSearchResponse.fromJson(Map<String, dynamic> json) {
+    return FoodSearchResponse(
+      foods: (json['foods'] as List?)
+          ?.map((e) => FoodSearchItem.fromJson(e))
+          .toList() ?? [],
+      query: json['query'] ?? '',
+    );
+  }
+}
+
+class FoodSearchItem {
+  final String id;
+  final String name;
+  final int calories;
+  final double protein;
+  final double carbs;
+  final double fat;
+  final double fiber;
+  final double sugar;
+  final double sodium;
+  final String servingSize;
+  final String? imageUrl;
+
+  FoodSearchItem({
+    required this.id,
+    required this.name,
+    required this.calories,
+    required this.protein,
+    required this.carbs,
+    required this.fat,
+    required this.fiber,
+    required this.sugar,
+    required this.sodium,
+    required this.servingSize,
+    this.imageUrl,
+  });
+
+  factory FoodSearchItem.fromJson(Map<String, dynamic> json) {
+    return FoodSearchItem(
+      id: json['id']?.toString() ?? '',
+      name: json['name'] ?? 'Unknown',
+      calories: (json['calories'] as num?)?.toInt() ?? 0,
+      protein: (json['protein'] as num?)?.toDouble() ?? 0.0,
+      carbs: (json['carbs'] as num?)?.toDouble() ?? 0.0,
+      fat: (json['fat'] as num?)?.toDouble() ?? 0.0,
+      fiber: (json['fiber'] as num?)?.toDouble() ?? 0.0,
+      sugar: (json['sugar'] as num?)?.toDouble() ?? 0.0,
+      sodium: (json['sodium'] as num?)?.toDouble() ?? 0.0,
+      servingSize: json['servingSize'] ?? '100g',
+      imageUrl: json['imageUrl'],
+    );
+  }
+}
+
+class BarcodeSearchResult {
+  final bool found;
+  final String barcode;
+  final String? name;
+  final String? brand;
+  final int? calories;
+  final double? protein;
+  final double? carbs;
+  final double? fat;
+  final double? fiber;
+  final double? sugar;
+  final double? sodium;
+  final String? servingSize;
+  final String? imageUrl;
+
+  BarcodeSearchResult({
+    required this.found,
+    required this.barcode,
+    this.name,
+    this.brand,
+    this.calories,
+    this.protein,
+    this.carbs,
+    this.fat,
+    this.fiber,
+    this.sugar,
+    this.sodium,
+    this.servingSize,
+    this.imageUrl,
+  });
+
+  factory BarcodeSearchResult.fromJson(Map<String, dynamic> json) {
+    return BarcodeSearchResult(
+      found: json['found'] ?? true,
+      barcode: json['barcode'] ?? '',
+      name: json['name'],
+      brand: json['brand'],
+      calories: (json['calories'] as num?)?.toInt(),
+      protein: (json['protein'] as num?)?.toDouble(),
+      carbs: (json['carbs'] as num?)?.toDouble(),
+      fat: (json['fat'] as num?)?.toDouble(),
+      fiber: (json['fiber'] as num?)?.toDouble(),
+      sugar: (json['sugar'] as num?)?.toDouble(),
+      sodium: (json['sodium'] as num?)?.toDouble(),
+      servingSize: json['servingSize'],
+      imageUrl: json['imageUrl'],
     );
   }
 }

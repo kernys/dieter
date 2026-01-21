@@ -1987,6 +1987,18 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Speak now, describe what you ate'**
   String get speakNow;
+
+  /// No description provided for @searchResults.
+  ///
+  /// In en, this message translates to:
+  /// **'Search Results'**
+  String get searchResults;
+
+  /// No description provided for @noSearchResults.
+  ///
+  /// In en, this message translates to:
+  /// **'No results found'**
+  String get noSearchResults;
 }
 
 class _AppLocalizationsDelegate

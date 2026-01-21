@@ -348,5 +348,8 @@
   "tapToRecord": "탭하여 녹음",
   "recording": "녹음 중...",
   "analyzing": "분석 중...",
-  "speakNow": "먹은 음식을 말씀해주세요"
+  "speakNow": "먹은 음식을 말씀해주세요",
+
+  "searchResults": "검색 결과",
+  "noSearchResults": "검색 결과가 없습니다"
 }

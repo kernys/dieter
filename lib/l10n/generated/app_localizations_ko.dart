@@ -988,4 +988,10 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String get speakNow => '먹은 음식을 말씀해주세요';
+
+  @override
+  String get searchResults => '검색 결과';
+
+  @override
+  String get noSearchResults => '검색 결과가 없습니다';
 }

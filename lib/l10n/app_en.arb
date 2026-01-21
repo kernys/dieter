@@ -363,5 +363,8 @@
   "tapToRecord": "Tap to record",
   "recording": "Recording...",
   "analyzing": "Analyzing...",
-  "speakNow": "Speak now, describe what you ate"
+  "speakNow": "Speak now, describe what you ate",
+
+  "searchResults": "Search Results",
+  "noSearchResults": "No results found"
 }

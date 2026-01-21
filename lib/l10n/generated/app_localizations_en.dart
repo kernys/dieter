@@ -996,4 +996,10 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get speakNow => 'Speak now, describe what you ate';
+
+  @override
+  String get searchResults => 'Search Results';
+
+  @override
+  String get noSearchResults => 'No results found';
 }
