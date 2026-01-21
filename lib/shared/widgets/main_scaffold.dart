@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../../core/constants/app_colors.dart';
 import '../../l10n/generated/app_localizations.dart';
+import '../../features/home/presentation/providers/home_provider.dart';
+import '../../features/progress/presentation/providers/progress_provider.dart';
 
-class MainScaffold extends StatefulWidget {
+class MainScaffold extends ConsumerStatefulWidget {
   final Widget child;
 
   const MainScaffold({
@@ -12,10 +15,10 @@ class MainScaffold extends StatefulWidget {
   });
 
   @override
-  State<MainScaffold> createState() => _MainScaffoldState();
+  ConsumerState<MainScaffold> createState() => _MainScaffoldState();
 }
 
-class _MainScaffoldState extends State<MainScaffold>
+class _MainScaffoldState extends ConsumerState<MainScaffold>
     with SingleTickerProviderStateMixin {
   bool _isFabMenuOpen = false;
   late AnimationController _animationController;
@@ -50,6 +53,31 @@ class _MainScaffoldState extends State<MainScaffold>
   }
 
   void _onItemTapped(BuildContext context, int index) {
+    final currentIndex = _calculateSelectedIndex(context);
+
+    // Refresh data when switching tabs
+    if (currentIndex != index) {
+      switch (index) {
+        case 0:
+          // Home tab - refresh daily summary
+          ref.invalidate(dailySummaryProvider);
+          ref.invalidate(userGoalsProvider);
+          ref.invalidate(streakProvider);
+          break;
+        case 1:
+          // Progress tab - refresh weight logs and stats
+          ref.invalidate(weightLogsProvider);
+          ref.invalidate(streakDataProvider);
+          ref.invalidate(dailyAverageCaloriesProvider);
+          ref.invalidate(weeklyEnergyDataProvider);
+          break;
+        case 3:
+          // Profile tab - refresh user goals
+          ref.invalidate(userGoalsProvider);
+          break;
+      }
+    }
+
     switch (index) {
       case 0:
         context.go('/home');

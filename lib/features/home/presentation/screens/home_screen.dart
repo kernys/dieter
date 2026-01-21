@@ -146,10 +146,7 @@ class HomeScreen extends ConsumerWidget {
                             child: Stack(
                               fit: StackFit.expand,
                               children: [
-                                Image.file(
-                                  File(roleModelImage),
-                                  fit: BoxFit.cover,
-                                ),
+                                _buildRoleModelImage(roleModelImage),
                                 Container(
                                   decoration: BoxDecoration(
                                     gradient: LinearGradient(
@@ -539,6 +536,44 @@ class HomeScreen extends ConsumerWidget {
 
       await File(pickedFile.path).copy(savedPath);
       ref.read(roleModelProvider.notifier).setImage(savedPath);
+    }
+  }
+
+  Widget _buildRoleModelImage(String imageSource) {
+    // Check if it's a URL or local file path
+    if (imageSource.startsWith('http://') || imageSource.startsWith('https://')) {
+      return Image.network(
+        imageSource,
+        fit: BoxFit.cover,
+        errorBuilder: (context, error, stackTrace) {
+          return Container(
+            color: Colors.grey[300],
+            child: const Icon(Icons.broken_image, size: 48),
+          );
+        },
+        loadingBuilder: (context, child, loadingProgress) {
+          if (loadingProgress == null) return child;
+          return Center(
+            child: CircularProgressIndicator(
+              value: loadingProgress.expectedTotalBytes != null
+                  ? loadingProgress.cumulativeBytesLoaded /
+                      loadingProgress.expectedTotalBytes!
+                  : null,
+            ),
+          );
+        },
+      );
+    } else {
+      return Image.file(
+        File(imageSource),
+        fit: BoxFit.cover,
+        errorBuilder: (context, error, stackTrace) {
+          return Container(
+            color: Colors.grey[300],
+            child: const Icon(Icons.broken_image, size: 48),
+          );
+        },
+      );
     }
   }
 

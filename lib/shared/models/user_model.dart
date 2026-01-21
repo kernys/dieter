@@ -10,6 +10,7 @@ abstract class UserModel with _$UserModel {
     required String email,
     String? name,
     String? avatarUrl,
+    String? roleModelImageUrl,
     @Default(2500) int dailyCalorieGoal,
     @Default(150) int dailyProteinGoal,
     @Default(275) int dailyCarbsGoal,

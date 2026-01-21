@@ -30,29 +30,42 @@ class _VoiceFoodEntryScreenState extends ConsumerState<VoiceFoodEntryScreen> {
   }
 
   Future<void> _initSpeech() async {
-    _speechAvailable = await _speech.initialize(
-      onStatus: (status) {
-        if (status == 'done' || status == 'notListening') {
-          if (_isListening) {
-            setState(() => _isListening = false);
-            if (_transcribedText.isNotEmpty) {
-              _analyzeFood();
+    try {
+      _speechAvailable = await _speech.initialize(
+        onStatus: (status) {
+          if (status == 'done' || status == 'notListening') {
+            if (_isListening && mounted) {
+              setState(() => _isListening = false);
+              if (_transcribedText.isNotEmpty) {
+                _analyzeFood();
+              }
             }
           }
-        }
-      },
-      onError: (error) {
-        setState(() => _isListening = false);
-      },
-    );
-    setState(() {});
+        },
+        onError: (error) {
+          if (mounted) {
+            setState(() => _isListening = false);
+          }
+        },
+      );
+      if (mounted) {
+        setState(() {});
+      }
+    } catch (e) {
+      _speechAvailable = false;
+      if (mounted) {
+        setState(() {});
+      }
+    }
   }
 
   Future<void> _startListening() async {
     if (!_speechAvailable) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Speech recognition not available')),
-      );
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Speech recognition not available')),
+        );
+      }
       return;
     }
 
@@ -62,23 +75,40 @@ class _VoiceFoodEntryScreenState extends ConsumerState<VoiceFoodEntryScreen> {
       _analysisResult = null;
     });
 
-    await _speech.listen(
-      onResult: (result) {
-        setState(() {
-          _transcribedText = result.recognizedWords;
-        });
-      },
-      localeId: Localizations.localeOf(context).languageCode,
-      listenFor: const Duration(seconds: 30),
-      pauseFor: const Duration(seconds: 3),
-    );
+    try {
+      await _speech.listen(
+        onResult: (result) {
+          if (mounted) {
+            setState(() {
+              _transcribedText = result.recognizedWords;
+            });
+          }
+        },
+        localeId: Localizations.localeOf(context).languageCode,
+        listenFor: const Duration(seconds: 30),
+        pauseFor: const Duration(seconds: 3),
+      );
+    } catch (e) {
+      if (mounted) {
+        setState(() => _isListening = false);
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Failed to start listening: $e')),
+        );
+      }
+    }
   }
 
   Future<void> _stopListening() async {
-    await _speech.stop();
-    setState(() => _isListening = false);
-    if (_transcribedText.isNotEmpty) {
-      _analyzeFood();
+    try {
+      await _speech.stop();
+    } catch (e) {
+      // Ignore stop errors
+    }
+    if (mounted) {
+      setState(() => _isListening = false);
+      if (_transcribedText.isNotEmpty) {
+        _analyzeFood();
+      }
     }
   }
 
@@ -225,7 +255,11 @@ class _VoiceFoodEntryScreenState extends ConsumerState<VoiceFoodEntryScreen> {
 
   @override
   void dispose() {
-    _speech.stop();
+    try {
+      _speech.stop();
+    } catch (e) {
+      // Ignore dispose errors
+    }
     super.dispose();
   }
 
