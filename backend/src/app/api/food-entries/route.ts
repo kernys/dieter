@@ -5,13 +5,13 @@ import { FoodEntryEntity, type FoodEntry } from '@/entities';
 import { Between } from 'typeorm';
 
 const createFoodEntrySchema = z.object({
-  user_id: z.string().uuid(),
+  userId: z.string().uuid().optional(),
   name: z.string(),
   calories: z.number(),
   protein: z.number(),
   carbs: z.number(),
   fat: z.number(),
-  image_url: z.string().nullish(),
+  imageUrl: z.string().nullish(),
   ingredients: z.array(z.object({
     name: z.string(),
     amount: z.string().nullable(),
@@ -21,17 +21,19 @@ const createFoodEntrySchema = z.object({
     fat: z.number().nullable(),
   })).nullish(),
   servings: z.number().default(1),
+}).refine(data => data.userId, {
+  message: "userId is required",
 });
 
 export async function GET(request: NextRequest) {
   try {
     const { searchParams } = new URL(request.url);
-    const userId = searchParams.get('user_id');
+    const userId = searchParams.get('userId');
     const date = searchParams.get('date');
 
     if (!userId) {
       return NextResponse.json(
-        { error: 'user_id is required' },
+        { error: 'userId is required' },
         { status: 400 }
       );
     }
@@ -103,13 +105,13 @@ export async function POST(request: NextRequest) {
     const foodEntryRepo = await getRepository<FoodEntry>(FoodEntryEntity);
 
     const entry = foodEntryRepo.create({
-      user_id: validatedData.user_id,
+      user_id: validatedData.userId,
       name: validatedData.name,
       calories: validatedData.calories,
       protein: validatedData.protein,
       carbs: validatedData.carbs,
       fat: validatedData.fat,
-      image_url: validatedData.image_url || null,
+      image_url: validatedData.imageUrl,
       ingredients: validatedData.ingredients || null,
       servings: validatedData.servings,
     });

@@ -841,7 +841,8 @@ class ProgressScreen extends ConsumerWidget {
 
     showDialog(
       context: context,
-      builder: (dialogContext) => AlertDialog(
+      builder: (dialogContext) => Consumer(
+        builder: (context, dialogRef, child) => AlertDialog(
         title: Text(l10n.goalWeight),
         content: TextField(
           controller: controller,
@@ -864,12 +865,27 @@ class ProgressScreen extends ConsumerWidget {
                 // Convert to lbs if input is in kg (API stores in lbs)
                 final weightInLbs = isMetric ? inputWeight / 0.453592 : inputWeight;
                 try {
-                  await ref.read(authStateProvider.notifier).updateUser({
+                  // Check if user is in guest mode
+                  final authState = dialogRef.read(authStateProvider);
+                  if (authState.isGuestMode) {
+                    // For guest mode, just show message
+                    if (dialogContext.mounted) {
+                      Navigator.pop(dialogContext);
+                    }
+                    if (context.mounted) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(content: Text(l10n.pleaseSignInToLogFood)),
+                      );
+                    }
+                    return;
+                  }
+
+                  await dialogRef.read(authStateProvider.notifier).updateUser({
                     'goalWeight': weightInLbs,
                   });
 
-                  // Refresh providers
-                  ref.invalidate(weightLogsResponseProvider);
+                  // Refresh all related providers
+                  dialogRef.invalidate(weightLogsResponseProvider);
 
                   if (dialogContext.mounted) {
                     Navigator.pop(dialogContext);
@@ -892,7 +908,7 @@ class ProgressScreen extends ConsumerWidget {
             child: Text(l10n.save),
           ),
         ],
-      ),
+      )),
     );
   }
 

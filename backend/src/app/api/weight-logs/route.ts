@@ -5,21 +5,23 @@ import { WeightLogEntity, UserEntity, type WeightLog, type User } from '@/entiti
 import { MoreThanOrEqual } from 'typeorm';
 
 const createWeightLogSchema = z.object({
-  user_id: z.string().uuid(),
+  userId: z.string().uuid().optional(),
   weight: z.number().positive(),
   note: z.string().optional(),
+}).refine(data => data.userId, {
+  message: "userId is required",
 });
 
 export async function GET(request: NextRequest) {
   try {
     const { searchParams } = new URL(request.url);
-    const userId = searchParams.get('user_id');
+    const userId = searchParams.get('userId');
     const limit = parseInt(searchParams.get('limit') || '100');
     const range = searchParams.get('range');
 
     if (!userId) {
       return NextResponse.json(
-        { error: 'user_id is required' },
+        { error: 'userId is required' },
         { status: 400 }
       );
     }
@@ -105,8 +107,9 @@ export async function POST(request: NextRequest) {
     const weightLogRepo = await getRepository<WeightLog>(WeightLogEntity);
     const userRepo = await getRepository<User>(UserEntity);
 
+    const finalUserId = validatedData.userId;
     const log = weightLogRepo.create({
-      user_id: validatedData.user_id,
+      user_id: finalUserId,
       weight: validatedData.weight,
       note: validatedData.note || null,
     });
@@ -114,7 +117,7 @@ export async function POST(request: NextRequest) {
     await weightLogRepo.save(log);
 
     await userRepo.update(
-      { id: validatedData.user_id },
+      { id: finalUserId },
       { current_weight: validatedData.weight }
     );
 

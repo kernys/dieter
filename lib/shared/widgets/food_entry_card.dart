@@ -211,7 +211,7 @@ class FoodEntryCard extends StatelessWidget {
     );
   }
 
-  void _shareEntry(BuildContext context) {
+  Future<void> _shareEntry(BuildContext context) async {
     final l10n = AppLocalizations.of(context)!;
 
     final shareText = '''
@@ -225,8 +225,16 @@ ${entry.name}
 ${l10n.sharedFromDieterAI}
 ''';
 
-    Share.share(shareText.trim());
-    onShare?.call();
+    try {
+      await Share.share(shareText.trim());
+      onShare?.call();
+    } catch (e) {
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Share failed: $e')),
+        );
+      }
+    }
   }
 
   void _confirmDelete(BuildContext context, AppLocalizations l10n) {

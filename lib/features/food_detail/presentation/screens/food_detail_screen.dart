@@ -789,7 +789,7 @@ class _FoodDetailScreenState extends ConsumerState<FoodDetailScreen> {
     }
   }
 
-  void _shareEntry(AppLocalizations l10n) {
+  Future<void> _shareEntry(AppLocalizations l10n) async {
     final shareText = '''
 ${_nameController.text}
 
@@ -801,7 +801,15 @@ ${_nameController.text}
 ${l10n.sharedFromDieterAI}
 ''';
 
-    Share.share(shareText.trim());
+    try {
+      await Share.share(shareText.trim());
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Share failed: $e')),
+        );
+      }
+    }
   }
 
   void _showMoreOptions(AppLocalizations l10n) {

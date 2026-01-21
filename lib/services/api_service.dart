@@ -91,7 +91,7 @@ class ApiService {
   Future<FoodEntriesResponse> getFoodEntries(String userId, DateTime date) async {
     final dateStr = '${date.year}-${date.month.toString().padLeft(2, '0')}-${date.day.toString().padLeft(2, '0')}';
     final response = await http.get(
-      Uri.parse('$baseUrl/food-entries?user_id=$userId&date=$dateStr'),
+      Uri.parse('$baseUrl/food-entries?userId=$userId&date=$dateStr'),
       headers: _headers,
     );
 
@@ -117,13 +117,13 @@ class ApiService {
       Uri.parse('$baseUrl/food-entries'),
       headers: _headers,
       body: jsonEncode({
-        'user_id': userId,
+        'userId': userId,
         'name': name,
         'calories': calories,
         'protein': protein,
         'carbs': carbs,
         'fat': fat,
-        'image_url': imageUrl,
+        'imageUrl': imageUrl,
         'ingredients': ingredients,
         'servings': servings,
       }),
@@ -198,7 +198,7 @@ class ApiService {
   // Weight Log APIs
   Future<WeightLogsResponse> getWeightLogs(String userId, {String range = '6m'}) async {
     final response = await http.get(
-      Uri.parse('$baseUrl/weight-logs?user_id=$userId&range=$range'),
+      Uri.parse('$baseUrl/weight-logs?userId=$userId&range=$range'),
       headers: _headers,
     );
 
@@ -218,7 +218,7 @@ class ApiService {
       Uri.parse('$baseUrl/weight-logs'),
       headers: _headers,
       body: jsonEncode({
-        'user_id': userId,
+        'userId': userId,
         'weight': weight,
         'note': note ?? '',  // Server expects string, not null
       }),
@@ -248,7 +248,7 @@ class ApiService {
   // Streak API
   Future<StreakResponse> getStreak(String userId) async {
     final response = await http.get(
-      Uri.parse('$baseUrl/stats/streak?user_id=$userId'),
+      Uri.parse('$baseUrl/stats/streak?userId=$userId'),
       headers: _headers,
     );
 
