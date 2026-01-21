@@ -349,5 +349,19 @@
   "deleteWeightLog": "Delete Weight Log",
   "deleteWeightLogConfirm": "Are you sure you want to delete this weight log?",
   "weightLogDeleted": "Weight log deleted",
-  "errorDeletingWeightLog": "Error deleting weight log"
+  "errorDeletingWeightLog": "Error deleting weight log",
+
+  "tapToName": "Tap to Name",
+  "ingredientsHidden": "Ingredients hidden",
+  "learnWhy": "Learn why",
+  "log": "Log",
+  "servings": "Servings",
+  "pleaseEnterFoodName": "Please enter a food name",
+  "foodLogged": "Food logged",
+  "errorLoggingFood": "Error logging food",
+  "voiceRecording": "Voice Recording",
+  "tapToRecord": "Tap to record",
+  "recording": "Recording...",
+  "analyzing": "Analyzing...",
+  "speakNow": "Speak now, describe what you ate"
 }

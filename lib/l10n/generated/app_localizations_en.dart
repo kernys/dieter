@@ -957,4 +957,43 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get errorDeletingWeightLog => 'Error deleting weight log';
+
+  @override
+  String get tapToName => 'Tap to Name';
+
+  @override
+  String get ingredientsHidden => 'Ingredients hidden';
+
+  @override
+  String get learnWhy => 'Learn why';
+
+  @override
+  String get log => 'Log';
+
+  @override
+  String get servings => 'Servings';
+
+  @override
+  String get pleaseEnterFoodName => 'Please enter a food name';
+
+  @override
+  String get foodLogged => 'Food logged';
+
+  @override
+  String get errorLoggingFood => 'Error logging food';
+
+  @override
+  String get voiceRecording => 'Voice Recording';
+
+  @override
+  String get tapToRecord => 'Tap to record';
+
+  @override
+  String get recording => 'Recording...';
+
+  @override
+  String get analyzing => 'Analyzing...';
+
+  @override
+  String get speakNow => 'Speak now, describe what you ate';
 }

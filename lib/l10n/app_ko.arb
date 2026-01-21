@@ -334,5 +334,19 @@
   "deleteWeightLog": "체중 기록 삭제",
   "deleteWeightLogConfirm": "이 체중 기록을 삭제하시겠습니까?",
   "weightLogDeleted": "체중 기록이 삭제되었습니다",
-  "errorDeletingWeightLog": "체중 기록 삭제 중 오류가 발생했습니다"
+  "errorDeletingWeightLog": "체중 기록 삭제 중 오류가 발생했습니다",
+
+  "tapToName": "이름 입력",
+  "ingredientsHidden": "재료 숨김",
+  "learnWhy": "자세히 알아보기",
+  "log": "기록",
+  "servings": "인분",
+  "pleaseEnterFoodName": "음식 이름을 입력해주세요",
+  "foodLogged": "음식이 기록되었습니다",
+  "errorLoggingFood": "음식 기록 중 오류가 발생했습니다",
+  "voiceRecording": "음성 기록",
+  "tapToRecord": "탭하여 녹음",
+  "recording": "녹음 중...",
+  "analyzing": "분석 중...",
+  "speakNow": "먹은 음식을 말씀해주세요"
 }

@@ -65,16 +65,31 @@ export async function GET(request: NextRequest) {
       weekData.push(loggedDates.has(dateKey));
     }
 
+    // Calculate max streak by checking consecutive days
     const sortedDates = Array.from(loggedDates).sort();
-    let tempStreak = 0;
-    for (const dateStr of sortedDates) {
-      tempStreak++;
-      maxStreak = Math.max(maxStreak, tempStreak);
+    let tempStreak = 1;
+    maxStreak = sortedDates.length > 0 ? 1 : 0;
+
+    for (let i = 1; i < sortedDates.length; i++) {
+      const [prevYear, prevMonth, prevDay] = sortedDates[i - 1].split('-').map(Number);
+      const [currYear, currMonth, currDay] = sortedDates[i].split('-').map(Number);
+
+      const prevDate = new Date(prevYear, prevMonth, prevDay);
+      const currDate = new Date(currYear, currMonth, currDay);
+
+      const diffDays = Math.round((currDate.getTime() - prevDate.getTime()) / (1000 * 60 * 60 * 24));
+
+      if (diffDays === 1) {
+        tempStreak++;
+        maxStreak = Math.max(maxStreak, tempStreak);
+      } else {
+        tempStreak = 1;
+      }
     }
 
     return NextResponse.json({
       currentStreak,
-      maxStreak,
+      maxStreak: Math.max(maxStreak, currentStreak),
       weekData,
       totalDaysLogged: loggedDates.size,
     });

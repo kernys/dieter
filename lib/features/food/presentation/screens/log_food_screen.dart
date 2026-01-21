@@ -5,6 +5,8 @@ import '../../../../l10n/generated/app_localizations.dart';
 import '../../../home/presentation/providers/home_provider.dart';
 import '../../../auth/presentation/providers/auth_provider.dart';
 import '../providers/saved_foods_provider.dart';
+import 'manual_food_entry_screen.dart';
+import 'voice_food_entry_screen.dart';
 
 class LogFoodScreen extends ConsumerStatefulWidget {
   final int initialTabIndex;
@@ -35,7 +37,7 @@ class _LogFoodScreenState extends ConsumerState<LogFoodScreen>
   @override
   void initState() {
     super.initState();
-    _tabController = TabController(length: 4, vsync: this, initialIndex: widget.initialTabIndex);
+    _tabController = TabController(length: 2, vsync: this, initialIndex: widget.initialTabIndex.clamp(0, 1));
   }
 
   @override
@@ -112,8 +114,6 @@ class _LogFoodScreenState extends ConsumerState<LogFoodScreen>
               tabAlignment: TabAlignment.start,
               tabs: [
                 Tab(text: l10n.all),
-                Tab(text: l10n.myFoods),
-                Tab(text: l10n.myMeals),
                 Tab(text: l10n.savedFoods),
               ],
             ),
@@ -125,10 +125,41 @@ class _LogFoodScreenState extends ConsumerState<LogFoodScreen>
               controller: _tabController,
               children: [
                 _buildAllTab(l10n),
-                _buildMyFoodsTab(l10n),
-                _buildMyMealsTab(l10n),
                 _buildSavedFoodsTab(),
               ],
+            ),
+          ),
+
+          // Fixed bottom action buttons
+          Container(
+            padding: const EdgeInsets.all(16),
+            decoration: BoxDecoration(
+              color: Colors.white,
+              border: Border(
+                top: BorderSide(color: AppColors.border, width: 1),
+              ),
+            ),
+            child: SafeArea(
+              top: false,
+              child: Row(
+                children: [
+                  Expanded(
+                    child: _ActionButton(
+                      icon: Icons.list_alt,
+                      label: l10n.manualAdd,
+                      onTap: () => _showManualAddSheet(l10n),
+                    ),
+                  ),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: _ActionButton(
+                      icon: Icons.mic,
+                      label: l10n.voiceLog,
+                      onTap: () => _showVoiceLog(l10n),
+                    ),
+                  ),
+                ],
+              ),
             ),
           ),
         ],
@@ -186,29 +217,6 @@ class _LogFoodScreenState extends ConsumerState<LogFoodScreen>
 
           // Suggestion items
           ..._filteredSuggestions.map((suggestion) => _buildSuggestionItem(suggestion, l10n)),
-
-          const SizedBox(height: 24),
-
-          // Action buttons
-          Row(
-            children: [
-              Expanded(
-                child: _ActionButton(
-                  icon: Icons.list_alt,
-                  label: l10n.manualAdd,
-                  onTap: () => _showManualAddSheet(l10n),
-                ),
-              ),
-              const SizedBox(width: 12),
-              Expanded(
-                child: _ActionButton(
-                  icon: Icons.mic,
-                  label: l10n.voiceLog,
-                  onTap: () => _showVoiceLog(l10n),
-                ),
-              ),
-            ],
-          ),
         ],
       ),
     );
@@ -281,22 +289,6 @@ class _LogFoodScreenState extends ConsumerState<LogFoodScreen>
           ),
         ],
       ),
-    );
-  }
-
-  Widget _buildMyFoodsTab(AppLocalizations l10n) {
-    return _buildEmptyState(
-      icon: Icons.restaurant,
-      title: l10n.noCustomFoodsYet,
-      subtitle: l10n.foodsYouCreateWillAppearHere,
-    );
-  }
-
-  Widget _buildMyMealsTab(AppLocalizations l10n) {
-    return _buildEmptyState(
-      icon: Icons.dinner_dining,
-      title: l10n.noSavedMealsYet,
-      subtitle: l10n.combineFoodsIntoMeals,
     );
   }
 
@@ -498,47 +490,6 @@ class _LogFoodScreenState extends ConsumerState<LogFoodScreen>
     }
   }
 
-  Widget _buildEmptyState({
-    required IconData icon,
-    required String title,
-    required String subtitle,
-  }) {
-    return Center(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Container(
-            width: 80,
-            height: 80,
-            decoration: BoxDecoration(
-              color: AppColors.surface,
-              shape: BoxShape.circle,
-            ),
-            child: Icon(icon, size: 40, color: AppColors.textTertiary),
-          ),
-          const SizedBox(height: 16),
-          Text(
-            title,
-            style: const TextStyle(
-              fontSize: 18,
-              fontWeight: FontWeight.bold,
-              color: AppColors.textPrimary,
-            ),
-          ),
-          const SizedBox(height: 8),
-          Text(
-            subtitle,
-            style: const TextStyle(
-              fontSize: 14,
-              color: AppColors.textSecondary,
-            ),
-            textAlign: TextAlign.center,
-          ),
-        ],
-      ),
-    );
-  }
-
   Future<void> _addFood(_FoodSuggestion suggestion, AppLocalizations l10n) async {
     final authState = ref.read(authStateProvider);
     if (authState.userId == null) {
@@ -576,22 +527,19 @@ class _LogFoodScreenState extends ConsumerState<LogFoodScreen>
   }
 
   void _showManualAddSheet(AppLocalizations l10n) {
-    showModalBottomSheet(
-      context: context,
-      isScrollControlled: true,
-      backgroundColor: Colors.white,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => const ManualFoodEntryScreen(),
       ),
-      builder: (context) => _ManualAddSheet(l10n: l10n),
     );
   }
 
   void _showVoiceLog(AppLocalizations l10n) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text(l10n.voiceLoggingComingSoon),
-        behavior: SnackBarBehavior.floating,
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => const VoiceFoodEntryScreen(),
       ),
     );
   }

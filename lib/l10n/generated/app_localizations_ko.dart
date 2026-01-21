@@ -949,4 +949,43 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String get errorDeletingWeightLog => '체중 기록 삭제 중 오류가 발생했습니다';
+
+  @override
+  String get tapToName => '이름 입력';
+
+  @override
+  String get ingredientsHidden => '재료 숨김';
+
+  @override
+  String get learnWhy => '자세히 알아보기';
+
+  @override
+  String get log => '기록';
+
+  @override
+  String get servings => '인분';
+
+  @override
+  String get pleaseEnterFoodName => '음식 이름을 입력해주세요';
+
+  @override
+  String get foodLogged => '음식이 기록되었습니다';
+
+  @override
+  String get errorLoggingFood => '음식 기록 중 오류가 발생했습니다';
+
+  @override
+  String get voiceRecording => '음성 기록';
+
+  @override
+  String get tapToRecord => '탭하여 녹음';
+
+  @override
+  String get recording => '녹음 중...';
+
+  @override
+  String get analyzing => '분석 중...';
+
+  @override
+  String get speakNow => '먹은 음식을 말씀해주세요';
 }

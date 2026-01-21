@@ -1909,6 +1909,84 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Error deleting weight log'**
   String get errorDeletingWeightLog;
+
+  /// No description provided for @tapToName.
+  ///
+  /// In en, this message translates to:
+  /// **'Tap to Name'**
+  String get tapToName;
+
+  /// No description provided for @ingredientsHidden.
+  ///
+  /// In en, this message translates to:
+  /// **'Ingredients hidden'**
+  String get ingredientsHidden;
+
+  /// No description provided for @learnWhy.
+  ///
+  /// In en, this message translates to:
+  /// **'Learn why'**
+  String get learnWhy;
+
+  /// No description provided for @log.
+  ///
+  /// In en, this message translates to:
+  /// **'Log'**
+  String get log;
+
+  /// No description provided for @servings.
+  ///
+  /// In en, this message translates to:
+  /// **'Servings'**
+  String get servings;
+
+  /// No description provided for @pleaseEnterFoodName.
+  ///
+  /// In en, this message translates to:
+  /// **'Please enter a food name'**
+  String get pleaseEnterFoodName;
+
+  /// No description provided for @foodLogged.
+  ///
+  /// In en, this message translates to:
+  /// **'Food logged'**
+  String get foodLogged;
+
+  /// No description provided for @errorLoggingFood.
+  ///
+  /// In en, this message translates to:
+  /// **'Error logging food'**
+  String get errorLoggingFood;
+
+  /// No description provided for @voiceRecording.
+  ///
+  /// In en, this message translates to:
+  /// **'Voice Recording'**
+  String get voiceRecording;
+
+  /// No description provided for @tapToRecord.
+  ///
+  /// In en, this message translates to:
+  /// **'Tap to record'**
+  String get tapToRecord;
+
+  /// No description provided for @recording.
+  ///
+  /// In en, this message translates to:
+  /// **'Recording...'**
+  String get recording;
+
+  /// No description provided for @analyzing.
+  ///
+  /// In en, this message translates to:
+  /// **'Analyzing...'**
+  String get analyzing;
+
+  /// No description provided for @speakNow.
+  ///
+  /// In en, this message translates to:
+  /// **'Speak now, describe what you ate'**
+  String get speakNow;
 }
 
 class _AppLocalizationsDelegate

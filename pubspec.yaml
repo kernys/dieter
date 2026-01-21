@@ -55,6 +55,9 @@ dependencies:
   # HTTP
   http: ^1.2.0
 
+  # Speech
+  speech_to_text: ^7.0.0
+
   # Animations
   animations: ^2.0.11
   image_gallery_saver_plus: ^4.0.1

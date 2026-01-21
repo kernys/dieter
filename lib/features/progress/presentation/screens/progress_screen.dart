@@ -530,6 +530,7 @@ class ProgressScreen extends ConsumerWidget {
             ),
 
             // Weekly Energy Chart
+            const SliverToBoxAdapter(child: SizedBox(height: 16)),
             SliverToBoxAdapter(
               child: Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 16),
