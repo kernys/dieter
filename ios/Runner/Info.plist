@@ -50,6 +50,8 @@
 	<key>NSPhotoLibraryUsageDescription</key>
 	<string>Dieter AI needs photo library access to let you select food photos for analysis.</string>
 	<key>NSMicrophoneUsageDescription</key>
-	<string>Dieter AI may need microphone access for video recording.</string>
+	<string>Dieter AI needs microphone access for voice food logging.</string>
+	<key>NSSpeechRecognitionUsageDescription</key>
+	<string>Dieter AI needs speech recognition to convert your voice to text for food logging.</string>
 </dict>
 </plist>

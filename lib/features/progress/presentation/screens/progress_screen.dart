@@ -126,8 +126,8 @@ class ProgressScreen extends ConsumerWidget {
                                 children: [
                                   Text(
                                     settings.unitSystem == UnitSystem.metric
-                                        ? l10n.goalKg(displayGoalWeight.toInt())
-                                        : l10n.goal(goalWeight.toInt()),
+                                        ? l10n.goalKg(displayGoalWeight.round())
+                                        : l10n.goal(goalWeight.round()),
                                     style: const TextStyle(
                                       fontSize: 12,
                                       color: AppColors.textTertiary,
