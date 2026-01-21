@@ -646,7 +646,7 @@ class ProgressScreen extends ConsumerWidget {
                   fontWeight: FontWeight.w600,
                   color: AppColors.success,
                 ),
-                labelResolver: (line) => '${l10n.goal}: ${goalWeight.toStringAsFixed(1)}',
+                labelResolver: (line) => '${l10n.goalWeight}: ${goalWeight.toStringAsFixed(1)}',
               ),
             ),
           ],
@@ -865,7 +865,7 @@ class ProgressScreen extends ConsumerWidget {
                 final weightInLbs = isMetric ? inputWeight / 0.453592 : inputWeight;
                 try {
                   await ref.read(authStateProvider.notifier).updateUser({
-                    'goal_weight': weightInLbs,
+                    'goalWeight': weightInLbs,
                   });
 
                   // Refresh providers
@@ -1364,8 +1364,26 @@ class _BMICard extends StatelessWidget {
       bmiColor = AppColors.error;
     }
 
-    // Calculate position on scale (BMI 15-40 range)
-    final bmiPosition = ((bmi - 15) / 25).clamp(0.0, 1.0);
+    // Calculate position on scale matching label positions
+    // Labels at equal spacing: 15, 18.5, 25, 30, 40 (positions 0, 0.25, 0.5, 0.75, 1.0)
+    double bmiPosition;
+    if (bmi <= 15) {
+      bmiPosition = 0.0;
+    } else if (bmi <= 18.5) {
+      // 15-18.5 maps to 0-0.25
+      bmiPosition = ((bmi - 15) / 3.5) * 0.25;
+    } else if (bmi <= 25) {
+      // 18.5-25 maps to 0.25-0.5
+      bmiPosition = 0.25 + ((bmi - 18.5) / 6.5) * 0.25;
+    } else if (bmi <= 30) {
+      // 25-30 maps to 0.5-0.75
+      bmiPosition = 0.5 + ((bmi - 25) / 5) * 0.25;
+    } else if (bmi <= 40) {
+      // 30-40 maps to 0.75-1.0
+      bmiPosition = 0.75 + ((bmi - 30) / 10) * 0.25;
+    } else {
+      bmiPosition = 1.0;
+    }
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -1432,12 +1450,13 @@ class _BMICard extends StatelessWidget {
                     borderRadius: BorderRadius.circular(4),
                     gradient: const LinearGradient(
                       colors: [
-                        Color(0xFF64B5F6), // Underweight
-                        Color(0xFF4CAF50), // Normal
-                        Color(0xFFFFB74D), // Overweight
-                        Color(0xFFE57373), // Obese
+                        Color(0xFF64B5F6), // Underweight (< 18.5)
+                        Color(0xFF4CAF50), // Normal (18.5-25)
+                        Color(0xFFFFB74D), // Overweight (25-30)
+                        Color(0xFFE57373), // Obese (>= 30)
                       ],
-                      stops: [0.0, 0.35, 0.6, 1.0],
+                      // Labels at 0, 0.25, 0.5, 0.75, 1.0 (15, 18.5, 25, 30, 40)
+                      stops: [0.0, 0.25, 0.5, 0.75],
                     ),
                   ),
                 ),
