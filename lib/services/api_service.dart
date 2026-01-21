@@ -1,5 +1,5 @@
 import 'dart:convert';
-import 'dart:typed_data';
+import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:http/http.dart' as http;
 import '../core/constants/app_constants.dart';
@@ -67,13 +67,16 @@ class ApiService {
     );
 
     if (response.statusCode == 200) {
-      return UserModel.fromJson(jsonDecode(response.body));
+      final json = jsonDecode(response.body);
+      debugPrint('getUser response - goalWeight: ${json['goalWeight']}');
+      return UserModel.fromJson(json);
     } else {
       throw ApiException(response.statusCode, 'Failed to get user');
     }
   }
 
   Future<UserModel> updateUser(String userId, Map<String, dynamic> updates) async {
+    debugPrint('updateUser request - updates: $updates');
     final response = await http.patch(
       Uri.parse('$baseUrl/users/$userId'),
       headers: _headers,
@@ -81,9 +84,13 @@ class ApiService {
     );
 
     if (response.statusCode == 200) {
-      return UserModel.fromJson(jsonDecode(response.body));
+      final json = jsonDecode(response.body);
+      debugPrint('updateUser response - goalWeight: ${json['goalWeight']}');
+      return UserModel.fromJson(json);
     } else {
-      throw ApiException(response.statusCode, 'Failed to update user');
+      final errorBody = jsonDecode(response.body);
+      final errorMessage = errorBody['error'] ?? 'Failed to update user';
+      throw ApiException(response.statusCode, errorMessage);
     }
   }
 

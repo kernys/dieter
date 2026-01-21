@@ -880,9 +880,14 @@ class ProgressScreen extends ConsumerWidget {
                     return;
                   }
 
+                  // Update goal weight on server
                   await dialogRef.read(authStateProvider.notifier).updateUser({
                     'goalWeight': weightInLbs,
                   });
+
+                  // Verify the update was successful
+                  final updatedUser = dialogRef.read(authStateProvider).user;
+                  debugPrint('Goal weight updated: ${updatedUser?.goalWeight}');
 
                   // Refresh all related providers
                   dialogRef.invalidate(weightLogsResponseProvider);
@@ -892,14 +897,15 @@ class ProgressScreen extends ConsumerWidget {
                   }
                   if (context.mounted) {
                     ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(content: Text(l10n.goalWeightUpdated)),
+                      SnackBar(content: Text('${l10n.goalWeightUpdated} (${updatedUser?.goalWeight?.toStringAsFixed(1)} lbs)')),
                     );
                   }
                 } catch (e) {
+                  debugPrint('Goal weight update error: $e');
                   if (context.mounted) {
                     final errorMessage = e.toString().replaceFirst('Exception: ', '');
                     ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(content: Text(errorMessage)),
+                      SnackBar(content: Text('Error: $errorMessage')),
                     );
                   }
                 }

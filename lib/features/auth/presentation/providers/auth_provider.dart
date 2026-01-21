@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../../../../services/api_service.dart';
@@ -74,6 +75,7 @@ class AuthNotifier extends StateNotifier<AuthState> {
 
         try {
           final user = await _apiService.getUser(userId);
+          debugPrint('AuthNotifier._checkAuthStatus - loaded user goalWeight: ${user.goalWeight}');
           state = AuthState.authenticated(
             userId: userId,
             accessToken: accessToken,
