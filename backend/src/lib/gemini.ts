@@ -36,6 +36,95 @@ export interface IngredientAnalysis {
   fat: number | null;
 }
 
+export interface ExerciseAnalysisResult {
+  exercise_type: string;
+  duration: number;
+  calories_burned: number;
+  intensity: string | null;
+  description: string | null;
+}
+
+export async function analyzeExercise(description: string, locale: string = 'en'): Promise<ExerciseAnalysisResult> {
+  const languageInstruction = getLanguageInstruction(locale);
+
+  const prompt = `
+Analyze this exercise description and estimate the calories burned.
+${languageInstruction}
+
+Exercise description: "${description}"
+
+Please respond in the following JSON format only, without any markdown formatting or code blocks:
+{
+  "exercise_type": "Type of exercise (e.g., 'Running', 'Weight Training', 'Yoga', 'Swimming')",
+  "duration": estimated duration in minutes (integer),
+  "calories_burned": estimated total calories burned (integer),
+  "intensity": "Low" | "Medium" | "High" (based on the description),
+  "description": "Brief summary of the exercise"
+}
+
+Important:
+- If duration is not specified, estimate based on typical workout duration for this type of exercise
+- Use realistic calorie estimates based on:
+  - Light activity: 3-5 cal/min
+  - Moderate activity: 5-8 cal/min
+  - Intense activity: 8-15 cal/min
+- Consider the type of exercise and intensity
+- Return ONLY the JSON object, no other text
+`;
+
+  try {
+    const response = await fetch(OPENROUTER_API_URL, {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${OPENROUTER_API_KEY}`,
+        'Content-Type': 'application/json',
+        'HTTP-Referer': process.env.OPENROUTER_HTTP_REFERER || '',
+        'X-Title': 'Dieter AI',
+      },
+      body: JSON.stringify({
+        model: 'google/gemini-2.5-flash',
+        messages: [
+          {
+            role: 'user',
+            content: prompt,
+          },
+        ],
+      }),
+    });
+
+    if (!response.ok) {
+      const errorText = await response.text();
+      console.error('OpenRouter API error:', response.status, errorText);
+      throw new Error(`OpenRouter API error: ${response.status}`);
+    }
+
+    const data = await response.json();
+    let text = data.choices[0]?.message?.content || '';
+
+    if (!text) {
+      throw new Error('No response content from OpenRouter');
+    }
+
+    // Clean up the response
+    text = text.trim();
+    if (text.startsWith('```json')) {
+      text = text.substring(7);
+    } else if (text.startsWith('```')) {
+      text = text.substring(3);
+    }
+    if (text.endsWith('```')) {
+      text = text.substring(0, text.length - 3);
+    }
+    text = text.trim();
+
+    const parsed = JSON.parse(text) as ExerciseAnalysisResult;
+    return parsed;
+  } catch (error) {
+    console.error('Error analyzing exercise:', error);
+    throw error;
+  }
+}
+
 export async function analyzeFood(imageBase64: string, locale: string = 'en'): Promise<FoodAnalysisResult> {
   const languageInstruction = getLanguageInstruction(locale);
 
