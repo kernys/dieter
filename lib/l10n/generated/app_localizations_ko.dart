@@ -706,6 +706,26 @@ class AppLocalizationsKo extends AppLocalizations {
   }
 
   @override
+  String get lightWeights => '가벼움';
+
+  @override
+  String get moderateWeights => '보통';
+
+  @override
+  String get heavyWeights => '무거움';
+
+  @override
+  String weightLiftingLogged(int duration, String intensity) {
+    return '웨이트 트레이닝 기록됨: $duration분 ($intensity 강도)';
+  }
+
+  @override
+  String get analyzingExercise => '운동 분석 중...';
+
+  @override
+  String get exerciseAnalysisFailed => '운동 분석에 실패했습니다';
+
+  @override
   String get logFood => '음식 기록';
 
   @override

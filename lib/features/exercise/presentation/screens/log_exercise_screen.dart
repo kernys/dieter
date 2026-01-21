@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../../../../core/constants/app_colors.dart';
 import '../../../../l10n/generated/app_localizations.dart';
+import '../../../../services/api_service.dart';
 import '../providers/exercise_log_provider.dart';
 
 class LogExerciseScreen extends ConsumerWidget {
@@ -67,7 +68,7 @@ class LogExerciseScreen extends ConsumerWidget {
                 icon: Icons.fitness_center,
                 title: l10n.weightLifting,
                 description: l10n.weightLiftingDescription,
-                onTap: () => _showExerciseInput(context, l10n.weightLifting, Icons.fitness_center, l10n, ref),
+                onTap: () => _showWeightLiftingInput(context, l10n, ref),
               ),
               const SizedBox(height: 12),
               _ExerciseOption(
@@ -260,121 +261,170 @@ class LogExerciseScreen extends ConsumerWidget {
     );
   }
 
-  void _showExerciseInput(BuildContext context, String exerciseType, IconData icon, AppLocalizations l10n, WidgetRef ref) {
+  void _showWeightLiftingInput(BuildContext context, AppLocalizations l10n, WidgetRef ref) {
     final durationController = TextEditingController();
+    String selectedIntensity = 'Medium';
 
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
       backgroundColor: Colors.transparent,
-      builder: (context) => Container(
-        padding: EdgeInsets.only(
-          bottom: MediaQuery.of(context).viewInsets.bottom,
-        ),
-        decoration: const BoxDecoration(
-          color: AppColors.background,
-          borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
-        ),
-        child: Padding(
-          padding: const EdgeInsets.all(24),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Center(
-                child: Container(
-                  width: 40,
-                  height: 4,
-                  decoration: BoxDecoration(
-                    color: AppColors.textTertiary,
-                    borderRadius: BorderRadius.circular(2),
-                  ),
-                ),
-              ),
-              const SizedBox(height: 24),
-              Row(
-                children: [
-                  Container(
-                    width: 48,
-                    height: 48,
+      builder: (context) => StatefulBuilder(
+        builder: (context, setState) => Container(
+          padding: EdgeInsets.only(
+            bottom: MediaQuery.of(context).viewInsets.bottom,
+          ),
+          decoration: const BoxDecoration(
+            color: AppColors.background,
+            borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+          ),
+          child: Padding(
+            padding: const EdgeInsets.all(24),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Center(
+                  child: Container(
+                    width: 40,
+                    height: 4,
                     decoration: BoxDecoration(
-                      color: AppColors.surface,
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                    child: Icon(icon, color: AppColors.textPrimary),
-                  ),
-                  const SizedBox(width: 16),
-                  Text(
-                    exerciseType,
-                    style: const TextStyle(
-                      fontSize: 20,
-                      fontWeight: FontWeight.bold,
-                      color: AppColors.textPrimary,
-                    ),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 24),
-              TextField(
-                controller: durationController,
-                keyboardType: TextInputType.number,
-                decoration: InputDecoration(
-                  labelText: l10n.durationMinutes,
-                  hintText: l10n.enterDuration,
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                ),
-                autofocus: true,
-              ),
-              const SizedBox(height: 24),
-              SizedBox(
-                width: double.infinity,
-                child: ElevatedButton(
-                  onPressed: () {
-                    final duration = int.tryParse(durationController.text);
-                    if (duration != null && duration > 0) {
-                      // Calculate calories (weight lifting burns ~5 cal/min on average)
-                      final caloriesBurned = duration * 5;
-
-                      ref.read(exerciseLogProvider.notifier).addLog(
-                        ExerciseLog(
-                          id: DateTime.now().millisecondsSinceEpoch.toString(),
-                          type: exerciseType,
-                          duration: duration,
-                          caloriesBurned: caloriesBurned,
-                          loggedAt: DateTime.now(),
-                        ),
-                      );
-
-                      Navigator.pop(context);
-                      Navigator.pop(context);
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(
-                          content: Text(l10n.exerciseLogged(exerciseType, duration)),
-                        ),
-                      );
-                    }
-                  },
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: AppColors.primary,
-                    foregroundColor: Colors.white,
-                    padding: const EdgeInsets.symmetric(vertical: 16),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                  ),
-                  child: Text(
-                    l10n.logExercise,
-                    style: const TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.w600,
+                      color: AppColors.textTertiary,
+                      borderRadius: BorderRadius.circular(2),
                     ),
                   ),
                 ),
-              ),
-              const SizedBox(height: 16),
-            ],
+                const SizedBox(height: 24),
+                Row(
+                  children: [
+                    Container(
+                      width: 48,
+                      height: 48,
+                      decoration: BoxDecoration(
+                        color: AppColors.surface,
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      child: const Icon(Icons.fitness_center, color: AppColors.textPrimary),
+                    ),
+                    const SizedBox(width: 16),
+                    Text(
+                      l10n.weightLifting,
+                      style: const TextStyle(
+                        fontSize: 20,
+                        fontWeight: FontWeight.bold,
+                        color: AppColors.textPrimary,
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 24),
+                Text(
+                  l10n.intensity,
+                  style: const TextStyle(
+                    fontSize: 14,
+                    fontWeight: FontWeight.w600,
+                    color: AppColors.textSecondary,
+                  ),
+                ),
+                const SizedBox(height: 12),
+                Row(
+                  children: [
+                    _IntensityChip(
+                      label: l10n.low,
+                      subtitle: l10n.lightWeights,
+                      isSelected: selectedIntensity == 'Low',
+                      onTap: () => setState(() => selectedIntensity = 'Low'),
+                    ),
+                    const SizedBox(width: 8),
+                    _IntensityChip(
+                      label: l10n.medium,
+                      subtitle: l10n.moderateWeights,
+                      isSelected: selectedIntensity == 'Medium',
+                      onTap: () => setState(() => selectedIntensity = 'Medium'),
+                    ),
+                    const SizedBox(width: 8),
+                    _IntensityChip(
+                      label: l10n.high,
+                      subtitle: l10n.heavyWeights,
+                      isSelected: selectedIntensity == 'High',
+                      onTap: () => setState(() => selectedIntensity = 'High'),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 24),
+                TextField(
+                  controller: durationController,
+                  keyboardType: TextInputType.number,
+                  decoration: InputDecoration(
+                    labelText: l10n.durationMinutes,
+                    hintText: l10n.enterDuration,
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                  ),
+                  autofocus: true,
+                ),
+                const SizedBox(height: 24),
+                SizedBox(
+                  width: double.infinity,
+                  child: ElevatedButton(
+                    onPressed: () {
+                      final duration = int.tryParse(durationController.text);
+                      if (duration != null && duration > 0) {
+                        // Calculate calories based on intensity
+                        int caloriesPerMin;
+                        switch (selectedIntensity) {
+                          case 'Low':
+                            caloriesPerMin = 4;
+                            break;
+                          case 'High':
+                            caloriesPerMin = 8;
+                            break;
+                          default:
+                            caloriesPerMin = 6;
+                        }
+                        final caloriesBurned = duration * caloriesPerMin;
+
+                        ref.read(exerciseLogProvider.notifier).addLog(
+                          ExerciseLog(
+                            id: DateTime.now().millisecondsSinceEpoch.toString(),
+                            type: l10n.weightLifting,
+                            duration: duration,
+                            caloriesBurned: caloriesBurned,
+                            intensity: selectedIntensity,
+                            loggedAt: DateTime.now(),
+                          ),
+                        );
+
+                        Navigator.pop(context);
+                        Navigator.pop(context);
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                            content: Text(l10n.weightLiftingLogged(duration, selectedIntensity)),
+                          ),
+                        );
+                      }
+                    },
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: AppColors.primary,
+                      foregroundColor: Colors.white,
+                      padding: const EdgeInsets.symmetric(vertical: 16),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                    ),
+                    child: Text(
+                      l10n.logExercise,
+                      style: const TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 16),
+              ],
+            ),
           ),
         ),
       ),
@@ -383,100 +433,208 @@ class LogExerciseScreen extends ConsumerWidget {
 
   void _showDescribeExercise(BuildContext context, AppLocalizations l10n, WidgetRef ref) {
     final descriptionController = TextEditingController();
+    bool isAnalyzing = false;
+    ExerciseAnalysisResult? analysisResult;
 
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
       backgroundColor: Colors.transparent,
-      builder: (context) => Container(
-        padding: EdgeInsets.only(
-          bottom: MediaQuery.of(context).viewInsets.bottom,
-        ),
-        decoration: const BoxDecoration(
-          color: AppColors.background,
-          borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
-        ),
-        child: Padding(
-          padding: const EdgeInsets.all(24),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Center(
-                child: Container(
-                  width: 40,
-                  height: 4,
-                  decoration: BoxDecoration(
-                    color: AppColors.textTertiary,
-                    borderRadius: BorderRadius.circular(2),
+      builder: (context) => StatefulBuilder(
+        builder: (context, setState) => Container(
+          padding: EdgeInsets.only(
+            bottom: MediaQuery.of(context).viewInsets.bottom,
+          ),
+          decoration: const BoxDecoration(
+            color: AppColors.background,
+            borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+          ),
+          child: Padding(
+            padding: const EdgeInsets.all(24),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Center(
+                  child: Container(
+                    width: 40,
+                    height: 4,
+                    decoration: BoxDecoration(
+                      color: AppColors.textTertiary,
+                      borderRadius: BorderRadius.circular(2),
+                    ),
                   ),
                 ),
-              ),
-              const SizedBox(height: 24),
-              Text(
-                l10n.describeYourWorkout,
-                style: const TextStyle(
-                  fontSize: 20,
-                  fontWeight: FontWeight.bold,
-                  color: AppColors.textPrimary,
-                ),
-              ),
-              const SizedBox(height: 16),
-              TextField(
-                controller: descriptionController,
-                maxLines: 4,
-                decoration: InputDecoration(
-                  hintText: l10n.describeHint,
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(12),
+                const SizedBox(height: 24),
+                Text(
+                  l10n.describeYourWorkout,
+                  style: const TextStyle(
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold,
+                    color: AppColors.textPrimary,
                   ),
                 ),
-                autofocus: true,
-              ),
-              const SizedBox(height: 24),
-              SizedBox(
-                width: double.infinity,
-                child: ElevatedButton(
-                  onPressed: () {
-                    if (descriptionController.text.isNotEmpty) {
-                      // Estimate 100 calories for described workouts
-                      ref.read(exerciseLogProvider.notifier).addLog(
-                        ExerciseLog(
-                          id: DateTime.now().millisecondsSinceEpoch.toString(),
-                          type: l10n.exercise,
-                          duration: 0,
-                          caloriesBurned: 100,
-                          description: descriptionController.text,
-                          loggedAt: DateTime.now(),
-                        ),
-                      );
-
-                      Navigator.pop(context);
-                      Navigator.pop(context);
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(content: Text(l10n.exerciseLoggedSuccess)),
-                      );
-                    }
-                  },
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: AppColors.primary,
-                    foregroundColor: Colors.white,
-                    padding: const EdgeInsets.symmetric(vertical: 16),
-                    shape: RoundedRectangleBorder(
+                const SizedBox(height: 16),
+                TextField(
+                  controller: descriptionController,
+                  maxLines: 4,
+                  decoration: InputDecoration(
+                    hintText: l10n.describeHint,
+                    border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(12),
                     ),
                   ),
-                  child: Text(
-                    l10n.logExercise,
-                    style: const TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.w600,
+                  autofocus: true,
+                ),
+                const SizedBox(height: 16),
+
+                // Analysis result card
+                if (analysisResult != null)
+                  Container(
+                    width: double.infinity,
+                    padding: const EdgeInsets.all(16),
+                    decoration: BoxDecoration(
+                      color: AppColors.success.withValues(alpha: 0.1),
+                      borderRadius: BorderRadius.circular(12),
+                      border: Border.all(color: AppColors.success.withValues(alpha: 0.3)),
+                    ),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Row(
+                          children: [
+                            Icon(Icons.check_circle, color: AppColors.success, size: 20),
+                            const SizedBox(width: 8),
+                            Text(
+                              analysisResult!.exerciseType,
+                              style: const TextStyle(
+                                fontSize: 16,
+                                fontWeight: FontWeight.bold,
+                                color: AppColors.textPrimary,
+                              ),
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 12),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceAround,
+                          children: [
+                            _AnalysisStatItem(
+                              label: l10n.durationMinutes,
+                              value: '${analysisResult!.duration}',
+                            ),
+                            _AnalysisStatItem(
+                              label: l10n.caloriesBurned,
+                              value: '${analysisResult!.caloriesBurned}',
+                            ),
+                            if (analysisResult!.intensity != null)
+                              _AnalysisStatItem(
+                                label: l10n.intensity,
+                                value: analysisResult!.intensity!,
+                              ),
+                          ],
+                        ),
+                      ],
                     ),
                   ),
+
+                const SizedBox(height: 24),
+                SizedBox(
+                  width: double.infinity,
+                  child: ElevatedButton(
+                    onPressed: isAnalyzing
+                        ? null
+                        : () async {
+                            if (descriptionController.text.isEmpty) return;
+
+                            // If already analyzed, log the exercise
+                            if (analysisResult != null) {
+                              ref.read(exerciseLogProvider.notifier).addLog(
+                                ExerciseLog(
+                                  id: DateTime.now().millisecondsSinceEpoch.toString(),
+                                  type: analysisResult!.exerciseType,
+                                  duration: analysisResult!.duration,
+                                  caloriesBurned: analysisResult!.caloriesBurned,
+                                  intensity: analysisResult!.intensity,
+                                  description: descriptionController.text,
+                                  loggedAt: DateTime.now(),
+                                ),
+                              );
+
+                              Navigator.pop(context);
+                              Navigator.pop(context);
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(content: Text(l10n.exerciseLoggedSuccess)),
+                              );
+                              return;
+                            }
+
+                            // Analyze exercise with AI
+                            setState(() => isAnalyzing = true);
+
+                            try {
+                              final apiService = ref.read(apiServiceProvider);
+                              final locale = Localizations.localeOf(context).languageCode;
+                              final result = await apiService.analyzeExercise(
+                                descriptionController.text,
+                                locale: locale,
+                              );
+
+                              setState(() {
+                                analysisResult = result;
+                                isAnalyzing = false;
+                              });
+                            } catch (e) {
+                              setState(() => isAnalyzing = false);
+                              if (context.mounted) {
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  SnackBar(content: Text(l10n.exerciseAnalysisFailed)),
+                                );
+                              }
+                            }
+                          },
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: AppColors.primary,
+                      foregroundColor: Colors.white,
+                      padding: const EdgeInsets.symmetric(vertical: 16),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                    ),
+                    child: isAnalyzing
+                        ? Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              const SizedBox(
+                                width: 20,
+                                height: 20,
+                                child: CircularProgressIndicator(
+                                  strokeWidth: 2,
+                                  valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                                ),
+                              ),
+                              const SizedBox(width: 12),
+                              Text(
+                                l10n.analyzingExercise,
+                                style: const TextStyle(
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.w600,
+                                ),
+                              ),
+                            ],
+                          )
+                        : Text(
+                            analysisResult != null ? l10n.logExercise : l10n.analyzing,
+                            style: const TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                  ),
                 ),
-              ),
-              const SizedBox(height: 16),
-            ],
+                const SizedBox(height: 16),
+              ],
+            ),
           ),
         ),
       ),
@@ -701,6 +859,40 @@ class _IntensityChip extends StatelessWidget {
           ),
         ),
       ),
+    );
+  }
+}
+
+class _AnalysisStatItem extends StatelessWidget {
+  final String label;
+  final String value;
+
+  const _AnalysisStatItem({
+    required this.label,
+    required this.value,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      children: [
+        Text(
+          value,
+          style: const TextStyle(
+            fontSize: 18,
+            fontWeight: FontWeight.bold,
+            color: AppColors.textPrimary,
+          ),
+        ),
+        const SizedBox(height: 4),
+        Text(
+          label,
+          style: const TextStyle(
+            fontSize: 12,
+            color: AppColors.textSecondary,
+          ),
+        ),
+      ],
     );
   }
 }

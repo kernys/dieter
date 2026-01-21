@@ -1442,6 +1442,42 @@ abstract class AppLocalizations {
   /// **'{calories} calories burned logged!'**
   String caloriesBurnedLogged(int calories);
 
+  /// No description provided for @lightWeights.
+  ///
+  /// In en, this message translates to:
+  /// **'Light'**
+  String get lightWeights;
+
+  /// No description provided for @moderateWeights.
+  ///
+  /// In en, this message translates to:
+  /// **'Moderate'**
+  String get moderateWeights;
+
+  /// No description provided for @heavyWeights.
+  ///
+  /// In en, this message translates to:
+  /// **'Heavy'**
+  String get heavyWeights;
+
+  /// No description provided for @weightLiftingLogged.
+  ///
+  /// In en, this message translates to:
+  /// **'Weight lifting logged: {duration} min ({intensity} intensity)'**
+  String weightLiftingLogged(int duration, String intensity);
+
+  /// No description provided for @analyzingExercise.
+  ///
+  /// In en, this message translates to:
+  /// **'Analyzing exercise...'**
+  String get analyzingExercise;
+
+  /// No description provided for @exerciseAnalysisFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to analyze exercise'**
+  String get exerciseAnalysisFailed;
+
   /// No description provided for @logFood.
   ///
   /// In en, this message translates to:

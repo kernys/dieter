@@ -710,6 +710,26 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
+  String get lightWeights => 'Light';
+
+  @override
+  String get moderateWeights => 'Moderate';
+
+  @override
+  String get heavyWeights => 'Heavy';
+
+  @override
+  String weightLiftingLogged(int duration, String intensity) {
+    return 'Weight lifting logged: $duration min ($intensity intensity)';
+  }
+
+  @override
+  String get analyzingExercise => 'Analyzing exercise...';
+
+  @override
+  String get exerciseAnalysisFailed => 'Failed to analyze exercise';
+
+  @override
   String get logFood => 'Log Food';
 
   @override

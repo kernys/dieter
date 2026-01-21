@@ -262,6 +262,13 @@
   "enterCaloriesBurned": "Enter calories burned",
   "caloriesBurnedLogged": "{calories} calories burned logged!",
   "@caloriesBurnedLogged": { "placeholders": { "calories": { "type": "int" } } },
+  "lightWeights": "Light",
+  "moderateWeights": "Moderate",
+  "heavyWeights": "Heavy",
+  "weightLiftingLogged": "Weight lifting logged: {duration} min ({intensity} intensity)",
+  "@weightLiftingLogged": { "placeholders": { "duration": { "type": "int" }, "intensity": { "type": "String" } } },
+  "analyzingExercise": "Analyzing exercise...",
+  "exerciseAnalysisFailed": "Failed to analyze exercise",
 
   "logFood": "Log Food",
   "all": "All",

@@ -259,6 +259,24 @@ class ApiService {
     }
   }
 
+  // Exercise Analysis API
+  Future<ExerciseAnalysisResult> analyzeExercise(String description, {String? locale}) async {
+    final response = await http.post(
+      Uri.parse('$baseUrl/exercise/analyze'),
+      headers: _headers,
+      body: jsonEncode({
+        'description': description,
+        if (locale != null) 'locale': locale,
+      }),
+    );
+
+    if (response.statusCode == 200) {
+      return ExerciseAnalysisResult.fromJson(jsonDecode(response.body));
+    } else {
+      throw ApiException(response.statusCode, 'Failed to analyze exercise');
+    }
+  }
+
   // Food Search API
   Future<FoodSearchResponse> searchFood(String query, {String lang = 'en'}) async {
     final response = await http.get(
@@ -595,6 +613,33 @@ class IngredientAnalysis {
       protein: (json['protein'] as num?)?.toDouble(),
       carbs: (json['carbs'] as num?)?.toDouble(),
       fat: (json['fat'] as num?)?.toDouble(),
+    );
+  }
+}
+
+class ExerciseAnalysisResult {
+  final String exerciseType;
+  final int duration;
+  final int caloriesBurned;
+  final String? intensity;
+  final String? description;
+
+  ExerciseAnalysisResult({
+    required this.exerciseType,
+    required this.duration,
+    required this.caloriesBurned,
+    this.intensity,
+    this.description,
+  });
+
+  factory ExerciseAnalysisResult.fromJson(Map<String, dynamic> json) {
+    return ExerciseAnalysisResult(
+      exerciseType: json['exercise_type'] ?? json['exerciseType'] ?? 'Exercise',
+      duration: (json['duration'] as num?)?.toInt() ?? 0,
+      caloriesBurned: (json['calories_burned'] as num?)?.toInt() ??
+                      (json['caloriesBurned'] as num?)?.toInt() ?? 0,
+      intensity: json['intensity'],
+      description: json['description'],
     );
   }
 }
