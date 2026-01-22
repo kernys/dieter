@@ -306,7 +306,7 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String percentOfGoal(int percent) {
-    return '목표의 $percent%';
+    return '목표까지 $percent% 남음';
   }
 
   @override

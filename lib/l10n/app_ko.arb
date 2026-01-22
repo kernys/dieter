@@ -110,7 +110,7 @@
   "logWeight": "체중 기록",
   "dayStreak": "연속 기록",
   "weightProgress": "체중 변화",
-  "percentOfGoal": "목표의 {percent}%",
+  "percentOfGoal": "목표까지 {percent}% 남음",
   "errorLoadingDataSimple": "데이터 로딩 오류",
   "greatJobConsistency": "잘하고 있어요! 꾸준함이 핵심이고, 당신은 잘 해내고 있습니다!",
   "dailyAverageCalories": "일일 평균 칼로리",

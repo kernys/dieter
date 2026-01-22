@@ -3,7 +3,9 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 import '../../../../core/constants/app_colors.dart';
 import '../../../../l10n/generated/app_localizations.dart';
+import '../../../../services/api_service.dart';
 import '../../../auth/presentation/providers/auth_provider.dart';
+import '../../../progress/presentation/providers/progress_provider.dart';
 import '../providers/settings_provider.dart';
 
 class PersonalDetailsScreen extends ConsumerStatefulWidget {
@@ -92,64 +94,6 @@ class _PersonalDetailsScreenState extends ConsumerState<PersonalDetailsScreen> {
         padding: const EdgeInsets.all(16),
         child: Column(
           children: [
-            // Goal Weight Card
-            Container(
-              padding: const EdgeInsets.all(16),
-              decoration: BoxDecoration(
-                color: context.cardColor,
-                borderRadius: BorderRadius.circular(16),
-                border: Border.all(color: context.borderColor),
-              ),
-              child: Row(
-                children: [
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          l10n.goalWeight,
-                          style: TextStyle(
-                            fontSize: 14,
-                            color: context.textSecondaryColor,
-                          ),
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                        ),
-                        const SizedBox(height: 4),
-                        Text(
-                          _formatWeight(user.goalWeight, isImperial, l10n),
-                          style: TextStyle(
-                            fontSize: 20,
-                            fontWeight: FontWeight.bold,
-                            color: context.textPrimaryColor,
-                          ),
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                        ),
-                      ],
-                    ),
-                  ),
-                  const SizedBox(width: 12),
-                  ElevatedButton(
-                    onPressed: () => _editGoalWeight(user.goalWeight, l10n),
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: AppColors.primary,
-                      foregroundColor: Colors.white,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(20),
-                      ),
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 20,
-                        vertical: 10,
-                      ),
-                    ),
-                    child: Text(l10n.changeGoal),
-                  ),
-                ],
-              ),
-            ),
-            const SizedBox(height: 16),
-
             // Details Card
             Container(
               decoration: BoxDecoration(
@@ -294,14 +238,37 @@ class _PersonalDetailsScreenState extends ConsumerState<PersonalDetailsScreen> {
       title: l10n.currentWeight,
       currentValue: displayValue,
       suffix: isImperial ? l10n.lbs : l10n.kg,
-      onSave: (value) {
+      onSave: (value) async {
         final inputWeight = double.tryParse(value);
         if (inputWeight != null && inputWeight > 0) {
           // Convert to lbs if input is in kg (API stores in lbs)
           final weightInLbs = isImperial ? inputWeight : inputWeight / 0.453592;
-          ref.read(authStateProvider.notifier).updateUser({
-            'currentWeight': weightInLbs,
-          });
+
+          final authState = ref.read(authStateProvider);
+          final userId = authState.userId;
+
+          if (userId != null && !authState.isGuestMode) {
+            // Create weight log entry (this also updates current_weight in user table)
+            try {
+              final apiService = ref.read(apiServiceProvider);
+              await apiService.createWeightLog(
+                userId: userId,
+                weight: weightInLbs,
+              );
+              // Invalidate weight logs to refresh
+              ref.invalidate(weightLogsResponseProvider);
+            } catch (e) {
+              // If weight log fails, still update user weight
+              ref.read(authStateProvider.notifier).updateUser({
+                'currentWeight': weightInLbs,
+              });
+            }
+          } else {
+            // Guest mode - just update user weight locally
+            ref.read(authStateProvider.notifier).updateUser({
+              'currentWeight': weightInLbs,
+            });
+          }
         }
       },
     );

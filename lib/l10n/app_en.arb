@@ -116,7 +116,7 @@
   "logWeight": "Log Weight",
   "dayStreak": "Day Streak",
   "weightProgress": "Weight Progress",
-  "percentOfGoal": "{percent}% of goal",
+  "percentOfGoal": "{percent}% to goal",
   "@percentOfGoal": { "placeholders": { "percent": { "type": "int" } } },
   "errorLoadingDataSimple": "Error loading data",
   "greatJobConsistency": "Great job! Consistency is key, and you're mastering it!",

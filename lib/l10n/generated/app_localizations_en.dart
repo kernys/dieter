@@ -309,7 +309,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String percentOfGoal(int percent) {
-    return '$percent% of goal';
+    return '$percent% to goal';
   }
 
   @override

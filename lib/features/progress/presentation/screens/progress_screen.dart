@@ -33,6 +33,7 @@ class ProgressScreen extends ConsumerWidget {
     final timeRange = ref.watch(timeRangeProvider);
     final weightLogsAsync = ref.watch(weightLogsProvider);
     final dailyAverageAsync = ref.watch(dailyAverageCaloriesProvider);
+    final weightChangeAsync = ref.watch(weightChangeProvider);
 
     // Convert weights based on unit system
     final displayWeight = _convertWeight(currentWeight, settings.unitSystem);
@@ -51,6 +52,13 @@ class ProgressScreen extends ConsumerWidget {
       data: (data) => data,
       loading: () => DailyAverageData(calories: 0, changePercentage: 0, isIncrease: false),
       error: (_, __) => DailyAverageData(calories: 0, changePercentage: 0, isIncrease: false),
+    );
+
+    // Get weight change data with defaults
+    final weightChange = weightChangeAsync.when(
+      data: (data) => data,
+      loading: () => WeightChangeData.empty(),
+      error: (_, __) => WeightChangeData.empty(),
     );
 
     return Scaffold(
@@ -427,12 +435,36 @@ class ProgressScreen extends ConsumerWidget {
                         ),
                       ),
                       const SizedBox(height: 16),
-                      _WeightChangeRow(period: l10n.day3, change: 0.0, isIncrease: null),
-                      _WeightChangeRow(period: l10n.day7, change: 0.0, isIncrease: null),
-                      _WeightChangeRow(period: l10n.day14, change: 0.0, isIncrease: null),
-                      _WeightChangeRow(period: l10n.day30, change: 1.0, isIncrease: true),
-                      _WeightChangeRow(period: l10n.day90, change: 1.0, isIncrease: true),
-                      _WeightChangeRow(period: l10n.allTime, change: 1.0, isIncrease: true),
+                      _WeightChangeRow(
+                        period: l10n.day3,
+                        change: weightChange.day3.abs(),
+                        isIncrease: weightChange.day3 == 0 ? null : weightChange.day3 > 0,
+                      ),
+                      _WeightChangeRow(
+                        period: l10n.day7,
+                        change: weightChange.day7.abs(),
+                        isIncrease: weightChange.day7 == 0 ? null : weightChange.day7 > 0,
+                      ),
+                      _WeightChangeRow(
+                        period: l10n.day14,
+                        change: weightChange.day14.abs(),
+                        isIncrease: weightChange.day14 == 0 ? null : weightChange.day14 > 0,
+                      ),
+                      _WeightChangeRow(
+                        period: l10n.day30,
+                        change: weightChange.day30.abs(),
+                        isIncrease: weightChange.day30 == 0 ? null : weightChange.day30 > 0,
+                      ),
+                      _WeightChangeRow(
+                        period: l10n.day90,
+                        change: weightChange.day90.abs(),
+                        isIncrease: weightChange.day90 == 0 ? null : weightChange.day90 > 0,
+                      ),
+                      _WeightChangeRow(
+                        period: l10n.allTime,
+                        change: weightChange.allTime.abs(),
+                        isIncrease: weightChange.allTime == 0 ? null : weightChange.allTime > 0,
+                      ),
                     ],
                   ),
                 ),

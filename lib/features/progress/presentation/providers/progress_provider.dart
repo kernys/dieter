@@ -65,8 +65,8 @@ final goalWeightProvider = Provider<double>((ref) {
 });
 
 // Progress percentage provider
-// Shows how close the current weight is to the goal weight
-// 100% = at goal, 0% = far from goal (e.g., 20kg+ away)
+// Shows how much is left to reach the goal weight
+// 0% = at goal, 100% = far from goal (e.g., 20kg+ away)
 final progressPercentageProvider = Provider<double>((ref) {
   final response = ref.watch(weightLogsResponseProvider);
 
@@ -79,17 +79,16 @@ final progressPercentageProvider = Provider<double>((ref) {
 
       if (goal == 0 || currentWeight == 0) return 0;
 
-      // Calculate how far from goal (in kg)
+      // Calculate how far from goal (in lbs, since weights are stored in lbs)
       final distanceFromGoal = (currentWeight - goal).abs();
 
-      // If at goal, return 100%
-      if (distanceFromGoal < 0.1) return 100;
+      // If at goal, return 0% (nothing left to goal)
+      if (distanceFromGoal < 0.1) return 0;
 
-      // Calculate percentage: 100% when at goal, decreasing as distance increases
-      // Use a reference distance of 20kg as "0%" progress
-      // This means being 20kg+ away from goal = ~0% progress
-      const maxDistance = 20.0;
-      final percentage = ((maxDistance - distanceFromGoal) / maxDistance * 100).clamp(0.0, 100.0);
+      // Calculate percentage: 0% when at goal, increasing as distance increases
+      // Use a reference distance of 44 lbs (~20kg) as "100%" left
+      const maxDistance = 44.0;
+      final percentage = (distanceFromGoal / maxDistance * 100).clamp(0.0, 100.0);
 
       return percentage;
     },
@@ -264,3 +263,94 @@ class WeeklyEnergyData {
     );
   }
 }
+
+// Weight change data class
+class WeightChangeData {
+  final double day3;
+  final double day7;
+  final double day14;
+  final double day30;
+  final double day90;
+  final double allTime;
+
+  WeightChangeData({
+    required this.day3,
+    required this.day7,
+    required this.day14,
+    required this.day30,
+    required this.day90,
+    required this.allTime,
+  });
+
+  factory WeightChangeData.empty() {
+    return WeightChangeData(
+      day3: 0,
+      day7: 0,
+      day14: 0,
+      day30: 0,
+      day90: 0,
+      allTime: 0,
+    );
+  }
+}
+
+// Weight change provider - calculates weight changes for different periods
+final weightChangeProvider = FutureProvider<WeightChangeData>((ref) async {
+  final apiService = ref.watch(apiServiceProvider);
+  final authState = ref.watch(authStateProvider);
+
+  final userId = authState.userId;
+  if (userId == null) {
+    return WeightChangeData.empty();
+  }
+
+  try {
+    // Fetch all weight logs to calculate changes
+    final response = await apiService.getWeightLogs(userId, range: 'all');
+    final logs = response.logs;
+
+    if (logs.isEmpty) {
+      return WeightChangeData.empty();
+    }
+
+    // Sort by date descending (most recent first)
+    logs.sort((a, b) => b.loggedAt.compareTo(a.loggedAt));
+
+    final currentWeight = logs.first.weight;
+    final now = DateTime.now();
+
+    // Helper function to find weight at a specific date or closest before
+    double? findWeightAtDaysAgo(int daysAgo) {
+      final targetDate = now.subtract(Duration(days: daysAgo));
+      // Find the first log that is at or before the target date
+      for (final log in logs) {
+        if (log.loggedAt.isBefore(targetDate) ||
+            log.loggedAt.day == targetDate.day &&
+            log.loggedAt.month == targetDate.month &&
+            log.loggedAt.year == targetDate.year) {
+          return log.weight;
+        }
+      }
+      return null;
+    }
+
+    // Calculate changes for each period
+    final weight3d = findWeightAtDaysAgo(3);
+    final weight7d = findWeightAtDaysAgo(7);
+    final weight14d = findWeightAtDaysAgo(14);
+    final weight30d = findWeightAtDaysAgo(30);
+    final weight90d = findWeightAtDaysAgo(90);
+    final weightStart = logs.last.weight; // Oldest weight
+
+    return WeightChangeData(
+      day3: weight3d != null ? currentWeight - weight3d : 0,
+      day7: weight7d != null ? currentWeight - weight7d : 0,
+      day14: weight14d != null ? currentWeight - weight14d : 0,
+      day30: weight30d != null ? currentWeight - weight30d : 0,
+      day90: weight90d != null ? currentWeight - weight90d : 0,
+      allTime: currentWeight - weightStart,
+    );
+  } catch (e) {
+    return WeightChangeData.empty();
+  }
+});
