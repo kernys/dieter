@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../../../../core/constants/app_colors.dart';
 import '../../../../l10n/generated/app_localizations.dart';
+import '../../../../services/api_service.dart';
 import '../providers/auth_provider.dart';
 
 class LoginScreen extends ConsumerStatefulWidget {
@@ -128,16 +129,28 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
               height: 56,
               child: ElevatedButton(
                 onPressed: () async {
-                  if (resetEmailController.text.isNotEmpty) {
-                    // TODO: Implement password reset API call
-                    Navigator.pop(sheetContext);
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(
-                        content: Text(l10n.resetLinkSent),
-                        backgroundColor: AppColors.success,
-                      ),
-                    );
+                  final email = resetEmailController.text.trim();
+                  if (email.isEmpty || !email.contains('@')) {
+                    return;
                   }
+
+                  final navigator = Navigator.of(sheetContext);
+                  final scaffoldMessenger = ScaffoldMessenger.of(context);
+
+                  try {
+                    final apiService = ref.read(apiServiceProvider);
+                    await apiService.forgotPassword(email);
+                  } catch (e) {
+                    // Ignore errors - always show success to prevent email enumeration
+                  }
+
+                  navigator.pop();
+                  scaffoldMessenger.showSnackBar(
+                    SnackBar(
+                      content: Text(l10n.resetLinkSent),
+                      backgroundColor: AppColors.success,
+                    ),
+                  );
                 },
                 style: ElevatedButton.styleFrom(
                   backgroundColor: AppColors.primary,

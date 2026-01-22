@@ -59,6 +59,19 @@ class ApiService {
     }
   }
 
+  Future<void> forgotPassword(String email) async {
+    final response = await http.post(
+      Uri.parse('$baseUrl/auth/forgot-password'),
+      headers: _headers,
+      body: jsonEncode({'email': email}),
+    );
+
+    if (response.statusCode != 200) {
+      final errorBody = jsonDecode(response.body);
+      throw ApiException(response.statusCode, errorBody['error'] ?? 'Failed to send reset email');
+    }
+  }
+
   // User APIs
   Future<UserModel> getUser(String userId) async {
     final response = await http.get(
