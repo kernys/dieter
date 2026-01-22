@@ -395,5 +395,23 @@
   "endOfDay": "하루 마무리",
   "endOfDayDescription": "하루에 한 번 알림을 받고 모든 식사를 한꺼번에 기록하세요.",
   "notificationsDisabledMessage": "Cal AI의 알림이 현재 비활성화되어 있습니다. 활성화하려면 시스템 설정으로 이동하세요.",
-  "openSettings": "설정 열기"
+  "openSettings": "설정 열기",
+
+  "appleHealth": "Apple 건강",
+  "appleHealthDescription": "Apple 건강과 데이터 동기화",
+  "healthPermissions": "건강 권한",
+  "connected": "연결됨",
+  "notConnected": "연결 안됨",
+  "connectToAppleHealth": "Apple 건강 연결하기",
+  "disconnectFromAppleHealth": "연결 해제",
+  "healthDataTypes": "데이터 유형",
+  "readData": "읽기 데이터",
+  "writeData": "쓰기 데이터",
+  "stepsData": "걸음 수",
+  "weightData": "체중",
+  "activeEnergy": "활동 에너지",
+  "nutritionData": "영양",
+  "healthConnected": "Apple 건강에 성공적으로 연결되었습니다",
+  "healthDisconnected": "Apple 건강 연결이 해제되었습니다",
+  "healthConnectionFailed": "Apple 건강 연결에 실패했습니다"
 }

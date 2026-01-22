@@ -411,5 +411,23 @@
   "endOfDay": "End of Day",
   "endOfDayDescription": "Get one daily reminder and log all your meals at once.",
   "notificationsDisabledMessage": "Notifications are currently disabled for Cal AI. To enable, go to system settings.",
-  "openSettings": "Open Settings"
+  "openSettings": "Open Settings",
+
+  "appleHealth": "Apple Health",
+  "appleHealthDescription": "Sync your data with Apple Health",
+  "healthPermissions": "Health Permissions",
+  "connected": "Connected",
+  "notConnected": "Not Connected",
+  "connectToAppleHealth": "Connect to Apple Health",
+  "disconnectFromAppleHealth": "Disconnect",
+  "healthDataTypes": "Data Types",
+  "readData": "Read Data",
+  "writeData": "Write Data",
+  "stepsData": "Steps",
+  "weightData": "Weight",
+  "activeEnergy": "Active Energy",
+  "nutritionData": "Nutrition",
+  "healthConnected": "Successfully connected to Apple Health",
+  "healthDisconnected": "Disconnected from Apple Health",
+  "healthConnectionFailed": "Failed to connect to Apple Health"
 }

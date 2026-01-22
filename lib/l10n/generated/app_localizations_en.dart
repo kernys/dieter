@@ -1134,4 +1134,55 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get openSettings => 'Open Settings';
+
+  @override
+  String get appleHealth => 'Apple Health';
+
+  @override
+  String get appleHealthDescription => 'Sync your data with Apple Health';
+
+  @override
+  String get healthPermissions => 'Health Permissions';
+
+  @override
+  String get connected => 'Connected';
+
+  @override
+  String get notConnected => 'Not Connected';
+
+  @override
+  String get connectToAppleHealth => 'Connect to Apple Health';
+
+  @override
+  String get disconnectFromAppleHealth => 'Disconnect';
+
+  @override
+  String get healthDataTypes => 'Data Types';
+
+  @override
+  String get readData => 'Read Data';
+
+  @override
+  String get writeData => 'Write Data';
+
+  @override
+  String get stepsData => 'Steps';
+
+  @override
+  String get weightData => 'Weight';
+
+  @override
+  String get activeEnergy => 'Active Energy';
+
+  @override
+  String get nutritionData => 'Nutrition';
+
+  @override
+  String get healthConnected => 'Successfully connected to Apple Health';
+
+  @override
+  String get healthDisconnected => 'Disconnected from Apple Health';
+
+  @override
+  String get healthConnectionFailed => 'Failed to connect to Apple Health';
 }

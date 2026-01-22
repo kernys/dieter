@@ -1124,4 +1124,55 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String get openSettings => '설정 열기';
+
+  @override
+  String get appleHealth => 'Apple 건강';
+
+  @override
+  String get appleHealthDescription => 'Apple 건강과 데이터 동기화';
+
+  @override
+  String get healthPermissions => '건강 권한';
+
+  @override
+  String get connected => '연결됨';
+
+  @override
+  String get notConnected => '연결 안됨';
+
+  @override
+  String get connectToAppleHealth => 'Apple 건강 연결하기';
+
+  @override
+  String get disconnectFromAppleHealth => '연결 해제';
+
+  @override
+  String get healthDataTypes => '데이터 유형';
+
+  @override
+  String get readData => '읽기 데이터';
+
+  @override
+  String get writeData => '쓰기 데이터';
+
+  @override
+  String get stepsData => '걸음 수';
+
+  @override
+  String get weightData => '체중';
+
+  @override
+  String get activeEnergy => '활동 에너지';
+
+  @override
+  String get nutritionData => '영양';
+
+  @override
+  String get healthConnected => 'Apple 건강에 성공적으로 연결되었습니다';
+
+  @override
+  String get healthDisconnected => 'Apple 건강 연결이 해제되었습니다';
+
+  @override
+  String get healthConnectionFailed => 'Apple 건강 연결에 실패했습니다';
 }

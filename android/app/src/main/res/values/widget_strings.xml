@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="widget_calories_description">Track your remaining calories for the day</string>
+    <string name="widget_streak_description">Track your logging streak</string>
+    <string name="calories_left">Calories left</string>
+    <string name="calories_icon">Calories icon</string>
+    <string name="day_streak">Day Streak</string>
+    <string name="streak_icon">Streak icon</string>
+</resources>

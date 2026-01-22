@@ -1,3 +1,4 @@
+import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -226,6 +227,13 @@ class ProfileScreen extends ConsumerWidget {
                         context.push('/weight-history');
                       },
                     ),
+                    if (Platform.isIOS)
+                      _HealthTile(
+                        label: l10n.appleHealth,
+                        onTap: () {
+                          context.push('/apple-health');
+                        },
+                      ),
                   ],
                 ),
               ),
@@ -786,6 +794,74 @@ class _AppInfoTile extends StatelessWidget {
             ),
           ),
         ],
+      ),
+    );
+  }
+}
+
+class _HealthTile extends StatelessWidget {
+  final String label;
+  final VoidCallback onTap;
+
+  const _HealthTile({
+    required this.label,
+    required this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        margin: const EdgeInsets.only(bottom: 8),
+        padding: const EdgeInsets.all(16),
+        decoration: BoxDecoration(
+          color: context.cardColor,
+          borderRadius: BorderRadius.circular(12),
+          border: Border.all(color: context.borderColor),
+        ),
+        child: Row(
+          children: [
+            Container(
+              width: 32,
+              height: 32,
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(8),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withValues(alpha: 0.1),
+                    blurRadius: 4,
+                    offset: const Offset(0, 2),
+                  ),
+                ],
+              ),
+              child: const Center(
+                child: Icon(
+                  Icons.favorite,
+                  color: Color(0xFFFF2D55),
+                  size: 20,
+                ),
+              ),
+            ),
+            const SizedBox(width: 12),
+            Expanded(
+              child: Text(
+                label,
+                style: TextStyle(
+                  fontSize: 14,
+                  fontWeight: FontWeight.w500,
+                  color: context.textPrimaryColor,
+                ),
+              ),
+            ),
+            Icon(
+              Icons.chevron_right,
+              color: context.textTertiaryColor,
+              size: 20,
+            ),
+          ],
+        ),
       ),
     );
   }

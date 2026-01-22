@@ -2251,6 +2251,108 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Open Settings'**
   String get openSettings;
+
+  /// No description provided for @appleHealth.
+  ///
+  /// In en, this message translates to:
+  /// **'Apple Health'**
+  String get appleHealth;
+
+  /// No description provided for @appleHealthDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Sync your data with Apple Health'**
+  String get appleHealthDescription;
+
+  /// No description provided for @healthPermissions.
+  ///
+  /// In en, this message translates to:
+  /// **'Health Permissions'**
+  String get healthPermissions;
+
+  /// No description provided for @connected.
+  ///
+  /// In en, this message translates to:
+  /// **'Connected'**
+  String get connected;
+
+  /// No description provided for @notConnected.
+  ///
+  /// In en, this message translates to:
+  /// **'Not Connected'**
+  String get notConnected;
+
+  /// No description provided for @connectToAppleHealth.
+  ///
+  /// In en, this message translates to:
+  /// **'Connect to Apple Health'**
+  String get connectToAppleHealth;
+
+  /// No description provided for @disconnectFromAppleHealth.
+  ///
+  /// In en, this message translates to:
+  /// **'Disconnect'**
+  String get disconnectFromAppleHealth;
+
+  /// No description provided for @healthDataTypes.
+  ///
+  /// In en, this message translates to:
+  /// **'Data Types'**
+  String get healthDataTypes;
+
+  /// No description provided for @readData.
+  ///
+  /// In en, this message translates to:
+  /// **'Read Data'**
+  String get readData;
+
+  /// No description provided for @writeData.
+  ///
+  /// In en, this message translates to:
+  /// **'Write Data'**
+  String get writeData;
+
+  /// No description provided for @stepsData.
+  ///
+  /// In en, this message translates to:
+  /// **'Steps'**
+  String get stepsData;
+
+  /// No description provided for @weightData.
+  ///
+  /// In en, this message translates to:
+  /// **'Weight'**
+  String get weightData;
+
+  /// No description provided for @activeEnergy.
+  ///
+  /// In en, this message translates to:
+  /// **'Active Energy'**
+  String get activeEnergy;
+
+  /// No description provided for @nutritionData.
+  ///
+  /// In en, this message translates to:
+  /// **'Nutrition'**
+  String get nutritionData;
+
+  /// No description provided for @healthConnected.
+  ///
+  /// In en, this message translates to:
+  /// **'Successfully connected to Apple Health'**
+  String get healthConnected;
+
+  /// No description provided for @healthDisconnected.
+  ///
+  /// In en, this message translates to:
+  /// **'Disconnected from Apple Health'**
+  String get healthDisconnected;
+
+  /// No description provided for @healthConnectionFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to connect to Apple Health'**
+  String get healthConnectionFailed;
 }
 
 class _AppLocalizationsDelegate

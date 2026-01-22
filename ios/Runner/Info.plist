@@ -53,5 +53,9 @@
 	<string>Dieter AI needs microphone access for voice food logging.</string>
 	<key>NSSpeechRecognitionUsageDescription</key>
 	<string>Dieter AI needs speech recognition to convert your voice to text for food logging.</string>
+	<key>NSHealthShareUsageDescription</key>
+	<string>Diet AI needs to read your health data to sync steps, weight, and nutrition information.</string>
+	<key>NSHealthUpdateUsageDescription</key>
+	<string>Diet AI needs to write health data to sync your weight and nutrition logs with Apple Health.</string>
 </dict>
 </plist>

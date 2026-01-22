@@ -16,6 +16,7 @@ import '../../features/profile/presentation/screens/profile_screen.dart';
 import '../../features/profile/presentation/screens/personal_details_screen.dart';
 import '../../features/profile/presentation/screens/privacy_screen.dart';
 import '../../features/profile/presentation/screens/notification_settings_screen.dart';
+import '../../features/profile/presentation/screens/apple_health_screen.dart';
 import '../../features/food/presentation/screens/log_food_screen.dart';
 import '../../features/exercise/presentation/screens/log_exercise_screen.dart';
 import '../../features/party/presentation/screens/party_screen.dart';
@@ -171,6 +172,12 @@ final routerProvider = Provider<GoRouter>((ref) {
       GoRoute(
         path: '/log-exercise',
         builder: (context, state) => const LogExerciseScreen(),
+      ),
+
+      // Apple Health Route
+      GoRoute(
+        path: '/apple-health',
+        builder: (context, state) => const AppleHealthScreen(),
       ),
     ],
     errorBuilder: (context, state) => Scaffold(
