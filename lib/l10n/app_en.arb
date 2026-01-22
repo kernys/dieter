@@ -382,5 +382,13 @@
   "speakNow": "Speak now, describe what you ate",
 
   "searchResults": "Search Results",
+  "today": "Today",
+  "sun": "Sun",
+  "mon": "Mon",
+  "tue": "Tue",
+  "wed": "Wed",
+  "thu": "Thu",
+  "fri": "Fri",
+  "sat": "Sat",
   "noSearchResults": "No results found"
 }

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import '../../../../core/constants/app_colors.dart';
+import '../../../../l10n/generated/app_localizations.dart';
 
 class WeekCalendar extends StatelessWidget {
   final DateTime selectedDate;
@@ -200,7 +201,7 @@ class _FullCalendarSheetState extends State<_FullCalendarSheet> {
                   },
                 ),
                 Text(
-                  DateFormat('MMMM yyyy').format(_currentMonth),
+                  DateFormat('MMMM yyyy', Localizations.localeOf(context).languageCode).format(_currentMonth),
                   style: TextStyle(
                     fontSize: 18,
                     fontWeight: FontWeight.w600,
@@ -225,22 +226,28 @@ class _FullCalendarSheetState extends State<_FullCalendarSheet> {
           // Weekday Headers
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceAround,
-              children: ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat']
-                  .map((day) => SizedBox(
-                        width: 40,
-                        child: Text(
-                          day,
-                          textAlign: TextAlign.center,
-                          style: TextStyle(
-                            fontSize: 12,
-                            fontWeight: FontWeight.w500,
-                            color: context.textSecondaryColor,
-                          ),
-                        ),
-                      ))
-                  .toList(),
+            child: Builder(
+              builder: (context) {
+                final l10n = AppLocalizations.of(context)!;
+                final weekdays = [l10n.sun, l10n.mon, l10n.tue, l10n.wed, l10n.thu, l10n.fri, l10n.sat];
+                return Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceAround,
+                  children: weekdays
+                      .map((day) => SizedBox(
+                            width: 40,
+                            child: Text(
+                              day,
+                              textAlign: TextAlign.center,
+                              style: TextStyle(
+                                fontSize: 12,
+                                fontWeight: FontWeight.w500,
+                                color: context.textSecondaryColor,
+                              ),
+                            ),
+                          ))
+                      .toList(),
+                );
+              },
             ),
           ),
           const SizedBox(height: 8),
@@ -253,16 +260,21 @@ class _FullCalendarSheetState extends State<_FullCalendarSheet> {
             padding: const EdgeInsets.all(16),
             child: SizedBox(
               width: double.infinity,
-              child: ElevatedButton(
-                onPressed: () => widget.onDateSelected(widget.today),
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: AppColors.primary,
-                  foregroundColor: Colors.white,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                ),
-                child: const Text('Today'),
+              child: Builder(
+                builder: (context) {
+                  final l10n = AppLocalizations.of(context)!;
+                  return ElevatedButton(
+                    onPressed: () => widget.onDateSelected(widget.today),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: AppColors.primary,
+                      foregroundColor: Colors.white,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                    ),
+                    child: Text(l10n.today),
+                  );
+                },
               ),
             ),
           ),

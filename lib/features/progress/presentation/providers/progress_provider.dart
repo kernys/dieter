@@ -65,6 +65,8 @@ final goalWeightProvider = Provider<double>((ref) {
 });
 
 // Progress percentage provider
+// Shows how close the current weight is to the goal weight
+// 100% = at goal, 0% = far from goal (e.g., 20kg+ away)
 final progressPercentageProvider = Provider<double>((ref) {
   final response = ref.watch(weightLogsResponseProvider);
 
@@ -73,23 +75,23 @@ final progressPercentageProvider = Provider<double>((ref) {
       if (data == null) return 0;
 
       final goal = ref.watch(goalWeightProvider);
-      final startWeight = data.stats.startWeight;
       final currentWeight = data.stats.currentWeight;
 
-      if (goal == 0 || startWeight == 0) return 0;
+      if (goal == 0 || currentWeight == 0) return 0;
 
-      final totalChange = (goal - startWeight).abs();
-      if (totalChange == 0) return 100; // Already at goal
+      // Calculate how far from goal (in kg)
+      final distanceFromGoal = (currentWeight - goal).abs();
 
-      // Check direction: weight loss or weight gain
-      final isLosingWeight = goal < startWeight;
-      final actualProgress = isLosingWeight
-          ? startWeight - currentWeight  // Weight loss
-          : currentWeight - startWeight; // Weight gain
+      // If at goal, return 100%
+      if (distanceFromGoal < 0.1) return 100;
 
-      if (actualProgress < 0) return 0; // Moving wrong direction
+      // Calculate percentage: 100% when at goal, decreasing as distance increases
+      // Use a reference distance of 20kg as "0%" progress
+      // This means being 20kg+ away from goal = ~0% progress
+      const maxDistance = 20.0;
+      final percentage = ((maxDistance - distanceFromGoal) / maxDistance * 100).clamp(0.0, 100.0);
 
-      return (actualProgress / totalChange * 100).clamp(0, 100);
+      return percentage;
     },
     loading: () => 0.0,
     error: (_, __) => 0.0,

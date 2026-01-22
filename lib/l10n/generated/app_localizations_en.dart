@@ -1050,5 +1050,29 @@ class AppLocalizationsEn extends AppLocalizations {
   String get searchResults => 'Search Results';
 
   @override
+  String get today => 'Today';
+
+  @override
+  String get sun => 'Sun';
+
+  @override
+  String get mon => 'Mon';
+
+  @override
+  String get tue => 'Tue';
+
+  @override
+  String get wed => 'Wed';
+
+  @override
+  String get thu => 'Thu';
+
+  @override
+  String get fri => 'Fri';
+
+  @override
+  String get sat => 'Sat';
+
+  @override
   String get noSearchResults => 'No results found';
 }

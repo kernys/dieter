@@ -1041,5 +1041,29 @@ class AppLocalizationsKo extends AppLocalizations {
   String get searchResults => '검색 결과';
 
   @override
+  String get today => '오늘';
+
+  @override
+  String get sun => '일';
+
+  @override
+  String get mon => '월';
+
+  @override
+  String get tue => '화';
+
+  @override
+  String get wed => '수';
+
+  @override
+  String get thu => '목';
+
+  @override
+  String get fri => '금';
+
+  @override
+  String get sat => '토';
+
+  @override
   String get noSearchResults => '검색 결과가 없습니다';
 }
