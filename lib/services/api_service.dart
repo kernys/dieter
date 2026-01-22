@@ -176,6 +176,23 @@ class ApiService {
     }
   }
 
+  Future<FoodAnalysisResult> analyzeTextFood(String description, {String? locale}) async {
+    final response = await http.post(
+      Uri.parse('$baseUrl/food-entries/analyze-text'),
+      headers: _headers,
+      body: jsonEncode({
+        'description': description,
+        if (locale != null) 'locale': locale,
+      }),
+    );
+
+    if (response.statusCode == 200) {
+      return FoodAnalysisResult.fromJson(jsonDecode(response.body));
+    } else {
+      throw ApiException(response.statusCode, 'Failed to analyze food description');
+    }
+  }
+
   // Image Upload API
   Future<String> uploadImage(Uint8List imageBytes) async {
     final request = http.MultipartRequest(

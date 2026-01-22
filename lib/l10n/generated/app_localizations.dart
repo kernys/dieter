@@ -113,8 +113,50 @@ abstract class AppLocalizations {
   /// No description provided for @signInToContinue.
   ///
   /// In en, this message translates to:
-  /// **'Sign in to continue tracking your nutrition'**
+  /// **'Become a better you'**
   String get signInToContinue;
+
+  /// No description provided for @continueWithApple.
+  ///
+  /// In en, this message translates to:
+  /// **'Continue with Apple'**
+  String get continueWithApple;
+
+  /// No description provided for @continueWithEmail.
+  ///
+  /// In en, this message translates to:
+  /// **'Continue with Email'**
+  String get continueWithEmail;
+
+  /// No description provided for @resetPassword.
+  ///
+  /// In en, this message translates to:
+  /// **'Reset Password'**
+  String get resetPassword;
+
+  /// No description provided for @resetPasswordDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter the email address you used to sign up and we\'ll send you a password reset link.'**
+  String get resetPasswordDescription;
+
+  /// No description provided for @sendResetLink.
+  ///
+  /// In en, this message translates to:
+  /// **'Send Reset Link'**
+  String get sendResetLink;
+
+  /// No description provided for @resetLinkSent.
+  ///
+  /// In en, this message translates to:
+  /// **'Password reset link has been sent to your email.'**
+  String get resetLinkSent;
+
+  /// No description provided for @backToLogin.
+  ///
+  /// In en, this message translates to:
+  /// **'Back to Login'**
+  String get backToLogin;
 
   /// No description provided for @createAccount.
   ///
@@ -1015,6 +1057,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Scan Food'**
   String get scanFood;
+
+  /// No description provided for @foodDatabase.
+  ///
+  /// In en, this message translates to:
+  /// **'Food Database'**
+  String get foodDatabase;
 
   /// No description provided for @barcode.
   ///

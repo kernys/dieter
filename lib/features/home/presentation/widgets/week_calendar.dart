@@ -125,6 +125,7 @@ class WeekCalendar extends StatelessWidget {
       builder: (context) => _FullCalendarSheet(
         selectedDate: selectedDate,
         today: today,
+        datesWithData: datesWithData,
         onDateSelected: (date) {
           onDateSelected(date);
           Navigator.pop(context);
@@ -142,11 +143,13 @@ class _FullCalendarSheet extends StatefulWidget {
   final DateTime selectedDate;
   final DateTime today;
   final ValueChanged<DateTime> onDateSelected;
+  final Set<DateTime>? datesWithData;
 
   const _FullCalendarSheet({
     required this.selectedDate,
     required this.today,
     required this.onDateSelected,
+    this.datesWithData,
   });
 
   @override
@@ -278,7 +281,7 @@ class _FullCalendarSheetState extends State<_FullCalendarSheet> {
 
     // Empty cells for days before the first of the month
     for (int i = 0; i < startingWeekday; i++) {
-      dayWidgets.add(const SizedBox(width: 40, height: 40));
+      dayWidgets.add(const SizedBox(width: 40, height: 48));
     }
 
     // Day cells
@@ -287,33 +290,55 @@ class _FullCalendarSheetState extends State<_FullCalendarSheet> {
       final isSelected = _isSameDay(date, widget.selectedDate);
       final isToday = _isSameDay(date, widget.today);
       final isFuture = date.isAfter(widget.today);
+      final hasData = widget.datesWithData?.any((d) => _isSameDay(d, date)) ?? false;
 
       dayWidgets.add(
         GestureDetector(
           onTap: isFuture ? null : () => widget.onDateSelected(date),
-          child: Container(
+          child: SizedBox(
             width: 40,
-            height: 40,
-            decoration: BoxDecoration(
-              color: isSelected ? AppColors.primary : null,
-              shape: BoxShape.circle,
-              border: isToday && !isSelected
-                  ? Border.all(color: AppColors.primary, width: 2)
-                  : null,
-            ),
-            child: Center(
-              child: Text(
-                day.toString(),
-                style: TextStyle(
-                  fontSize: 14,
-                  fontWeight: isSelected || isToday ? FontWeight.w600 : FontWeight.normal,
-                  color: isSelected
-                      ? Colors.white
-                      : isFuture
-                          ? context.textTertiaryColor
-                          : context.textPrimaryColor,
+            height: 48,
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Container(
+                  width: 36,
+                  height: 36,
+                  decoration: BoxDecoration(
+                    color: isSelected ? AppColors.primary : null,
+                    shape: BoxShape.circle,
+                    border: isToday && !isSelected
+                        ? Border.all(color: AppColors.primary, width: 2)
+                        : null,
+                  ),
+                  child: Center(
+                    child: Text(
+                      day.toString(),
+                      style: TextStyle(
+                        fontSize: 14,
+                        fontWeight: isSelected || isToday ? FontWeight.w600 : FontWeight.normal,
+                        color: isSelected
+                            ? Colors.white
+                            : isFuture
+                                ? context.textTertiaryColor
+                                : context.textPrimaryColor,
+                      ),
+                    ),
+                  ),
                 ),
-              ),
+                const SizedBox(height: 2),
+                if (hasData && !isSelected)
+                  Container(
+                    width: 5,
+                    height: 5,
+                    decoration: const BoxDecoration(
+                      color: AppColors.success,
+                      shape: BoxShape.circle,
+                    ),
+                  )
+                else
+                  const SizedBox(height: 5),
+              ],
             ),
           ),
         ),

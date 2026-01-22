@@ -231,6 +231,7 @@ class _MainScaffoldState extends ConsumerState<MainScaffold>
   }
 
   Widget _buildFabMenu(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 24),
       child: Column(
@@ -240,7 +241,7 @@ class _MainScaffoldState extends ConsumerState<MainScaffold>
               Expanded(
                 child: _FabMenuItem(
                   icon: Icons.fitness_center,
-                  label: 'Log exercise',
+                  label: l10n.logExercise,
                   onTap: () {
                     _closeFabMenu();
                     context.push('/log-exercise');
@@ -251,7 +252,7 @@ class _MainScaffoldState extends ConsumerState<MainScaffold>
               Expanded(
                 child: _FabMenuItem(
                   icon: Icons.bookmark,
-                  label: 'Saved foods',
+                  label: l10n.savedFoods,
                   onTap: () {
                     _closeFabMenu();
                     context.push('/log-food', extra: {'initialTabIndex': 3});
@@ -266,7 +267,7 @@ class _MainScaffoldState extends ConsumerState<MainScaffold>
               Expanded(
                 child: _FabMenuItem(
                   icon: Icons.search,
-                  label: 'Food Database',
+                  label: l10n.foodDatabase,
                   onTap: () {
                     _closeFabMenu();
                     context.push('/log-food');
@@ -277,7 +278,7 @@ class _MainScaffoldState extends ConsumerState<MainScaffold>
               Expanded(
                 child: _FabMenuItem(
                   icon: Icons.camera_alt,
-                  label: 'Scan food',
+                  label: l10n.scanFood,
                   onTap: () {
                     _closeFabMenu();
                     context.push('/camera');

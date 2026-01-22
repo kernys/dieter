@@ -5,7 +5,14 @@
   "@appTitle": { "description": "App title" },
 
   "welcomeBack": "Welcome back",
-  "signInToContinue": "Sign in to continue tracking your nutrition",
+  "signInToContinue": "Become a better you",
+  "continueWithApple": "Continue with Apple",
+  "continueWithEmail": "Continue with Email",
+  "resetPassword": "Reset Password",
+  "resetPasswordDescription": "Enter the email address you used to sign up and we'll send you a password reset link.",
+  "sendResetLink": "Send Reset Link",
+  "resetLinkSent": "Password reset link has been sent to your email.",
+  "backToLogin": "Back to Login",
   "createAccount": "Create Account",
   "startYourJourney": "Start your journey to better health",
 
@@ -180,6 +187,7 @@
   "@cameraError": { "placeholders": { "error": { "type": "String" } } },
   "pickFromGallery": "Pick from Gallery",
   "scanFood": "Scan Food",
+  "foodDatabase": "Food Database",
   "barcode": "Barcode",
   "foodLabel": "Food Label",
   "zoomHalf": ".5x",

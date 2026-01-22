@@ -660,6 +660,7 @@ class _FoodDetailScreenState extends ConsumerState<FoodDetailScreen> {
             ),
           ],
         ),
+        actionsAlignment: MainAxisAlignment.spaceBetween,
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
@@ -740,6 +741,7 @@ class _FoodDetailScreenState extends ConsumerState<FoodDetailScreen> {
             ),
           ],
         ),
+        actionsAlignment: MainAxisAlignment.spaceBetween,
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
@@ -907,6 +909,7 @@ ${l10n.sharedFromDieterAI}
       builder: (context) => AlertDialog(
         title: Text(l10n.deleteEntry),
         content: Text(l10n.deleteEntryConfirm),
+        actionsAlignment: MainAxisAlignment.spaceBetween,
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),

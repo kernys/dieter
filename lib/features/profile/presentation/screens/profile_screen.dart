@@ -364,6 +364,7 @@ class ProfileScreen extends ConsumerWidget {
       builder: (context) => AlertDialog(
         title: Text(l10n.signOutConfirmTitle),
         content: Text(l10n.signOutConfirmMessage),
+        actionsAlignment: MainAxisAlignment.spaceBetween,
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
@@ -470,6 +471,7 @@ class ProfileScreen extends ConsumerWidget {
             labelText: goalType == 'calories' ? l10n.cal : 'g',
           ),
         ),
+        actionsAlignment: MainAxisAlignment.spaceBetween,
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),

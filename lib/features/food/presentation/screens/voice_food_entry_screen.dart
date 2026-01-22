@@ -56,6 +56,14 @@ class _VoiceFoodEntryScreenState extends ConsumerState<VoiceFoodEntryScreen> {
       );
       if (!_disposed && mounted) {
         setState(() {});
+        // Auto-start recording after initialization
+        if (_speechAvailable) {
+          Future.delayed(const Duration(milliseconds: 500), () {
+            if (!_disposed && mounted && !_isListening) {
+              _startListening();
+            }
+          });
+        }
       }
     } catch (e) {
       _speechAvailable = false;
@@ -128,9 +136,9 @@ class _VoiceFoodEntryScreenState extends ConsumerState<VoiceFoodEntryScreen> {
     }
 
     try {
-      // Use the text to create a food entry with estimated values
-      // In a real app, you'd call an AI API to analyze the text
-      final result = await _estimateFoodFromText(_transcribedText);
+      final apiService = ref.read(apiServiceProvider);
+      final locale = Localizations.localeOf(context).languageCode;
+      final result = await apiService.analyzeTextFood(_transcribedText, locale: locale);
       if (!_disposed && mounted) {
         setState(() {
           _analysisResult = result;
@@ -145,74 +153,6 @@ class _VoiceFoodEntryScreenState extends ConsumerState<VoiceFoodEntryScreen> {
         );
       }
     }
-  }
-
-  Future<FoodAnalysisResult> _estimateFoodFromText(String text) async {
-    // Simple estimation based on common foods
-    // In production, this would call an AI API
-    final lowerText = text.toLowerCase();
-
-    int calories = 200;
-    double protein = 10;
-    double carbs = 25;
-    double fat = 8;
-    String name = text;
-
-    // Simple keyword matching for demo
-    if (lowerText.contains('chicken') || lowerText.contains('닭')) {
-      calories = 250;
-      protein = 30;
-      carbs = 0;
-      fat = 10;
-    } else if (lowerText.contains('rice') || lowerText.contains('밥')) {
-      calories = 200;
-      protein = 4;
-      carbs = 45;
-      fat = 0;
-    } else if (lowerText.contains('salad') || lowerText.contains('샐러드')) {
-      calories = 150;
-      protein = 5;
-      carbs = 15;
-      fat = 8;
-    } else if (lowerText.contains('pizza') || lowerText.contains('피자')) {
-      calories = 350;
-      protein = 15;
-      carbs = 40;
-      fat = 15;
-    } else if (lowerText.contains('burger') || lowerText.contains('버거')) {
-      calories = 500;
-      protein = 25;
-      carbs = 40;
-      fat = 25;
-    } else if (lowerText.contains('egg') || lowerText.contains('계란')) {
-      calories = 78;
-      protein = 6;
-      carbs = 1;
-      fat = 5;
-    } else if (lowerText.contains('apple') || lowerText.contains('사과')) {
-      calories = 95;
-      protein = 0;
-      carbs = 25;
-      fat = 0;
-    } else if (lowerText.contains('banana') || lowerText.contains('바나나')) {
-      calories = 105;
-      protein = 1;
-      carbs = 27;
-      fat = 0;
-    }
-
-    return FoodAnalysisResult(
-      name: name,
-      calories: calories,
-      protein: protein,
-      carbs: carbs,
-      fat: fat,
-      fiber: 2.0,
-      sugar: 5.0,
-      sodium: 200.0,
-      healthScore: 70,
-      ingredients: [],
-    );
   }
 
   Future<void> _logFood() async {

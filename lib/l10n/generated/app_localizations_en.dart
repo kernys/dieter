@@ -15,7 +15,30 @@ class AppLocalizationsEn extends AppLocalizations {
   String get welcomeBack => 'Welcome back';
 
   @override
-  String get signInToContinue => 'Sign in to continue tracking your nutrition';
+  String get signInToContinue => 'Become a better you';
+
+  @override
+  String get continueWithApple => 'Continue with Apple';
+
+  @override
+  String get continueWithEmail => 'Continue with Email';
+
+  @override
+  String get resetPassword => 'Reset Password';
+
+  @override
+  String get resetPasswordDescription =>
+      'Enter the email address you used to sign up and we\'ll send you a password reset link.';
+
+  @override
+  String get sendResetLink => 'Send Reset Link';
+
+  @override
+  String get resetLinkSent =>
+      'Password reset link has been sent to your email.';
+
+  @override
+  String get backToLogin => 'Back to Login';
 
   @override
   String get createAccount => 'Create Account';
@@ -484,6 +507,9 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get scanFood => 'Scan Food';
+
+  @override
+  String get foodDatabase => 'Food Database';
 
   @override
   String get barcode => 'Barcode';

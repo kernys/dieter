@@ -18,6 +18,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
   final _passwordController = TextEditingController();
   bool _isLoading = false;
   bool _obscurePassword = true;
+  bool _showEmailForm = false;
 
   @override
   void dispose() {
@@ -57,9 +58,114 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
     }
   }
 
-  void _skipLogin() {
-    ref.read(authStateProvider.notifier).setGuestMode();
-    context.go('/home');
+  void _showForgotPasswordDialog() {
+    final l10n = AppLocalizations.of(context)!;
+    final resetEmailController = TextEditingController();
+
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (sheetContext) => Container(
+        padding: EdgeInsets.only(
+          left: 24,
+          right: 24,
+          top: 24,
+          bottom: MediaQuery.of(sheetContext).viewInsets.bottom + 24,
+        ),
+        decoration: BoxDecoration(
+          color: sheetContext.cardColor,
+          borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
+        ),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Center(
+              child: Container(
+                width: 40,
+                height: 4,
+                decoration: BoxDecoration(
+                  color: AppColors.textTertiary,
+                  borderRadius: BorderRadius.circular(2),
+                ),
+              ),
+            ),
+            const SizedBox(height: 24),
+            Text(
+              l10n.resetPassword,
+              style: TextStyle(
+                fontSize: 24,
+                fontWeight: FontWeight.bold,
+                color: sheetContext.textPrimaryColor,
+              ),
+            ),
+            const SizedBox(height: 8),
+            Text(
+              l10n.resetPasswordDescription,
+              style: TextStyle(
+                fontSize: 14,
+                color: sheetContext.textSecondaryColor,
+              ),
+            ),
+            const SizedBox(height: 24),
+            TextField(
+              controller: resetEmailController,
+              keyboardType: TextInputType.emailAddress,
+              autofocus: true,
+              decoration: InputDecoration(
+                labelText: l10n.email,
+                hintText: l10n.enterYourEmail,
+                prefixIcon: const Icon(Icons.email_outlined),
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(12),
+                ),
+              ),
+            ),
+            const SizedBox(height: 24),
+            SizedBox(
+              width: double.infinity,
+              height: 56,
+              child: ElevatedButton(
+                onPressed: () async {
+                  if (resetEmailController.text.isNotEmpty) {
+                    // TODO: Implement password reset API call
+                    Navigator.pop(sheetContext);
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(
+                        content: Text(l10n.resetLinkSent),
+                        backgroundColor: AppColors.success,
+                      ),
+                    );
+                  }
+                },
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: AppColors.primary,
+                  foregroundColor: Colors.white,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(28),
+                  ),
+                ),
+                child: Text(
+                  l10n.sendResetLink,
+                  style: const TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+              ),
+            ),
+            const SizedBox(height: 12),
+            Center(
+              child: TextButton(
+                onPressed: () => Navigator.pop(sheetContext),
+                child: Text(l10n.backToLogin),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
   }
 
   @override
@@ -67,166 +173,74 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
     final l10n = AppLocalizations.of(context)!;
 
     return Scaffold(
-      backgroundColor: AppColors.background,
+      backgroundColor: context.backgroundColor,
       body: SafeArea(
         child: SingleChildScrollView(
           padding: const EdgeInsets.all(24),
-          child: Form(
-            key: _formKey,
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                const SizedBox(height: 60),
-                // Logo
-                Center(
-                  child: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Icon(
-                        Icons.apple,
-                        size: 40,
-                        color: AppColors.primary,
-                      ),
-                      const SizedBox(width: 8),
-                      Text(
-                        l10n.appTitle,
-                        style: const TextStyle(
-                          fontSize: 32,
-                          fontWeight: FontWeight.bold,
-                          color: AppColors.textPrimary,
-                        ),
-                      ),
-                    ],
-                  ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              const SizedBox(height: 60),
+              // Logo with flame icon (same as home screen)
+              Container(
+                width: 80,
+                height: 80,
+                decoration: BoxDecoration(
+                  color: AppColors.primary.withValues(alpha: 0.1),
+                  borderRadius: BorderRadius.circular(20),
                 ),
-                const SizedBox(height: 60),
+                child: Icon(
+                  Icons.local_fire_department,
+                  size: 48,
+                  color: AppColors.primary,
+                ),
+              ),
+              const SizedBox(height: 16),
+              Text(
+                l10n.appTitle,
+                style: TextStyle(
+                  fontSize: 28,
+                  fontWeight: FontWeight.bold,
+                  color: context.textPrimaryColor,
+                ),
+              ),
+              const SizedBox(height: 8),
+              Text(
+                l10n.signInToContinue,
+                style: TextStyle(
+                  fontSize: 16,
+                  color: context.textSecondaryColor,
+                ),
+              ),
+              const SizedBox(height: 48),
 
-                // Title
-                Text(
-                  l10n.welcomeBack,
-                  style: const TextStyle(
-                    fontSize: 28,
-                    fontWeight: FontWeight.bold,
-                    color: AppColors.textPrimary,
-                  ),
-                ),
-                const SizedBox(height: 8),
-                Text(
-                  l10n.signInToContinue,
-                  style: const TextStyle(
-                    fontSize: 16,
-                    color: AppColors.textSecondary,
-                  ),
-                ),
-                const SizedBox(height: 40),
-
-                // Email Field
-                TextFormField(
-                  controller: _emailController,
-                  keyboardType: TextInputType.emailAddress,
-                  textInputAction: TextInputAction.next,
-                  decoration: InputDecoration(
-                    labelText: l10n.email,
-                    hintText: l10n.enterYourEmail,
-                    prefixIcon: const Icon(Icons.email_outlined),
-                  ),
-                  validator: (value) {
-                    if (value == null || value.isEmpty) {
-                      return l10n.pleaseEnterEmail;
-                    }
-                    if (!value.contains('@')) {
-                      return l10n.pleaseEnterValidEmail;
-                    }
-                    return null;
-                  },
-                ),
-                const SizedBox(height: 16),
-
-                // Password Field
-                TextFormField(
-                  controller: _passwordController,
-                  obscureText: _obscurePassword,
-                  textInputAction: TextInputAction.done,
-                  decoration: InputDecoration(
-                    labelText: l10n.password,
-                    hintText: l10n.enterYourPassword,
-                    prefixIcon: const Icon(Icons.lock_outlined),
-                    suffixIcon: IconButton(
-                      icon: Icon(
-                        _obscurePassword
-                            ? Icons.visibility_outlined
-                            : Icons.visibility_off_outlined,
-                      ),
-                      onPressed: () {
-                        setState(() => _obscurePassword = !_obscurePassword);
-                      },
-                    ),
-                  ),
-                  validator: (value) {
-                    if (value == null || value.isEmpty) {
-                      return l10n.pleaseEnterPassword;
-                    }
-                    if (value.length < 6) {
-                      return l10n.passwordMinLength;
-                    }
-                    return null;
-                  },
-                  onFieldSubmitted: (_) => _signIn(),
-                ),
-                const SizedBox(height: 12),
-
-                // Forgot Password
-                Align(
-                  alignment: Alignment.centerRight,
-                  child: TextButton(
-                    onPressed: () {
-                      // TODO: Implement forgot password
-                    },
-                    child: Text(l10n.forgotPassword),
-                  ),
-                ),
-                const SizedBox(height: 24),
-
-                // Sign In Button
+              if (!_showEmailForm) ...[
+                // Social Login Buttons
+                // Apple Sign In
                 SizedBox(
                   width: double.infinity,
-                  child: ElevatedButton(
-                    onPressed: _isLoading ? null : _signIn,
-                    child: _isLoading
-                        ? const SizedBox(
-                            height: 20,
-                            width: 20,
-                            child: CircularProgressIndicator(
-                              strokeWidth: 2,
-                              color: Colors.white,
-                            ),
-                          )
-                        : Text(l10n.signIn),
-                  ),
-                ),
-                const SizedBox(height: 24),
-
-                // Divider
-                Row(
-                  children: [
-                    const Expanded(child: Divider()),
-                    Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 16),
-                      child: Text(
-                        l10n.or,
-                        style: TextStyle(
-                          color: AppColors.textTertiary,
-                        ),
+                  height: 56,
+                  child: OutlinedButton.icon(
+                    onPressed: () {
+                      // TODO: Implement Apple Sign In
+                    },
+                    icon: const Icon(Icons.apple, size: 24),
+                    label: Text(l10n.continueWithApple),
+                    style: OutlinedButton.styleFrom(
+                      foregroundColor: context.textPrimaryColor,
+                      side: BorderSide(color: context.borderColor),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(28),
                       ),
                     ),
-                    const Expanded(child: Divider()),
-                  ],
+                  ),
                 ),
-                const SizedBox(height: 24),
+                const SizedBox(height: 12),
 
                 // Google Sign In
                 SizedBox(
                   width: double.infinity,
+                  height: 56,
                   child: OutlinedButton.icon(
                     onPressed: () {
                       // TODO: Implement Google Sign In
@@ -238,6 +252,34 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                           const Icon(Icons.g_mobiledata, size: 24),
                     ),
                     label: Text(l10n.continueWithGoogle),
+                    style: OutlinedButton.styleFrom(
+                      foregroundColor: context.textPrimaryColor,
+                      side: BorderSide(color: context.borderColor),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(28),
+                      ),
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 12),
+
+                // Email Sign In
+                SizedBox(
+                  width: double.infinity,
+                  height: 56,
+                  child: OutlinedButton.icon(
+                    onPressed: () {
+                      setState(() => _showEmailForm = true);
+                    },
+                    icon: const Icon(Icons.email_outlined, size: 24),
+                    label: Text(l10n.continueWithEmail),
+                    style: OutlinedButton.styleFrom(
+                      foregroundColor: context.textPrimaryColor,
+                      side: BorderSide(color: context.borderColor),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(28),
+                      ),
+                    ),
                   ),
                 ),
                 const SizedBox(height: 40),
@@ -248,7 +290,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                   children: [
                     Text(
                       l10n.dontHaveAccount,
-                      style: const TextStyle(color: AppColors.textSecondary),
+                      style: TextStyle(color: context.textSecondaryColor),
                     ),
                     TextButton(
                       onPressed: () => context.push('/signup'),
@@ -256,19 +298,149 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                     ),
                   ],
                 ),
+              ] else ...[
+                // Email Form
+                Form(
+                  key: _formKey,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      // Back Button
+                      Align(
+                        alignment: Alignment.centerLeft,
+                        child: TextButton.icon(
+                          onPressed: () {
+                            setState(() => _showEmailForm = false);
+                          },
+                          icon: const Icon(Icons.arrow_back, size: 18),
+                          label: Text(l10n.backToLogin),
+                        ),
+                      ),
+                      const SizedBox(height: 16),
 
-                // Skip Login (for demo)
-                Center(
-                  child: TextButton(
-                    onPressed: _skipLogin,
-                    child: Text(
-                      l10n.skipForNow,
-                      style: const TextStyle(color: AppColors.textTertiary),
-                    ),
+                      // Email Field
+                      TextFormField(
+                        controller: _emailController,
+                        keyboardType: TextInputType.emailAddress,
+                        textInputAction: TextInputAction.next,
+                        decoration: InputDecoration(
+                          labelText: l10n.email,
+                          hintText: l10n.enterYourEmail,
+                          prefixIcon: const Icon(Icons.email_outlined),
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                        ),
+                        validator: (value) {
+                          if (value == null || value.isEmpty) {
+                            return l10n.pleaseEnterEmail;
+                          }
+                          if (!value.contains('@')) {
+                            return l10n.pleaseEnterValidEmail;
+                          }
+                          return null;
+                        },
+                      ),
+                      const SizedBox(height: 16),
+
+                      // Password Field
+                      TextFormField(
+                        controller: _passwordController,
+                        obscureText: _obscurePassword,
+                        textInputAction: TextInputAction.done,
+                        decoration: InputDecoration(
+                          labelText: l10n.password,
+                          hintText: l10n.enterYourPassword,
+                          prefixIcon: const Icon(Icons.lock_outlined),
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                          suffixIcon: IconButton(
+                            icon: Icon(
+                              _obscurePassword
+                                  ? Icons.visibility_outlined
+                                  : Icons.visibility_off_outlined,
+                            ),
+                            onPressed: () {
+                              setState(() => _obscurePassword = !_obscurePassword);
+                            },
+                          ),
+                        ),
+                        validator: (value) {
+                          if (value == null || value.isEmpty) {
+                            return l10n.pleaseEnterPassword;
+                          }
+                          if (value.length < 6) {
+                            return l10n.passwordMinLength;
+                          }
+                          return null;
+                        },
+                        onFieldSubmitted: (_) => _signIn(),
+                      ),
+                      const SizedBox(height: 12),
+
+                      // Forgot Password
+                      Align(
+                        alignment: Alignment.centerRight,
+                        child: TextButton(
+                          onPressed: _showForgotPasswordDialog,
+                          child: Text(l10n.forgotPassword),
+                        ),
+                      ),
+                      const SizedBox(height: 24),
+
+                      // Sign In Button
+                      SizedBox(
+                        width: double.infinity,
+                        height: 56,
+                        child: ElevatedButton(
+                          onPressed: _isLoading ? null : _signIn,
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: AppColors.primary,
+                            foregroundColor: Colors.white,
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(28),
+                            ),
+                          ),
+                          child: _isLoading
+                              ? const SizedBox(
+                                  height: 20,
+                                  width: 20,
+                                  child: CircularProgressIndicator(
+                                    strokeWidth: 2,
+                                    color: Colors.white,
+                                  ),
+                                )
+                              : Text(
+                                  l10n.signIn,
+                                  style: const TextStyle(
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.w600,
+                                  ),
+                                ),
+                        ),
+                      ),
+                      const SizedBox(height: 24),
+
+                      // Sign Up Link
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Text(
+                            l10n.dontHaveAccount,
+                            style: TextStyle(color: context.textSecondaryColor),
+                          ),
+                          TextButton(
+                            onPressed: () => context.push('/signup'),
+                            child: Text(l10n.signUp),
+                          ),
+                        ],
+                      ),
+                    ],
                   ),
                 ),
               ],
-            ),
+            ],
           ),
         ),
       ),

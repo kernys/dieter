@@ -21,7 +21,7 @@ class _ManualFoodEntryScreenState extends ConsumerState<ManualFoodEntryScreen> {
   final _fatController = TextEditingController(text: '0');
   int _servings = 1;
   bool _isLoading = false;
-  bool _isSaved = false;
+  final List<Map<String, dynamic>> _ingredients = [];
 
   @override
   void dispose() {
@@ -72,20 +72,9 @@ class _ManualFoodEntryScreenState extends ConsumerState<ManualFoodEntryScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Bookmark and Time Row
+            // Time Row
             Row(
               children: [
-                GestureDetector(
-                  onTap: () {
-                    setState(() => _isSaved = !_isSaved);
-                  },
-                  child: Icon(
-                    _isSaved ? Icons.bookmark : Icons.bookmark_border,
-                    color: _isSaved ? AppColors.primary : context.textSecondaryColor,
-                    size: 28,
-                  ),
-                ),
-                const SizedBox(width: 12),
                 Container(
                   padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                   decoration: BoxDecoration(
@@ -263,47 +252,73 @@ class _ManualFoodEntryScreenState extends ConsumerState<ManualFoodEntryScreen> {
                   ),
                 ),
                 TextButton.icon(
-                  onPressed: () {
-                    // Add ingredient
-                  },
+                  onPressed: () => _showAddIngredientDialog(l10n),
                   icon: const Icon(Icons.add, size: 18),
                   label: Text(l10n.add),
                 ),
               ],
             ),
             const SizedBox(height: 12),
-            Center(
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Icon(
-                    Icons.visibility_off_outlined,
-                    size: 20,
-                    color: context.textTertiaryColor,
+            if (_ingredients.isEmpty)
+              Center(
+                child: Text(
+                  l10n.noIngredientsDetected,
+                  style: TextStyle(
+                    fontSize: 14,
+                    color: context.textSecondaryColor,
                   ),
-                  const SizedBox(width: 8),
-                  Text(
-                    l10n.ingredientsHidden,
-                    style: TextStyle(
-                      fontSize: 14,
-                      color: context.textSecondaryColor,
-                    ),
+                ),
+              )
+            else
+              ..._ingredients.asMap().entries.map((entry) {
+                final index = entry.key;
+                final ingredient = entry.value;
+                return Container(
+                  margin: const EdgeInsets.only(bottom: 8),
+                  padding: const EdgeInsets.all(12),
+                  decoration: BoxDecoration(
+                    color: context.cardColor,
+                    borderRadius: BorderRadius.circular(12),
                   ),
-                  TextButton(
-                    onPressed: () {
-                      // Learn why
-                    },
-                    child: Text(
-                      l10n.learnWhy,
-                      style: const TextStyle(
-                        fontSize: 14,
-                        decoration: TextDecoration.underline,
+                  child: Row(
+                    children: [
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              ingredient['name'] as String,
+                              style: TextStyle(
+                                fontSize: 14,
+                                fontWeight: FontWeight.w600,
+                                color: context.textPrimaryColor,
+                              ),
+                            ),
+                            if (ingredient['calories'] != null && ingredient['calories'] > 0)
+                              Text(
+                                '${ingredient['calories']} cal',
+                                style: TextStyle(
+                                  fontSize: 12,
+                                  color: context.textSecondaryColor,
+                                ),
+                              ),
+                          ],
+                        ),
                       ),
-                    ),
+                      IconButton(
+                        onPressed: () {
+                          setState(() => _ingredients.removeAt(index));
+                        },
+                        icon: Icon(
+                          Icons.close,
+                          size: 18,
+                          color: context.textSecondaryColor,
+                        ),
+                      ),
+                    ],
                   ),
-                ],
-              ),
-            ),
+                );
+              }),
           ],
         ),
       ),
@@ -394,6 +409,59 @@ class _ManualFoodEntryScreenState extends ConsumerState<ManualFoodEntryScreen> {
     return '$hour12:$minute $period';
   }
 
+  void _showAddIngredientDialog(AppLocalizations l10n) {
+    final nameController = TextEditingController();
+    final caloriesController = TextEditingController();
+    showDialog(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: Text(l10n.addIngredient),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            TextField(
+              controller: nameController,
+              autofocus: true,
+              decoration: InputDecoration(
+                labelText: l10n.name,
+              ),
+            ),
+            const SizedBox(height: 12),
+            TextField(
+              controller: caloriesController,
+              keyboardType: TextInputType.number,
+              decoration: InputDecoration(
+                labelText: l10n.calories,
+                suffixText: 'cal',
+              ),
+            ),
+          ],
+        ),
+        actionsAlignment: MainAxisAlignment.spaceBetween,
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(ctx),
+            child: Text(l10n.cancel),
+          ),
+          TextButton(
+            onPressed: () {
+              if (nameController.text.isNotEmpty) {
+                setState(() {
+                  _ingredients.add({
+                    'name': nameController.text,
+                    'calories': int.tryParse(caloriesController.text) ?? 0,
+                  });
+                });
+                Navigator.pop(ctx);
+              }
+            },
+            child: Text(l10n.add),
+          ),
+        ],
+      ),
+    );
+  }
+
   void _showNameEditDialog(AppLocalizations l10n) {
     final controller = TextEditingController(text: _nameController.text);
     showDialog(
@@ -407,6 +475,7 @@ class _ManualFoodEntryScreenState extends ConsumerState<ManualFoodEntryScreen> {
             hintText: l10n.tapToName,
           ),
         ),
+        actionsAlignment: MainAxisAlignment.spaceBetween,
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(ctx),
@@ -506,6 +575,7 @@ class _ManualFoodEntryScreenState extends ConsumerState<ManualFoodEntryScreen> {
             suffixText: type == 'calories' ? 'cal' : 'g',
           ),
         ),
+        actionsAlignment: MainAxisAlignment.spaceBetween,
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(ctx),

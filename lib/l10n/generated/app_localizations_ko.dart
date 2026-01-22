@@ -15,7 +15,29 @@ class AppLocalizationsKo extends AppLocalizations {
   String get welcomeBack => '다시 오셨군요';
 
   @override
-  String get signInToContinue => '영양 추적을 계속하려면 로그인하세요';
+  String get signInToContinue => '더 나은 나를 만들어 가요';
+
+  @override
+  String get continueWithApple => 'Apple로 계속하기';
+
+  @override
+  String get continueWithEmail => '이메일로 계속하기';
+
+  @override
+  String get resetPassword => '비밀번호 재설정';
+
+  @override
+  String get resetPasswordDescription =>
+      '가입한 이메일 주소를 입력하시면 비밀번호 재설정 링크를 보내드립니다.';
+
+  @override
+  String get sendResetLink => '재설정 링크 보내기';
+
+  @override
+  String get resetLinkSent => '비밀번호 재설정 링크가 이메일로 전송되었습니다.';
+
+  @override
+  String get backToLogin => '로그인으로 돌아가기';
 
   @override
   String get createAccount => '계정 만들기';
@@ -480,6 +502,9 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String get scanFood => '음식 스캔';
+
+  @override
+  String get foodDatabase => '음식 데이터베이스';
 
   @override
   String get barcode => '바코드';
