@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { z } from 'zod';
 import { getRepository } from '@/lib/database';
+import { getUserFromRequest } from '@/lib/auth';
 import { UserEntity, type User } from '@/entities';
 
 const updateUserSchema = z.object({
@@ -88,7 +89,23 @@ export async function GET(
   { params }: { params: Promise<{ userId: string }> }
 ) {
   try {
+    const tokenUserId = getUserFromRequest(request);
+    if (!tokenUserId) {
+      return NextResponse.json(
+        { error: 'Unauthorized' },
+        { status: 401 }
+      );
+    }
+
     const { userId } = await params;
+
+    // Ensure user can only access their own data
+    if (tokenUserId !== userId) {
+      return NextResponse.json(
+        { error: 'Forbidden' },
+        { status: 403 }
+      );
+    }
 
     const userRepo = await getRepository<User>(UserEntity);
     const user = await userRepo.findOne({ where: { id: userId } });
@@ -100,7 +117,6 @@ export async function GET(
       );
     }
 
-    console.log('GET /users/:userId - goal_weight from DB:', user.goal_weight);
     return NextResponse.json(formatUserResponse(user));
   } catch (error) {
     console.error('Get user error:', error);
@@ -116,11 +132,26 @@ export async function PATCH(
   { params }: { params: Promise<{ userId: string }> }
 ) {
   try {
+    const tokenUserId = getUserFromRequest(request);
+    if (!tokenUserId) {
+      return NextResponse.json(
+        { error: 'Unauthorized' },
+        { status: 401 }
+      );
+    }
+
     const { userId } = await params;
+
+    // Ensure user can only update their own data
+    if (tokenUserId !== userId) {
+      return NextResponse.json(
+        { error: 'Forbidden' },
+        { status: 403 }
+      );
+    }
+
     const body = await request.json();
-    console.log('PATCH /users/:userId - Received body:', JSON.stringify(body));
     const updates = updateUserSchema.parse(body);
-    console.log('PATCH /users/:userId - Parsed updates:', JSON.stringify(updates));
 
     const userRepo = await getRepository<User>(UserEntity);
     const user = await userRepo.findOne({ where: { id: userId } });
@@ -132,12 +163,9 @@ export async function PATCH(
       );
     }
 
-    console.log('PATCH /users/:userId - User before update - goal_weight:', user.goal_weight);
     const snakeCaseUpdates = toSnakeCase(updates);
-    console.log('PATCH /users/:userId - Snake case updates:', JSON.stringify(snakeCaseUpdates));
     Object.assign(user, snakeCaseUpdates);
     await userRepo.save(user);
-    console.log('PATCH /users/:userId - User after save - goal_weight:', user.goal_weight);
 
     return NextResponse.json(formatUserResponse(user));
   } catch (error) {

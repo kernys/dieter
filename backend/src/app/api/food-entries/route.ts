@@ -1,11 +1,11 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { z } from 'zod';
 import { getRepository } from '@/lib/database';
+import { getUserFromRequest } from '@/lib/auth';
 import { FoodEntryEntity, type FoodEntry } from '@/entities';
 import { Between } from 'typeorm';
 
 const createFoodEntrySchema = z.object({
-  userId: z.string().uuid().optional(),
   name: z.string(),
   calories: z.number(),
   protein: z.number(),
@@ -21,20 +21,18 @@ const createFoodEntrySchema = z.object({
     fat: z.number().nullable(),
   })).nullish(),
   servings: z.number().default(1),
-}).refine(data => data.userId, {
-  message: "userId is required",
 });
 
 export async function GET(request: NextRequest) {
   try {
+    const userId = getUserFromRequest(request);
     const { searchParams } = new URL(request.url);
-    const userId = searchParams.get('userId');
     const date = searchParams.get('date');
 
     if (!userId) {
       return NextResponse.json(
-        { error: 'userId is required' },
-        { status: 400 }
+        { error: 'Unauthorized' },
+        { status: 401 }
       );
     }
 
@@ -99,13 +97,21 @@ export async function GET(request: NextRequest) {
 
 export async function POST(request: NextRequest) {
   try {
+    const userId = getUserFromRequest(request);
+    if (!userId) {
+      return NextResponse.json(
+        { error: 'Unauthorized' },
+        { status: 401 }
+      );
+    }
+
     const body = await request.json();
     const validatedData = createFoodEntrySchema.parse(body);
 
     const foodEntryRepo = await getRepository<FoodEntry>(FoodEntryEntity);
 
     const entry = foodEntryRepo.create({
-      user_id: validatedData.userId,
+      user_id: userId,
       name: validatedData.name,
       calories: validatedData.calories,
       protein: validatedData.protein,

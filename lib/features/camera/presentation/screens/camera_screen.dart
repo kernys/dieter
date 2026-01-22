@@ -683,7 +683,6 @@ class _CameraScreenState extends ConsumerState<CameraScreen> {
     try {
       final apiService = ref.read(apiServiceProvider);
       await apiService.createFoodEntry(
-        userId: authState.userId!,
         name: result.name ?? 'Unknown',
         calories: result.calories ?? 0,
         protein: result.protein ?? 0,

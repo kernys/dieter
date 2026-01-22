@@ -13,7 +13,8 @@ export async function comparePassword(password: string, hash: string): Promise<b
 }
 
 export function generateToken(userId: string, email: string): string {
-  return jwt.sign({ userId, email }, JWT_SECRET, { expiresIn: '7d' });
+  // No expiration - token is valid indefinitely
+  return jwt.sign({ userId, email }, JWT_SECRET);
 }
 
 export function verifyToken(token: string): { userId: string; email: string } | null {
@@ -22,4 +23,19 @@ export function verifyToken(token: string): { userId: string; email: string } | 
   } catch {
     return null;
   }
+}
+
+/**
+ * Extract and verify user from Authorization header
+ * Returns userId if valid, null otherwise
+ */
+export function getUserFromRequest(request: Request): string | null {
+  const authHeader = request.headers.get('Authorization');
+  if (!authHeader?.startsWith('Bearer ')) {
+    return null;
+  }
+
+  const token = authHeader.substring(7);
+  const payload = verifyToken(token);
+  return payload?.userId ?? null;
 }

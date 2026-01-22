@@ -95,10 +95,10 @@ class ApiService {
   }
 
   // Food Entry APIs
-  Future<FoodEntriesResponse> getFoodEntries(String userId, DateTime date) async {
+  Future<FoodEntriesResponse> getFoodEntries(DateTime date) async {
     final dateStr = '${date.year}-${date.month.toString().padLeft(2, '0')}-${date.day.toString().padLeft(2, '0')}';
     final response = await http.get(
-      Uri.parse('$baseUrl/food-entries?userId=$userId&date=$dateStr'),
+      Uri.parse('$baseUrl/food-entries?date=$dateStr'),
       headers: _headers,
     );
 
@@ -110,7 +110,6 @@ class ApiService {
   }
 
   Future<FoodEntryModel> createFoodEntry({
-    required String userId,
     required String name,
     required int calories,
     required double protein,
@@ -124,7 +123,6 @@ class ApiService {
       Uri.parse('$baseUrl/food-entries'),
       headers: _headers,
       body: jsonEncode({
-        'userId': userId,
         'name': name,
         'calories': calories,
         'protein': protein,
@@ -220,9 +218,9 @@ class ApiService {
   }
 
   // Weight Log APIs
-  Future<WeightLogsResponse> getWeightLogs(String userId, {String range = '6m'}) async {
+  Future<WeightLogsResponse> getWeightLogs({String range = '6m'}) async {
     final response = await http.get(
-      Uri.parse('$baseUrl/weight-logs?userId=$userId&range=$range'),
+      Uri.parse('$baseUrl/weight-logs?range=$range'),
       headers: _headers,
     );
 
@@ -234,7 +232,6 @@ class ApiService {
   }
 
   Future<WeightLogModel> createWeightLog({
-    required String userId,
     required double weight,
     String? note,
   }) async {
@@ -242,7 +239,6 @@ class ApiService {
       Uri.parse('$baseUrl/weight-logs'),
       headers: _headers,
       body: jsonEncode({
-        'userId': userId,
         'weight': weight,
         'note': note ?? '',  // Server expects string, not null
       }),
@@ -270,11 +266,11 @@ class ApiService {
   }
 
   // Streak API
-  Future<StreakResponse> getStreak(String userId) async {
+  Future<StreakResponse> getStreak() async {
     // Send timezone offset in minutes (e.g., Asia/Seoul = +540)
     final tzOffset = DateTime.now().timeZoneOffset.inMinutes;
     final response = await http.get(
-      Uri.parse('$baseUrl/stats/streak?userId=$userId&tzOffset=$tzOffset'),
+      Uri.parse('$baseUrl/stats/streak?tzOffset=$tzOffset'),
       headers: _headers,
     );
 

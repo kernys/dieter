@@ -632,7 +632,6 @@ class _ManualFoodEntryScreenState extends ConsumerState<ManualFoodEntryScreen> {
     try {
       final apiService = ref.read(apiServiceProvider);
       await apiService.createFoodEntry(
-        userId: authState.userId!,
         name: name,
         calories: (int.tryParse(_caloriesController.text) ?? 0) * _servings,
         protein: (double.tryParse(_proteinController.text) ?? 0) * _servings,

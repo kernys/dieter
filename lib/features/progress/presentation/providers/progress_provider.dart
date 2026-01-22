@@ -36,7 +36,7 @@ final weightLogsResponseProvider = FutureProvider<WeightLogsResponse?>((ref) asy
   }
 
   try {
-    return await apiService.getWeightLogs(userId, range: _getApiRange(timeRange));
+    return await apiService.getWeightLogs(range: _getApiRange(timeRange));
   } catch (e) {
     return null;
   }
@@ -108,7 +108,7 @@ final streakDataProvider = FutureProvider<StreakData>((ref) async {
   }
 
   try {
-    final response = await apiService.getStreak(userId);
+    final response = await apiService.getStreak();
     return StreakData(
       currentStreak: response.currentStreak,
       weekData: response.weekData,
@@ -139,7 +139,7 @@ final weeklyEnergyDataProvider = FutureProvider<WeeklyEnergyData>((ref) async {
     for (int i = 0; i < 7; i++) {
       final date = sunday.add(Duration(days: i));
       try {
-        final response = await apiService.getFoodEntries(userId, date);
+        final response = await apiService.getFoodEntries(date);
         final dayCalories = response.summary.totalCalories;
         consumedData.add(dayCalories);
         totalConsumed += dayCalories;
@@ -192,7 +192,6 @@ final addWeightLogProvider = FutureProvider.family<WeightLogModel?, AddWeightLog
 
   try {
     final log = await apiService.createWeightLog(
-      userId: userId,
       weight: params.weight,
       note: params.note,
     );
@@ -306,7 +305,7 @@ final weightChangeProvider = FutureProvider<WeightChangeData>((ref) async {
 
   try {
     // Fetch all weight logs to calculate changes
-    final response = await apiService.getWeightLogs(userId, range: 'all');
+    final response = await apiService.getWeightLogs(range: 'all');
     final logs = response.logs;
 
     if (logs.isEmpty) {

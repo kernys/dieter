@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getRepository } from '@/lib/database';
+import { getUserFromRequest } from '@/lib/auth';
 import { FoodEntryEntity, type FoodEntry } from '@/entities';
 import { MoreThanOrEqual } from 'typeorm';
 
@@ -19,17 +20,17 @@ function formatDateKey(date: Date): string {
 
 export async function GET(request: NextRequest) {
   try {
-    const { searchParams } = new URL(request.url);
-    const userId = searchParams.get('userId');
-    // Timezone offset in minutes (e.g., Asia/Seoul = +540)
-    const tzOffset = parseInt(searchParams.get('tzOffset') || '0', 10);
-
+    const userId = getUserFromRequest(request);
     if (!userId) {
       return NextResponse.json(
-        { error: 'userId is required' },
-        { status: 400 }
+        { error: 'Unauthorized' },
+        { status: 401 }
       );
     }
+
+    const { searchParams } = new URL(request.url);
+    // Timezone offset in minutes (e.g., Asia/Seoul = +540)
+    const tzOffset = parseInt(searchParams.get('tzOffset') || '0', 10);
 
     const startDate = new Date();
     startDate.setDate(startDate.getDate() - 365);

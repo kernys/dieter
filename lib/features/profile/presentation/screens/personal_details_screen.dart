@@ -252,11 +252,12 @@ class _PersonalDetailsScreenState extends ConsumerState<PersonalDetailsScreen> {
             try {
               final apiService = ref.read(apiServiceProvider);
               await apiService.createWeightLog(
-                userId: userId,
                 weight: weightInLbs,
               );
-              // Invalidate weight logs to refresh
+              // Refresh user data and weight logs
+              await ref.read(authStateProvider.notifier).refreshUser();
               ref.invalidate(weightLogsResponseProvider);
+              ref.invalidate(weightChangeProvider);
             } catch (e) {
               // If weight log fails, still update user weight
               ref.read(authStateProvider.notifier).updateUser({

@@ -167,6 +167,18 @@ class AuthNotifier extends StateNotifier<AuthState> {
     }
   }
 
+  /// Refresh user data from server
+  Future<void> refreshUser() async {
+    if (state.userId == null || state.isGuestMode) return;
+
+    try {
+      final user = await _apiService.getUser(state.userId!);
+      state = state.copyWith(user: user);
+    } catch (e) {
+      debugPrint('Failed to refresh user: $e');
+    }
+  }
+
   Future<void> _storeCredentials(String userId, String accessToken) async {
     final prefs = await SharedPreferences.getInstance();
     await prefs.setString('user_id', userId);

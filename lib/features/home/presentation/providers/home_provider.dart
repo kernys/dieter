@@ -31,7 +31,7 @@ final dailySummaryProvider = FutureProvider.family<DailySummaryModel, DateTime>(
   }
 
   try {
-    final response = await apiService.getFoodEntries(userId, date);
+    final response = await apiService.getFoodEntries(date);
 
     return DailySummaryModel(
       id: 'summary-${date.toIso8601String()}',
@@ -102,7 +102,7 @@ final streakProvider = FutureProvider<int>((ref) async {
   }
 
   try {
-    final response = await apiService.getStreak(userId);
+    final response = await apiService.getStreak();
     return response.currentStreak;
   } catch (e) {
     return 0;
@@ -149,7 +149,6 @@ final addFoodEntryProvider = FutureProvider.family<FoodEntryModel?, AddFoodEntry
 
   try {
     final entry = await apiService.createFoodEntry(
-      userId: userId,
       name: params.name,
       calories: params.calories,
       protein: params.protein,

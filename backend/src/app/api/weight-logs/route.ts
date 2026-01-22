@@ -1,30 +1,28 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { z } from 'zod';
 import { getRepository } from '@/lib/database';
+import { getUserFromRequest } from '@/lib/auth';
 import { WeightLogEntity, UserEntity, type WeightLog, type User } from '@/entities';
 import { MoreThanOrEqual } from 'typeorm';
 
 const createWeightLogSchema = z.object({
-  userId: z.string().uuid().optional(),
   weight: z.number().positive(),
   note: z.string().optional(),
-}).refine(data => data.userId, {
-  message: "userId is required",
 });
 
 export async function GET(request: NextRequest) {
   try {
-    const { searchParams } = new URL(request.url);
-    const userId = searchParams.get('userId');
-    const limit = parseInt(searchParams.get('limit') || '100');
-    const range = searchParams.get('range');
-
+    const userId = getUserFromRequest(request);
     if (!userId) {
       return NextResponse.json(
-        { error: 'userId is required' },
-        { status: 400 }
+        { error: 'Unauthorized' },
+        { status: 401 }
       );
     }
+
+    const { searchParams } = new URL(request.url);
+    const limit = parseInt(searchParams.get('limit') || '100');
+    const range = searchParams.get('range');
 
     const weightLogRepo = await getRepository<WeightLog>(WeightLogEntity);
 
@@ -101,15 +99,22 @@ export async function GET(request: NextRequest) {
 
 export async function POST(request: NextRequest) {
   try {
+    const userId = getUserFromRequest(request);
+    if (!userId) {
+      return NextResponse.json(
+        { error: 'Unauthorized' },
+        { status: 401 }
+      );
+    }
+
     const body = await request.json();
     const validatedData = createWeightLogSchema.parse(body);
 
     const weightLogRepo = await getRepository<WeightLog>(WeightLogEntity);
     const userRepo = await getRepository<User>(UserEntity);
 
-    const finalUserId = validatedData.userId;
     const log = weightLogRepo.create({
-      user_id: finalUserId,
+      user_id: userId,
       weight: validatedData.weight,
       note: validatedData.note || null,
     });
@@ -117,7 +122,7 @@ export async function POST(request: NextRequest) {
     await weightLogRepo.save(log);
 
     await userRepo.update(
-      { id: finalUserId },
+      { id: userId },
       { current_weight: validatedData.weight }
     );
 

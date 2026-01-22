@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { z } from 'zod';
 import { getRepository } from '@/lib/database';
+import { getUserFromRequest } from '@/lib/auth';
 import { FoodEntryEntity, type FoodEntry } from '@/entities';
 
 const updateFoodEntrySchema = z.object({
@@ -25,6 +26,14 @@ export async function GET(
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const userId = getUserFromRequest(request);
+    if (!userId) {
+      return NextResponse.json(
+        { error: 'Unauthorized' },
+        { status: 401 }
+      );
+    }
+
     const { id } = await params;
 
     const foodEntryRepo = await getRepository<FoodEntry>(FoodEntryEntity);
@@ -34,6 +43,14 @@ export async function GET(
       return NextResponse.json(
         { error: 'Food entry not found' },
         { status: 404 }
+      );
+    }
+
+    // Verify ownership
+    if (entry.user_id !== userId) {
+      return NextResponse.json(
+        { error: 'Forbidden' },
+        { status: 403 }
       );
     }
 
@@ -52,6 +69,14 @@ export async function PATCH(
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const userId = getUserFromRequest(request);
+    if (!userId) {
+      return NextResponse.json(
+        { error: 'Unauthorized' },
+        { status: 401 }
+      );
+    }
+
     const { id } = await params;
     const body = await request.json();
     const updates = updateFoodEntrySchema.parse(body);
@@ -63,6 +88,14 @@ export async function PATCH(
       return NextResponse.json(
         { error: 'Food entry not found' },
         { status: 404 }
+      );
+    }
+
+    // Verify ownership
+    if (entry.user_id !== userId) {
+      return NextResponse.json(
+        { error: 'Forbidden' },
+        { status: 403 }
       );
     }
 
@@ -90,17 +123,35 @@ export async function DELETE(
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const userId = getUserFromRequest(request);
+    if (!userId) {
+      return NextResponse.json(
+        { error: 'Unauthorized' },
+        { status: 401 }
+      );
+    }
+
     const { id } = await params;
 
     const foodEntryRepo = await getRepository<FoodEntry>(FoodEntryEntity);
-    const result = await foodEntryRepo.delete({ id });
+    const entry = await foodEntryRepo.findOne({ where: { id } });
 
-    if (result.affected === 0) {
+    if (!entry) {
       return NextResponse.json(
         { error: 'Food entry not found' },
         { status: 404 }
       );
     }
+
+    // Verify ownership
+    if (entry.user_id !== userId) {
+      return NextResponse.json(
+        { error: 'Forbidden' },
+        { status: 403 }
+      );
+    }
+
+    await foodEntryRepo.remove(entry);
 
     return NextResponse.json({ message: 'Deleted successfully' });
   } catch (error) {

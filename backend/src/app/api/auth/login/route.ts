@@ -49,7 +49,7 @@ export async function POST(request: NextRequest) {
       },
       session: {
         accessToken: token,
-        expiresAt: Math.floor(Date.now() / 1000) + 7 * 24 * 60 * 60,
+        expiresAt: null, // Token does not expire
       },
     });
   } catch (error) {

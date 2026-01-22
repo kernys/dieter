@@ -171,7 +171,6 @@ class _VoiceFoodEntryScreenState extends ConsumerState<VoiceFoodEntryScreen> {
     try {
       final apiService = ref.read(apiServiceProvider);
       await apiService.createFoodEntry(
-        userId: authState.userId!,
         name: _analysisResult!.name,
         calories: _analysisResult!.calories,
         protein: _analysisResult!.protein,

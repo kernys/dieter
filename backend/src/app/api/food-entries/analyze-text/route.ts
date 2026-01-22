@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { analyzeTextFood } from '@/lib/gemini';
+import { getUserFromRequest } from '@/lib/auth';
 import { z } from 'zod';
 
 const analyzeSchema = z.object({
@@ -9,6 +10,14 @@ const analyzeSchema = z.object({
 
 export async function POST(request: NextRequest) {
   try {
+    const userId = getUserFromRequest(request);
+    if (!userId) {
+      return NextResponse.json(
+        { error: 'Unauthorized' },
+        { status: 401 }
+      );
+    }
+
     const body = await request.json();
     const { description, locale } = analyzeSchema.parse(body);
 

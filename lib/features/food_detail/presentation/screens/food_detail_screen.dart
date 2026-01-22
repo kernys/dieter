@@ -991,7 +991,6 @@ ${l10n.sharedFromDieterAI}
       }).toList();
 
       await apiService.createFoodEntry(
-        userId: userId,
         name: _nameController.text.isNotEmpty ? _nameController.text : l10n.unknownFood,
         calories: _totalCalories,
         protein: _totalProtein,

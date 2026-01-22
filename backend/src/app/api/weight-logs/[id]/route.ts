@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getRepository } from '@/lib/database';
+import { getUserFromRequest } from '@/lib/auth';
 import { WeightLogEntity, type WeightLog } from '@/entities';
 
 export async function DELETE(
@@ -7,6 +8,14 @@ export async function DELETE(
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const userId = getUserFromRequest(request);
+    if (!userId) {
+      return NextResponse.json(
+        { error: 'Unauthorized' },
+        { status: 401 }
+      );
+    }
+
     const { id } = await params;
 
     const weightLogRepo = await getRepository<WeightLog>(WeightLogEntity);
@@ -16,6 +25,14 @@ export async function DELETE(
       return NextResponse.json(
         { error: 'Weight log not found' },
         { status: 404 }
+      );
+    }
+
+    // Verify ownership
+    if (weightLog.user_id !== userId) {
+      return NextResponse.json(
+        { error: 'Forbidden' },
+        { status: 403 }
       );
     }
 
