@@ -390,5 +390,16 @@
   "thu": "Thu",
   "fri": "Fri",
   "sat": "Sat",
-  "noSearchResults": "No results found"
+  "noSearchResults": "No results found",
+
+  "unknownProduct": "Unknown Product",
+  "nutritionFacts": "Nutrition Facts",
+  "servingsPerContainer": "2 servings per container",
+  "servingSize": "Serving size",
+  "amountPerServing": "Amount per serving",
+  "totalFat": "Total Fat",
+  "saturatedFat": "Saturated Fat",
+  "cholesterol": "Cholesterol",
+  "totalCarbohydrate": "Total Carbohydrate",
+  "positionBarcodeInFrame": "Position barcode in frame"
 }

@@ -374,5 +374,16 @@
   "wed": "수",
   "thu": "목",
   "fri": "금",
-  "sat": "토"
+  "sat": "토",
+
+  "unknownProduct": "알 수 없는 제품",
+  "nutritionFacts": "영양 성분표",
+  "servingsPerContainer": "1회 제공량 2회",
+  "servingSize": "1회 제공량",
+  "amountPerServing": "1회 제공량당",
+  "totalFat": "총 지방",
+  "saturatedFat": "포화지방",
+  "cholesterol": "콜레스테롤",
+  "totalCarbohydrate": "총 탄수화물",
+  "positionBarcodeInFrame": "프레임 안에 바코드를 맞춰주세요"
 }

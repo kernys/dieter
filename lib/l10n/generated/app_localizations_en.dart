@@ -1075,4 +1075,34 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get noSearchResults => 'No results found';
+
+  @override
+  String get unknownProduct => 'Unknown Product';
+
+  @override
+  String get nutritionFacts => 'Nutrition Facts';
+
+  @override
+  String get servingsPerContainer => '2 servings per container';
+
+  @override
+  String get servingSize => 'Serving size';
+
+  @override
+  String get amountPerServing => 'Amount per serving';
+
+  @override
+  String get totalFat => 'Total Fat';
+
+  @override
+  String get saturatedFat => 'Saturated Fat';
+
+  @override
+  String get cholesterol => 'Cholesterol';
+
+  @override
+  String get totalCarbohydrate => 'Total Carbohydrate';
+
+  @override
+  String get positionBarcodeInFrame => 'Position barcode in frame';
 }

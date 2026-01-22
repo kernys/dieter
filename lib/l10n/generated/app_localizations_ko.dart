@@ -1066,4 +1066,34 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String get noSearchResults => '검색 결과가 없습니다';
+
+  @override
+  String get unknownProduct => '알 수 없는 제품';
+
+  @override
+  String get nutritionFacts => '영양 성분표';
+
+  @override
+  String get servingsPerContainer => '1회 제공량 2회';
+
+  @override
+  String get servingSize => '1회 제공량';
+
+  @override
+  String get amountPerServing => '1회 제공량당';
+
+  @override
+  String get totalFat => '총 지방';
+
+  @override
+  String get saturatedFat => '포화지방';
+
+  @override
+  String get cholesterol => '콜레스테롤';
+
+  @override
+  String get totalCarbohydrate => '총 탄수화물';
+
+  @override
+  String get positionBarcodeInFrame => '프레임 안에 바코드를 맞춰주세요';
 }

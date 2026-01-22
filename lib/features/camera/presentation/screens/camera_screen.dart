@@ -484,18 +484,102 @@ class _CameraScreenState extends ConsumerState<CameraScreen> {
       facing: CameraFacing.back,
     );
 
-    return MobileScanner(
-      controller: _barcodeScannerController!,
-      onDetect: (capture) {
-        if (_isProcessingBarcode) return;
+    return Stack(
+      children: [
+        MobileScanner(
+          controller: _barcodeScannerController!,
+          onDetect: (capture) {
+            if (_isProcessingBarcode) return;
 
-        final List<Barcode> barcodes = capture.barcodes;
-        for (final barcode in barcodes) {
-          if (barcode.rawValue != null) {
-            _handleBarcodeDetected(barcode.rawValue!, l10n);
-            break;
-          }
-        }
+            final List<Barcode> barcodes = capture.barcodes;
+            for (final barcode in barcodes) {
+              if (barcode.rawValue != null) {
+                _handleBarcodeDetected(barcode.rawValue!, l10n);
+                break;
+              }
+            }
+          },
+        ),
+        // Dimming overlay with scan box
+        _buildScanOverlay(l10n, isBarcode: true),
+      ],
+    );
+  }
+
+  Widget _buildScanOverlay(AppLocalizations l10n, {required bool isBarcode}) {
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final screenWidth = constraints.maxWidth;
+        final screenHeight = constraints.maxHeight;
+
+        // Scan box dimensions
+        final boxWidth = screenWidth * 0.75;
+        final boxHeight = isBarcode ? 120.0 : screenWidth * 0.6;
+        final boxLeft = (screenWidth - boxWidth) / 2;
+        final boxTop = (screenHeight - boxHeight) / 2 - 50;
+
+        return Stack(
+          children: [
+            // Top dimming
+            Positioned(
+              top: 0,
+              left: 0,
+              right: 0,
+              height: boxTop,
+              child: Container(color: Colors.black.withValues(alpha: 0.6)),
+            ),
+            // Bottom dimming
+            Positioned(
+              top: boxTop + boxHeight,
+              left: 0,
+              right: 0,
+              bottom: 0,
+              child: Container(color: Colors.black.withValues(alpha: 0.6)),
+            ),
+            // Left dimming
+            Positioned(
+              top: boxTop,
+              left: 0,
+              width: boxLeft,
+              height: boxHeight,
+              child: Container(color: Colors.black.withValues(alpha: 0.6)),
+            ),
+            // Right dimming
+            Positioned(
+              top: boxTop,
+              right: 0,
+              width: boxLeft,
+              height: boxHeight,
+              child: Container(color: Colors.black.withValues(alpha: 0.6)),
+            ),
+            // Scan box border with corner accents
+            Positioned(
+              top: boxTop,
+              left: boxLeft,
+              child: SizedBox(
+                width: boxWidth,
+                height: boxHeight,
+                child: CustomPaint(
+                  painter: _ScanBoxPainter(),
+                ),
+              ),
+            ),
+            // Hint text below box
+            Positioned(
+              top: boxTop + boxHeight + 24,
+              left: 0,
+              right: 0,
+              child: Text(
+                l10n.positionBarcodeInFrame,
+                textAlign: TextAlign.center,
+                style: const TextStyle(
+                  color: Colors.white70,
+                  fontSize: 14,
+                ),
+              ),
+            ),
+          ],
+        );
       },
     );
   }
@@ -567,7 +651,7 @@ class _CameraScreenState extends ConsumerState<CameraScreen> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    result.name ?? 'Unknown Product',
+                    result.name ?? l10n.unknownProduct,
                     style: const TextStyle(
                       fontSize: 22,
                       fontWeight: FontWeight.bold,
@@ -683,7 +767,7 @@ class _CameraScreenState extends ConsumerState<CameraScreen> {
     try {
       final apiService = ref.read(apiServiceProvider);
       await apiService.createFoodEntry(
-        name: result.name ?? 'Unknown',
+        name: result.name ?? l10n.unknownProduct,
         calories: result.calories ?? 0,
         protein: result.protein ?? 0,
         carbs: result.carbs ?? 0,
@@ -712,6 +796,7 @@ class _CameraScreenState extends ConsumerState<CameraScreen> {
   }
 
   void _showBarcodeInfo() {
+    final l10n = AppLocalizations.of(context)!;
     showModalBottomSheet(
       context: context,
       backgroundColor: Colors.transparent,
@@ -786,21 +871,21 @@ class _CameraScreenState extends ConsumerState<CameraScreen> {
             ),
             const SizedBox(height: 24),
             // Title
-            const Text(
-              'Barcode Scanner',
-              style: TextStyle(
+            Text(
+              l10n.barcodeScanner,
+              style: const TextStyle(
                 fontSize: 22,
                 fontWeight: FontWeight.bold,
                 color: Colors.white,
               ),
             ),
             const SizedBox(height: 8),
-            const Padding(
-              padding: EdgeInsets.symmetric(horizontal: 32),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 32),
               child: Text(
-                'Point your camera at a barcode on any food package to instantly get nutrition information.',
+                l10n.barcodeScannerDescription,
                 textAlign: TextAlign.center,
-                style: TextStyle(
+                style: const TextStyle(
                   fontSize: 14,
                   color: Colors.white70,
                 ),
@@ -812,11 +897,11 @@ class _CameraScreenState extends ConsumerState<CameraScreen> {
               padding: const EdgeInsets.symmetric(horizontal: 32),
               child: Column(
                 children: [
-                  _buildBarcodeTip(Icons.lightbulb_outline, 'Make sure the barcode is well-lit'),
+                  _buildBarcodeTip(Icons.lightbulb_outline, l10n.barcodeTip1),
                   const SizedBox(height: 8),
-                  _buildBarcodeTip(Icons.center_focus_strong, 'Center the barcode in the frame'),
+                  _buildBarcodeTip(Icons.center_focus_strong, l10n.barcodeTip2),
                   const SizedBox(height: 8),
-                  _buildBarcodeTip(Icons.straighten, 'Hold your phone steady'),
+                  _buildBarcodeTip(Icons.straighten, l10n.barcodeTip3),
                 ],
               ),
             ),
@@ -834,9 +919,9 @@ class _CameraScreenState extends ConsumerState<CameraScreen> {
                     borderRadius: BorderRadius.circular(24),
                   ),
                 ),
-                child: const Text(
-                  'Got it',
-                  style: TextStyle(
+                child: Text(
+                  l10n.gotIt,
+                  style: const TextStyle(
                     fontSize: 16,
                     fontWeight: FontWeight.w600,
                   ),
@@ -869,6 +954,7 @@ class _CameraScreenState extends ConsumerState<CameraScreen> {
   }
 
   void _showNutritionLabelInfo() {
+    final l10n = AppLocalizations.of(context)!;
     showModalBottomSheet(
       context: context,
       backgroundColor: Colors.transparent,
@@ -979,21 +1065,21 @@ class _CameraScreenState extends ConsumerState<CameraScreen> {
             ),
             const SizedBox(height: 24),
             // Title
-            const Text(
-              'Nutrition Label Scanner',
-              style: TextStyle(
+            Text(
+              l10n.nutritionLabelScanner,
+              style: const TextStyle(
                 fontSize: 22,
                 fontWeight: FontWeight.bold,
                 color: Colors.white,
               ),
             ),
             const SizedBox(height: 8),
-            const Padding(
-              padding: EdgeInsets.symmetric(horizontal: 32),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 32),
               child: Text(
-                'Get nutrition details from any label to track your intake accurately.',
+                l10n.nutritionLabelDescription,
                 textAlign: TextAlign.center,
-                style: TextStyle(
+                style: const TextStyle(
                   fontSize: 14,
                   color: Colors.white70,
                 ),
@@ -1013,9 +1099,9 @@ class _CameraScreenState extends ConsumerState<CameraScreen> {
                     borderRadius: BorderRadius.circular(24),
                   ),
                 ),
-                child: const Text(
-                  'Got it',
-                  style: TextStyle(
+                child: Text(
+                  l10n.gotIt,
+                  style: const TextStyle(
                     fontSize: 16,
                     fontWeight: FontWeight.w600,
                   ),
@@ -1061,6 +1147,54 @@ class _CameraScreenState extends ConsumerState<CameraScreen> {
       ),
     );
   }
+}
+
+class _ScanBoxPainter extends CustomPainter {
+  @override
+  void paint(Canvas canvas, Size size) {
+    final paint = Paint()
+      ..color = Colors.white
+      ..strokeWidth = 3
+      ..style = PaintingStyle.stroke;
+
+    const cornerLength = 24.0;
+    const radius = 8.0;
+
+    // Top-left corner
+    final topLeftPath = Path()
+      ..moveTo(0, cornerLength)
+      ..lineTo(0, radius)
+      ..quadraticBezierTo(0, 0, radius, 0)
+      ..lineTo(cornerLength, 0);
+    canvas.drawPath(topLeftPath, paint);
+
+    // Top-right corner
+    final topRightPath = Path()
+      ..moveTo(size.width - cornerLength, 0)
+      ..lineTo(size.width - radius, 0)
+      ..quadraticBezierTo(size.width, 0, size.width, radius)
+      ..lineTo(size.width, cornerLength);
+    canvas.drawPath(topRightPath, paint);
+
+    // Bottom-left corner
+    final bottomLeftPath = Path()
+      ..moveTo(0, size.height - cornerLength)
+      ..lineTo(0, size.height - radius)
+      ..quadraticBezierTo(0, size.height, radius, size.height)
+      ..lineTo(cornerLength, size.height);
+    canvas.drawPath(bottomLeftPath, paint);
+
+    // Bottom-right corner
+    final bottomRightPath = Path()
+      ..moveTo(size.width - cornerLength, size.height)
+      ..lineTo(size.width - radius, size.height)
+      ..quadraticBezierTo(size.width, size.height, size.width, size.height - radius)
+      ..lineTo(size.width, size.height - cornerLength);
+    canvas.drawPath(bottomRightPath, paint);
+  }
+
+  @override
+  bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
 }
 
 class _IconButton extends StatelessWidget {

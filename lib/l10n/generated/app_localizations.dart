@@ -2137,6 +2137,66 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'No results found'**
   String get noSearchResults;
+
+  /// No description provided for @unknownProduct.
+  ///
+  /// In en, this message translates to:
+  /// **'Unknown Product'**
+  String get unknownProduct;
+
+  /// No description provided for @nutritionFacts.
+  ///
+  /// In en, this message translates to:
+  /// **'Nutrition Facts'**
+  String get nutritionFacts;
+
+  /// No description provided for @servingsPerContainer.
+  ///
+  /// In en, this message translates to:
+  /// **'2 servings per container'**
+  String get servingsPerContainer;
+
+  /// No description provided for @servingSize.
+  ///
+  /// In en, this message translates to:
+  /// **'Serving size'**
+  String get servingSize;
+
+  /// No description provided for @amountPerServing.
+  ///
+  /// In en, this message translates to:
+  /// **'Amount per serving'**
+  String get amountPerServing;
+
+  /// No description provided for @totalFat.
+  ///
+  /// In en, this message translates to:
+  /// **'Total Fat'**
+  String get totalFat;
+
+  /// No description provided for @saturatedFat.
+  ///
+  /// In en, this message translates to:
+  /// **'Saturated Fat'**
+  String get saturatedFat;
+
+  /// No description provided for @cholesterol.
+  ///
+  /// In en, this message translates to:
+  /// **'Cholesterol'**
+  String get cholesterol;
+
+  /// No description provided for @totalCarbohydrate.
+  ///
+  /// In en, this message translates to:
+  /// **'Total Carbohydrate'**
+  String get totalCarbohydrate;
+
+  /// No description provided for @positionBarcodeInFrame.
+  ///
+  /// In en, this message translates to:
+  /// **'Position barcode in frame'**
+  String get positionBarcodeInFrame;
 }
 
 class _AppLocalizationsDelegate
