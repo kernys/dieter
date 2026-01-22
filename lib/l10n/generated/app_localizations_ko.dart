@@ -1096,4 +1096,32 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String get positionBarcodeInFrame => '프레임 안에 바코드를 맞춰주세요';
+
+  @override
+  String get trackingReminders => '기록 알림';
+
+  @override
+  String get breakfast => '아침';
+
+  @override
+  String get lunch => '점심';
+
+  @override
+  String get snack => '간식';
+
+  @override
+  String get dinner => '저녁';
+
+  @override
+  String get endOfDay => '하루 마무리';
+
+  @override
+  String get endOfDayDescription => '하루에 한 번 알림을 받고 모든 식사를 한꺼번에 기록하세요.';
+
+  @override
+  String get notificationsDisabledMessage =>
+      'Cal AI의 알림이 현재 비활성화되어 있습니다. 활성화하려면 시스템 설정으로 이동하세요.';
+
+  @override
+  String get openSettings => '설정 열기';
 }

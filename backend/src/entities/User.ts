@@ -19,6 +19,17 @@ export interface User {
   gender: string | null;
   daily_step_goal: number;
   onboarding_completed: boolean | null;
+  // Notification settings
+  breakfast_reminder_enabled: boolean;
+  breakfast_reminder_time: string | null;
+  lunch_reminder_enabled: boolean;
+  lunch_reminder_time: string | null;
+  snack_reminder_enabled: boolean;
+  snack_reminder_time: string | null;
+  dinner_reminder_enabled: boolean;
+  dinner_reminder_time: string | null;
+  end_of_day_reminder_enabled: boolean;
+  end_of_day_reminder_time: string | null;
   created_at: Date;
 }
 
@@ -111,6 +122,57 @@ export const UserEntity = new EntitySchema<User>({
     onboarding_completed: {
       type: 'boolean',
       nullable: true,
+    },
+    // Notification settings
+    breakfast_reminder_enabled: {
+      type: 'boolean',
+      default: true,
+    },
+    breakfast_reminder_time: {
+      type: 'varchar',
+      length: 5,
+      nullable: true,
+      default: "'08:30'",
+    },
+    lunch_reminder_enabled: {
+      type: 'boolean',
+      default: true,
+    },
+    lunch_reminder_time: {
+      type: 'varchar',
+      length: 5,
+      nullable: true,
+      default: "'11:30'",
+    },
+    snack_reminder_enabled: {
+      type: 'boolean',
+      default: false,
+    },
+    snack_reminder_time: {
+      type: 'varchar',
+      length: 5,
+      nullable: true,
+      default: "'16:00'",
+    },
+    dinner_reminder_enabled: {
+      type: 'boolean',
+      default: true,
+    },
+    dinner_reminder_time: {
+      type: 'varchar',
+      length: 5,
+      nullable: true,
+      default: "'18:00'",
+    },
+    end_of_day_reminder_enabled: {
+      type: 'boolean',
+      default: false,
+    },
+    end_of_day_reminder_time: {
+      type: 'varchar',
+      length: 5,
+      nullable: true,
+      default: "'21:00'",
     },
     created_at: {
       type: 'timestamp with time zone',

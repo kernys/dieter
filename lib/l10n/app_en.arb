@@ -401,5 +401,15 @@
   "saturatedFat": "Saturated Fat",
   "cholesterol": "Cholesterol",
   "totalCarbohydrate": "Total Carbohydrate",
-  "positionBarcodeInFrame": "Position barcode in frame"
+  "positionBarcodeInFrame": "Position barcode in frame",
+
+  "trackingReminders": "Tracking Reminders",
+  "breakfast": "Breakfast",
+  "lunch": "Lunch",
+  "snack": "Snack",
+  "dinner": "Dinner",
+  "endOfDay": "End of Day",
+  "endOfDayDescription": "Get one daily reminder and log all your meals at once.",
+  "notificationsDisabledMessage": "Notifications are currently disabled for Cal AI. To enable, go to system settings.",
+  "openSettings": "Open Settings"
 }

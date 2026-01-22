@@ -249,7 +249,7 @@ class ProfileScreen extends ConsumerWidget {
                     _SettingsTile(
                       icon: Icons.notifications_outlined,
                       label: l10n.notifications,
-                      onTap: () => _showNotificationsDialog(context, ref, l10n, settings),
+                      onTap: () => context.push('/notification-settings'),
                     ),
                     _SettingsTile(
                       icon: Icons.language,
@@ -611,72 +611,6 @@ class ProfileScreen extends ConsumerWidget {
     );
   }
 
-  void _showNotificationsDialog(
-    BuildContext context,
-    WidgetRef ref,
-    AppLocalizations l10n,
-    AppSettings settings,
-  ) {
-    // Use local state for the dialog to reflect immediate updates
-    bool mealReminders = settings.mealReminders;
-    bool weightReminders = settings.weightReminders;
-    bool weeklyReports = settings.weeklyReports;
-
-    showDialog(
-      context: context,
-      builder: (context) => StatefulBuilder(
-        builder: (context, setState) {
-          return AlertDialog(
-            title: Text(l10n.notifications),
-            content: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                SwitchListTile(
-                  title: Text(l10n.mealReminders),
-                  subtitle: Text(l10n.mealRemindersDescription),
-                  value: mealReminders,
-                  onChanged: (value) {
-                    ref.read(settingsProvider.notifier).setMealReminders(value);
-                    setState(() {
-                      mealReminders = value;
-                    });
-                  },
-                ),
-                SwitchListTile(
-                  title: Text(l10n.weightReminders),
-                  subtitle: Text(l10n.weightRemindersDescription),
-                  value: weightReminders,
-                  onChanged: (value) {
-                    ref.read(settingsProvider.notifier).setWeightReminders(value);
-                    setState(() {
-                      weightReminders = value;
-                    });
-                  },
-                ),
-                SwitchListTile(
-                  title: Text(l10n.weeklyReports),
-                  subtitle: Text(l10n.weeklyReportsDescription),
-                  value: weeklyReports,
-                  onChanged: (value) {
-                    ref.read(settingsProvider.notifier).setWeeklyReports(value);
-                    setState(() {
-                      weeklyReports = value;
-                    });
-                  },
-                ),
-              ],
-            ),
-            actions: [
-              TextButton(
-                onPressed: () => Navigator.pop(context),
-                child: Text(l10n.done),
-              ),
-            ],
-          );
-        },
-      ),
-    );
-  }
 }
 
 class _GoalTile extends StatelessWidget {

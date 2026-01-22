@@ -1105,4 +1105,33 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get positionBarcodeInFrame => 'Position barcode in frame';
+
+  @override
+  String get trackingReminders => 'Tracking Reminders';
+
+  @override
+  String get breakfast => 'Breakfast';
+
+  @override
+  String get lunch => 'Lunch';
+
+  @override
+  String get snack => 'Snack';
+
+  @override
+  String get dinner => 'Dinner';
+
+  @override
+  String get endOfDay => 'End of Day';
+
+  @override
+  String get endOfDayDescription =>
+      'Get one daily reminder and log all your meals at once.';
+
+  @override
+  String get notificationsDisabledMessage =>
+      'Notifications are currently disabled for Cal AI. To enable, go to system settings.';
+
+  @override
+  String get openSettings => 'Open Settings';
 }

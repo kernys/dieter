@@ -19,6 +19,17 @@ const updateUserSchema = z.object({
   gender: z.string().optional(),
   dailyStepGoal: z.number().optional(),
   onboardingCompleted: z.boolean().optional(),
+  // Notification settings
+  breakfastReminderEnabled: z.boolean().optional(),
+  breakfastReminderTime: z.string().optional(),
+  lunchReminderEnabled: z.boolean().optional(),
+  lunchReminderTime: z.string().optional(),
+  snackReminderEnabled: z.boolean().optional(),
+  snackReminderTime: z.string().optional(),
+  dinnerReminderEnabled: z.boolean().optional(),
+  dinnerReminderTime: z.string().optional(),
+  endOfDayReminderEnabled: z.boolean().optional(),
+  endOfDayReminderTime: z.string().optional(),
 });
 
 // Convert camelCase to snake_case for database
@@ -38,6 +49,17 @@ function toSnakeCase(updates: z.infer<typeof updateUserSchema>): Partial<User> {
   if (updates.gender !== undefined) result.gender = updates.gender;
   if (updates.dailyStepGoal !== undefined) result.daily_step_goal = updates.dailyStepGoal;
   if (updates.onboardingCompleted !== undefined) result.onboarding_completed = updates.onboardingCompleted;
+  // Notification settings
+  if (updates.breakfastReminderEnabled !== undefined) result.breakfast_reminder_enabled = updates.breakfastReminderEnabled;
+  if (updates.breakfastReminderTime !== undefined) result.breakfast_reminder_time = updates.breakfastReminderTime;
+  if (updates.lunchReminderEnabled !== undefined) result.lunch_reminder_enabled = updates.lunchReminderEnabled;
+  if (updates.lunchReminderTime !== undefined) result.lunch_reminder_time = updates.lunchReminderTime;
+  if (updates.snackReminderEnabled !== undefined) result.snack_reminder_enabled = updates.snackReminderEnabled;
+  if (updates.snackReminderTime !== undefined) result.snack_reminder_time = updates.snackReminderTime;
+  if (updates.dinnerReminderEnabled !== undefined) result.dinner_reminder_enabled = updates.dinnerReminderEnabled;
+  if (updates.dinnerReminderTime !== undefined) result.dinner_reminder_time = updates.dinnerReminderTime;
+  if (updates.endOfDayReminderEnabled !== undefined) result.end_of_day_reminder_enabled = updates.endOfDayReminderEnabled;
+  if (updates.endOfDayReminderTime !== undefined) result.end_of_day_reminder_time = updates.endOfDayReminderTime;
   return result;
 }
 
@@ -80,6 +102,17 @@ function formatUserResponse(user: User) {
     gender: user.gender,
     dailyStepGoal: Number(user.daily_step_goal ?? 10000),
     onboardingCompleted: user.onboarding_completed,
+    // Notification settings
+    breakfastReminderEnabled: user.breakfast_reminder_enabled ?? true,
+    breakfastReminderTime: user.breakfast_reminder_time ?? '08:30',
+    lunchReminderEnabled: user.lunch_reminder_enabled ?? true,
+    lunchReminderTime: user.lunch_reminder_time ?? '11:30',
+    snackReminderEnabled: user.snack_reminder_enabled ?? false,
+    snackReminderTime: user.snack_reminder_time ?? '16:00',
+    dinnerReminderEnabled: user.dinner_reminder_enabled ?? true,
+    dinnerReminderTime: user.dinner_reminder_time ?? '18:00',
+    endOfDayReminderEnabled: user.end_of_day_reminder_enabled ?? false,
+    endOfDayReminderTime: user.end_of_day_reminder_time ?? '21:00',
     createdAt: user.created_at,
   };
 }

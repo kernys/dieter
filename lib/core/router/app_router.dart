@@ -15,6 +15,7 @@ import '../../features/progress/presentation/screens/weight_history_screen.dart'
 import '../../features/profile/presentation/screens/profile_screen.dart';
 import '../../features/profile/presentation/screens/personal_details_screen.dart';
 import '../../features/profile/presentation/screens/privacy_screen.dart';
+import '../../features/profile/presentation/screens/notification_settings_screen.dart';
 import '../../features/food/presentation/screens/log_food_screen.dart';
 import '../../features/exercise/presentation/screens/log_exercise_screen.dart';
 import '../../features/party/presentation/screens/party_screen.dart';
@@ -148,6 +149,12 @@ final routerProvider = Provider<GoRouter>((ref) {
       GoRoute(
         path: '/privacy',
         builder: (context, state) => const PrivacyScreen(),
+      ),
+
+      // Notification Settings Route
+      GoRoute(
+        path: '/notification-settings',
+        builder: (context, state) => const NotificationSettingsScreen(),
       ),
 
       // Log Food Route

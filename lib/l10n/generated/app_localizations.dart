@@ -2197,6 +2197,60 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Position barcode in frame'**
   String get positionBarcodeInFrame;
+
+  /// No description provided for @trackingReminders.
+  ///
+  /// In en, this message translates to:
+  /// **'Tracking Reminders'**
+  String get trackingReminders;
+
+  /// No description provided for @breakfast.
+  ///
+  /// In en, this message translates to:
+  /// **'Breakfast'**
+  String get breakfast;
+
+  /// No description provided for @lunch.
+  ///
+  /// In en, this message translates to:
+  /// **'Lunch'**
+  String get lunch;
+
+  /// No description provided for @snack.
+  ///
+  /// In en, this message translates to:
+  /// **'Snack'**
+  String get snack;
+
+  /// No description provided for @dinner.
+  ///
+  /// In en, this message translates to:
+  /// **'Dinner'**
+  String get dinner;
+
+  /// No description provided for @endOfDay.
+  ///
+  /// In en, this message translates to:
+  /// **'End of Day'**
+  String get endOfDay;
+
+  /// No description provided for @endOfDayDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Get one daily reminder and log all your meals at once.'**
+  String get endOfDayDescription;
+
+  /// No description provided for @notificationsDisabledMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Notifications are currently disabled for Cal AI. To enable, go to system settings.'**
+  String get notificationsDisabledMessage;
+
+  /// No description provided for @openSettings.
+  ///
+  /// In en, this message translates to:
+  /// **'Open Settings'**
+  String get openSettings;
 }
 
 class _AppLocalizationsDelegate
