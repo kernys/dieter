@@ -5,9 +5,11 @@ import 'package:camera/camera.dart';
 import 'package:go_router/go_router.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:mobile_scanner/mobile_scanner.dart';
+import 'package:uuid/uuid.dart';
 import '../../../../services/api_service.dart';
 import '../../../../l10n/generated/app_localizations.dart';
 import '../../../auth/presentation/providers/auth_provider.dart';
+import '../../../home/presentation/providers/home_provider.dart';
 import '../providers/camera_provider.dart';
 
 class CameraScreen extends ConsumerStatefulWidget {
@@ -336,16 +338,89 @@ class _CameraScreenState extends ConsumerState<CameraScreen> {
     try {
       final apiService = ref.read(apiServiceProvider);
       final locale = Localizations.localeOf(context).languageCode;
+      final l10n = AppLocalizations.of(context)!;
+
+      // Analyze the food
       final result = await apiService.analyzeFood(imageBytes, locale: locale);
 
       ref.read(analysisResultProvider.notifier).state = result;
       ref.read(analysisStateProvider.notifier).state = AnalysisState.success;
 
+      // Generate unique ID for this pending entry
+      final pendingId = const Uuid().v4();
+
+      // Add to pending list
+      final pendingList = ref.read(pendingFoodEntriesProvider);
+      ref.read(pendingFoodEntriesProvider.notifier).state = [...pendingList, pendingId];
+
       if (mounted) {
-        context.push('/food/new', extra: {
-          'imageBytes': imageBytes,
-          'analysisResult': result,
-        });
+        // Show registering message and navigate back to home
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(l10n.registeringFood),
+            duration: const Duration(seconds: 2),
+          ),
+        );
+        context.pop();
+      }
+
+      // Register the food in the background
+      try {
+        // Upload image first if needed
+        String? imageUrl;
+        try {
+          imageUrl = await apiService.uploadImage(imageBytes);
+        } catch (uploadError) {
+          // Continue without image if upload fails
+          debugPrint('Failed to upload image: $uploadError');
+        }
+
+        // Create food entry
+        await apiService.createFoodEntry(
+          name: result.name,
+          calories: result.calories,
+          protein: result.protein,
+          carbs: result.carbs,
+          fat: result.fat,
+          imageUrl: imageUrl,
+          ingredients: result.ingredients.map((i) => {
+            'name': i.name,
+            'amount': i.amount,
+            'calories': i.calories,
+            'protein': i.protein,
+            'carbs': i.carbs,
+            'fat': i.fat,
+          }).toList(),
+        );
+
+        // Refresh the daily summary
+        ref.invalidate(dailySummaryProvider);
+
+        // Remove from pending list
+        final updatedList = ref.read(pendingFoodEntriesProvider).where((id) => id != pendingId).toList();
+        ref.read(pendingFoodEntriesProvider.notifier).state = updatedList;
+
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(l10n.foodRegistered),
+              backgroundColor: Colors.green,
+            ),
+          );
+        }
+      } catch (registerError) {
+        // Remove from pending list
+        final updatedList = ref.read(pendingFoodEntriesProvider).where((id) => id != pendingId).toList();
+        ref.read(pendingFoodEntriesProvider.notifier).state = updatedList;
+
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text('${l10n.failedToRegisterFood}: $registerError'),
+              backgroundColor: Colors.red,
+            ),
+          );
+        }
       }
     } catch (e) {
       ref.read(analysisStateProvider.notifier).state = AnalysisState.error;

@@ -2,6 +2,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../../../../services/api_service.dart';
+import '../../../../services/cache_service.dart';
 import '../../../../shared/models/user_model.dart';
 
 // Auth state class
@@ -57,8 +58,9 @@ class AuthState {
 // Auth state notifier
 class AuthNotifier extends StateNotifier<AuthState> {
   final ApiService _apiService;
+  final CacheService _cacheService;
 
-  AuthNotifier(this._apiService) : super(AuthState.initial()) {
+  AuthNotifier(this._apiService, this._cacheService) : super(AuthState.initial()) {
     _checkAuthStatus();
   }
 
@@ -76,15 +78,29 @@ class AuthNotifier extends StateNotifier<AuthState> {
         try {
           final user = await _apiService.getUser(userId);
           debugPrint('AuthNotifier._checkAuthStatus - loaded user goalWeight: ${user.goalWeight}');
+          // Cache user data for offline use
+          await _cacheService.cacheUser(userId, user);
           state = AuthState.authenticated(
             userId: userId,
             accessToken: accessToken,
             user: user,
           );
         } catch (e) {
-          // Token might be invalid, clear stored credentials
-          await _clearStoredCredentials();
-          state = AuthState.initial();
+          // Check if it's a network error
+          if (e is ApiException && e.isNetworkError) {
+            // Network error - try to load from cache
+            debugPrint('AuthNotifier._checkAuthStatus - network error, loading from cache');
+            final cachedUser = await _cacheService.getCachedUser(userId);
+            state = AuthState.authenticated(
+              userId: userId,
+              accessToken: accessToken,
+              user: cachedUser, // Use cached data, null if not available
+            );
+          } else {
+            // Token might be invalid, clear stored credentials
+            await _clearStoredCredentials();
+            state = AuthState.initial();
+          }
         }
       } else {
         state = AuthState.initial();
@@ -107,6 +123,9 @@ class AuthNotifier extends StateNotifier<AuthState> {
         await _storeCredentials(userId, accessToken);
 
         final user = await _apiService.getUser(userId);
+
+        // Cache user data for offline use
+        await _cacheService.cacheUser(userId, user);
 
         state = AuthState.authenticated(
           userId: userId,
@@ -136,6 +155,9 @@ class AuthNotifier extends StateNotifier<AuthState> {
 
         final user = await _apiService.getUser(userId);
 
+        // Cache user data for offline use
+        await _cacheService.cacheUser(userId, user);
+
         state = AuthState.authenticated(
           userId: userId,
           accessToken: accessToken,
@@ -152,6 +174,10 @@ class AuthNotifier extends StateNotifier<AuthState> {
   }
 
   Future<void> logout() async {
+    // Clear cache when logging out
+    if (state.userId != null) {
+      await _cacheService.clearUserCache(state.userId!);
+    }
     await _clearStoredCredentials();
     state = AuthState.initial();
   }
@@ -161,6 +187,8 @@ class AuthNotifier extends StateNotifier<AuthState> {
 
     try {
       final updatedUser = await _apiService.updateUser(state.userId!, updates);
+      // Cache updated user data
+      await _cacheService.cacheUser(state.userId!, updatedUser);
       state = state.copyWith(user: updatedUser);
     } catch (e) {
       rethrow;
@@ -173,6 +201,8 @@ class AuthNotifier extends StateNotifier<AuthState> {
 
     try {
       final user = await _apiService.getUser(state.userId!);
+      // Cache refreshed user data
+      await _cacheService.cacheUser(state.userId!, user);
       state = state.copyWith(user: user);
     } catch (e) {
       debugPrint('Failed to refresh user: $e');
@@ -203,7 +233,8 @@ class AuthNotifier extends StateNotifier<AuthState> {
 // Providers
 final authStateProvider = StateNotifierProvider<AuthNotifier, AuthState>((ref) {
   final apiService = ref.watch(apiServiceProvider);
-  return AuthNotifier(apiService);
+  final cacheService = ref.watch(cacheServiceProvider);
+  return AuthNotifier(apiService, cacheService);
 });
 
 // Convenience providers

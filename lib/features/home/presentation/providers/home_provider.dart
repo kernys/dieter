@@ -2,6 +2,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../../shared/models/food_entry_model.dart';
 import '../../../../core/constants/app_constants.dart';
 import '../../../../services/api_service.dart';
+import '../../../../services/cache_service.dart';
 import '../../../auth/presentation/providers/auth_provider.dart';
 
 // Selected date provider
@@ -12,6 +13,7 @@ final selectedDateProvider = StateProvider<DateTime>((ref) {
 // Daily summary provider - fetches from real API
 final dailySummaryProvider = FutureProvider.family<DailySummaryModel, DateTime>((ref, date) async {
   final apiService = ref.watch(apiServiceProvider);
+  final cacheService = ref.watch(cacheServiceProvider);
   final authState = ref.watch(authStateProvider);
 
   // Get user ID from auth state
@@ -33,6 +35,15 @@ final dailySummaryProvider = FutureProvider.family<DailySummaryModel, DateTime>(
   try {
     final response = await apiService.getFoodEntries(date);
 
+    // Cache the data for offline use
+    await cacheService.cacheFoodEntries(userId, date, response.entries);
+    await cacheService.cacheDailySummary(userId, date, {
+      'totalCalories': response.summary.totalCalories,
+      'totalProtein': response.summary.totalProtein,
+      'totalCarbs': response.summary.totalCarbs,
+      'totalFat': response.summary.totalFat,
+    });
+
     return DailySummaryModel(
       id: 'summary-${date.toIso8601String()}',
       userId: userId,
@@ -44,7 +55,26 @@ final dailySummaryProvider = FutureProvider.family<DailySummaryModel, DateTime>(
       entries: response.entries,
     );
   } catch (e) {
-    // Return empty summary on error
+    // Try to load from cache on error
+    if (e is ApiException && e.isNetworkError) {
+      final cachedEntries = await cacheService.getCachedFoodEntries(userId, date);
+      final cachedSummary = await cacheService.getCachedDailySummary(userId, date);
+
+      if (cachedEntries != null && cachedSummary != null) {
+        return DailySummaryModel(
+          id: 'cached-${date.toIso8601String()}',
+          userId: userId,
+          date: date,
+          totalCalories: cachedSummary['totalCalories'] ?? 0,
+          totalProtein: (cachedSummary['totalProtein'] as num?)?.toDouble() ?? 0.0,
+          totalCarbs: (cachedSummary['totalCarbs'] as num?)?.toDouble() ?? 0.0,
+          totalFat: (cachedSummary['totalFat'] as num?)?.toDouble() ?? 0.0,
+          entries: cachedEntries,
+        );
+      }
+    }
+
+    // Return empty summary if no cache available
     return DailySummaryModel(
       id: 'empty',
       userId: userId,
@@ -245,3 +275,6 @@ final dailyQuoteProvider = Provider<String>((ref) {
   final index = dayOfYear % motivationalQuotes.length;
   return motivationalQuotes[index];
 });
+
+// Pending food entry provider - tracks food entries being registered from camera
+final pendingFoodEntriesProvider = StateProvider<List<String>>((ref) => []);

@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:http/http.dart' as http;
 import '../core/constants/app_constants.dart';
 import '../shared/models/food_entry_model.dart';
+import '../shared/models/group_model.dart';
 import '../shared/models/user_model.dart';
 import '../shared/models/weight_log_model.dart';
 
@@ -74,17 +75,25 @@ class ApiService {
 
   // User APIs
   Future<UserModel> getUser(String userId) async {
-    final response = await http.get(
-      Uri.parse('$baseUrl/users/$userId'),
-      headers: _headers,
-    );
+    try {
+      final response = await http.get(
+        Uri.parse('$baseUrl/users/$userId'),
+        headers: _headers,
+      );
 
-    if (response.statusCode == 200) {
-      final json = jsonDecode(response.body);
-      debugPrint('getUser response - goalWeight: ${json['goalWeight']}');
-      return UserModel.fromJson(json);
-    } else {
-      throw ApiException(response.statusCode, 'Failed to get user');
+      if (response.statusCode == 200) {
+        final json = jsonDecode(response.body);
+        debugPrint('getUser response - goalWeight: ${json['goalWeight']}');
+        return UserModel.fromJson(json);
+      } else {
+        throw ApiException(response.statusCode, 'Failed to get user');
+      }
+    } catch (e) {
+      // Network errors (connection refused, timeout, no internet, etc.)
+      if (e is! ApiException) {
+        throw ApiException(0, 'Network error: ${e.toString()}', isNetworkError: true);
+      }
+      rethrow;
     }
   }
 
@@ -339,6 +348,235 @@ class ApiService {
       return BarcodeSearchResult(found: false, barcode: barcode);
     } else {
       throw ApiException(response.statusCode, 'Failed to search barcode');
+    }
+  }
+
+  // Groups APIs
+  Future<List<GroupModel>> getGroups() async {
+    try {
+      final response = await http.get(
+        Uri.parse('$baseUrl/groups'),
+        headers: _headers,
+      );
+
+      if (response.statusCode == 200) {
+        final data = jsonDecode(response.body);
+        final groups = (data['groups'] as List)
+            .map((json) => GroupModel.fromJson(json))
+            .toList();
+        return groups;
+      } else {
+        throw ApiException(response.statusCode, 'Failed to get groups');
+      }
+    } catch (e) {
+      if (e is! ApiException) {
+        throw ApiException(0, 'Network error: ${e.toString()}', isNetworkError: true);
+      }
+      rethrow;
+    }
+  }
+
+  Future<List<GroupModel>> getMyGroups() async {
+    try {
+      final response = await http.get(
+        Uri.parse('$baseUrl/groups/my'),
+        headers: _headers,
+      );
+
+      if (response.statusCode == 200) {
+        final data = jsonDecode(response.body);
+        final groups = (data['groups'] as List)
+            .map((json) => GroupModel.fromJson(json))
+            .toList();
+        return groups;
+      } else {
+        throw ApiException(response.statusCode, 'Failed to get my groups');
+      }
+    } catch (e) {
+      if (e is! ApiException) {
+        throw ApiException(0, 'Network error: ${e.toString()}', isNetworkError: true);
+      }
+      rethrow;
+    }
+  }
+
+  Future<GroupModel> getGroup(String groupId) async {
+    try {
+      final response = await http.get(
+        Uri.parse('$baseUrl/groups/$groupId'),
+        headers: _headers,
+      );
+
+      if (response.statusCode == 200) {
+        return GroupModel.fromJson(jsonDecode(response.body));
+      } else {
+        throw ApiException(response.statusCode, 'Failed to get group');
+      }
+    } catch (e) {
+      if (e is! ApiException) {
+        throw ApiException(0, 'Network error: ${e.toString()}', isNetworkError: true);
+      }
+      rethrow;
+    }
+  }
+
+  Future<GroupModel> createGroup({
+    required String name,
+    required String description,
+    String? imageUrl,
+    bool isPrivate = false,
+  }) async {
+    try {
+      final response = await http.post(
+        Uri.parse('$baseUrl/groups'),
+        headers: _headers,
+        body: jsonEncode({
+          'name': name,
+          'description': description,
+          if (imageUrl != null) 'imageUrl': imageUrl,
+          'isPrivate': isPrivate,
+        }),
+      );
+
+      if (response.statusCode == 201) {
+        return GroupModel.fromJson(jsonDecode(response.body));
+      } else {
+        throw ApiException(response.statusCode, 'Failed to create group');
+      }
+    } catch (e) {
+      if (e is! ApiException) {
+        throw ApiException(0, 'Network error: ${e.toString()}', isNetworkError: true);
+      }
+      rethrow;
+    }
+  }
+
+  Future<void> joinGroup(String groupId) async {
+    try {
+      final response = await http.post(
+        Uri.parse('$baseUrl/groups/$groupId/join'),
+        headers: _headers,
+      );
+
+      if (response.statusCode != 200) {
+        throw ApiException(response.statusCode, 'Failed to join group');
+      }
+    } catch (e) {
+      if (e is! ApiException) {
+        throw ApiException(0, 'Network error: ${e.toString()}', isNetworkError: true);
+      }
+      rethrow;
+    }
+  }
+
+  Future<void> leaveGroup(String groupId) async {
+    try {
+      final response = await http.delete(
+        Uri.parse('$baseUrl/groups/$groupId/leave'),
+        headers: _headers,
+      );
+
+      if (response.statusCode != 200) {
+        throw ApiException(response.statusCode, 'Failed to leave group');
+      }
+    } catch (e) {
+      if (e is! ApiException) {
+        throw ApiException(0, 'Network error: ${e.toString()}', isNetworkError: true);
+      }
+      rethrow;
+    }
+  }
+
+  Future<List<GroupMember>> getGroupMembers(String groupId) async {
+    try {
+      final response = await http.get(
+        Uri.parse('$baseUrl/groups/$groupId/members'),
+        headers: _headers,
+      );
+
+      if (response.statusCode == 200) {
+        final data = jsonDecode(response.body);
+        final members = (data['members'] as List)
+            .map((json) => GroupMember.fromJson({
+              'id': json['id'],
+              'userId': json['userId'],
+              'username': json['userName'],
+              'profileImage': json['avatarUrl'],
+              'score': json['score'],
+              'rank': json['rank'],
+            }))
+            .toList();
+        return members;
+      } else {
+        throw ApiException(response.statusCode, 'Failed to get group members');
+      }
+    } catch (e) {
+      if (e is! ApiException) {
+        throw ApiException(0, 'Network error: ${e.toString()}', isNetworkError: true);
+      }
+      rethrow;
+    }
+  }
+
+  Future<List<GroupMessage>> getGroupMessages(String groupId) async {
+    try {
+      final response = await http.get(
+        Uri.parse('$baseUrl/groups/$groupId/messages'),
+        headers: _headers,
+      );
+
+      if (response.statusCode == 200) {
+        final data = jsonDecode(response.body);
+        final messages = (data['messages'] as List)
+            .map((json) => GroupMessage.fromJson({
+              'id': json['id'],
+              'groupId': json['groupId'],
+              'userId': json['userId'],
+              'username': json['userName'],
+              'userProfileImage': json['avatarUrl'],
+              'message': json['message'],
+              'createdAt': json['createdAt'],
+            }))
+            .toList();
+        return messages;
+      } else {
+        throw ApiException(response.statusCode, 'Failed to get group messages');
+      }
+    } catch (e) {
+      if (e is! ApiException) {
+        throw ApiException(0, 'Network error: ${e.toString()}', isNetworkError: true);
+      }
+      rethrow;
+    }
+  }
+
+  Future<GroupMessage> sendGroupMessage(String groupId, String message) async {
+    try {
+      final response = await http.post(
+        Uri.parse('$baseUrl/groups/$groupId/messages'),
+        headers: _headers,
+        body: jsonEncode({'message': message}),
+      );
+
+      if (response.statusCode == 201) {
+        final json = jsonDecode(response.body);
+        return GroupMessage.fromJson({
+          'id': json['id'],
+          'groupId': json['groupId'],
+          'userId': json['userId'],
+          'username': json['userName'],
+          'userProfileImage': json['avatarUrl'],
+          'message': json['message'],
+          'createdAt': json['createdAt'],
+        });
+      } else {
+        throw ApiException(response.statusCode, 'Failed to send message');
+      }
+    } catch (e) {
+      if (e is! ApiException) {
+        throw ApiException(0, 'Network error: ${e.toString()}', isNetworkError: true);
+      }
+      rethrow;
     }
   }
 }
@@ -682,9 +920,10 @@ class ExerciseAnalysisResult {
 class ApiException implements Exception {
   final int statusCode;
   final String message;
+  final bool isNetworkError;
 
-  ApiException(this.statusCode, this.message);
+  ApiException(this.statusCode, this.message, {this.isNetworkError = false});
 
   @override
-  String toString() => 'ApiException: $statusCode - $message';
+  String toString() => 'ApiException: $statusCode - $message${isNetworkError ? ' (Network Error)' : ''}';
 }

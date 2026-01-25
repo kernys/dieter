@@ -1106,6 +1106,24 @@ abstract class AppLocalizations {
   /// **'Analysis failed: {error}'**
   String analysisFailed(String error);
 
+  /// No description provided for @registeringFood.
+  ///
+  /// In en, this message translates to:
+  /// **'Registering food...'**
+  String get registeringFood;
+
+  /// No description provided for @foodRegistered.
+  ///
+  /// In en, this message translates to:
+  /// **'Food registered successfully!'**
+  String get foodRegistered;
+
+  /// No description provided for @failedToRegisterFood.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to register food'**
+  String get failedToRegisterFood;
+
   /// No description provided for @howToUse.
   ///
   /// In en, this message translates to:

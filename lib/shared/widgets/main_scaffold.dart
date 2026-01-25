@@ -47,7 +47,7 @@ class _MainScaffoldState extends ConsumerState<MainScaffold>
     final location = GoRouterState.of(context).uri.path;
     if (location.startsWith('/home')) return 0;
     if (location.startsWith('/progress')) return 1;
-    if (location.startsWith('/party')) return 2;
+    if (location.startsWith('/groups')) return 2;
     if (location.startsWith('/profile')) return 3;
     return 0;
   }
@@ -86,7 +86,7 @@ class _MainScaffoldState extends ConsumerState<MainScaffold>
         context.go('/progress');
         break;
       case 2:
-        context.go('/party');
+        context.go('/groups');
         break;
       case 3:
         context.go('/profile');
@@ -206,9 +206,9 @@ class _MainScaffoldState extends ConsumerState<MainScaffold>
                 const SizedBox(width: 56), // Space for FAB
                 Expanded(
                   child: _NavItem(
-                    icon: Icons.celebration_outlined,
-                    activeIcon: Icons.celebration,
-                    label: l10n.party,
+                    icon: Icons.group_outlined,
+                    activeIcon: Icons.group,
+                    label: 'Groups',
                     isSelected: selectedIndex == 2,
                     onTap: () => _onItemTapped(context, 2),
                   ),

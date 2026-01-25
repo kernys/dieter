@@ -9,7 +9,6 @@ import '../../../../core/constants/app_constants.dart';
 import '../../../../shared/widgets/circular_progress_indicator_widget.dart';
 import '../../../../shared/widgets/food_entry_card.dart';
 import '../../../../l10n/generated/app_localizations.dart';
-import '../../../../services/api_service.dart';
 import '../../../exercise/presentation/providers/exercise_log_provider.dart';
 import '../providers/home_provider.dart';
 import '../providers/role_model_provider.dart';
@@ -27,6 +26,7 @@ class HomeScreen extends ConsumerWidget {
     final userGoalsAsync = ref.watch(userGoalsProvider);
     final streakAsync = ref.watch(streakProvider);
     final roleModelImage = ref.watch(roleModelProvider);
+    final pendingFoodEntries = ref.watch(pendingFoodEntriesProvider);
 
     // Get exercise logs for selected date
     final allExerciseLogs = ref.watch(exerciseLogProvider);
@@ -405,7 +405,40 @@ class HomeScreen extends ConsumerWidget {
                             ],
                           ),
                         )
-                      else
+                      else ...[
+                        // Show pending food entries being registered
+                        ...pendingFoodEntries.map((pendingId) => Padding(
+                          padding: const EdgeInsets.only(bottom: 12),
+                          child: Container(
+                            padding: const EdgeInsets.all(16),
+                            decoration: BoxDecoration(
+                              color: context.cardColor,
+                              borderRadius: BorderRadius.circular(12),
+                              border: Border.all(color: context.borderColor),
+                            ),
+                            child: Row(
+                              children: [
+                                const SizedBox(
+                                  width: 20,
+                                  height: 20,
+                                  child: CircularProgressIndicator(strokeWidth: 2),
+                                ),
+                                const SizedBox(width: 12),
+                                Expanded(
+                                  child: Text(
+                                    l10n.registeringFood,
+                                    style: TextStyle(
+                                      fontSize: 14,
+                                      color: context.textSecondaryColor,
+                                      fontStyle: FontStyle.italic,
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        )),
+                        // Show registered food entries
                         ...summary.entries.map((entry) => Padding(
                           padding: const EdgeInsets.only(bottom: 12),
                           child: FoodEntryCard(
@@ -415,25 +448,10 @@ class HomeScreen extends ConsumerWidget {
                                 'entry': entry,
                               });
                             },
-                            onDelete: () async {
-                              try {
-                                await ref.read(apiServiceProvider).deleteFoodEntry(entry.id);
-                                ref.invalidate(dailySummaryProvider);
-                                if (context.mounted) {
-                                  ScaffoldMessenger.of(context).showSnackBar(
-                                    SnackBar(content: Text(l10n.entryDeleted)),
-                                  );
-                                }
-                              } catch (e) {
-                                if (context.mounted) {
-                                  ScaffoldMessenger.of(context).showSnackBar(
-                                    SnackBar(content: Text('Delete failed: $e')),
-                                  );
-                                }
-                              }
-                            },
+                            // Remove onDelete - users can delete from detail screen
                           ),
                         )),
+                      ],
                     ],
                   ),
                 ),
@@ -663,20 +681,7 @@ class HomeScreen extends ConsumerWidget {
               ),
             ],
           ),
-          const SizedBox(width: 8),
-          GestureDetector(
-            onTap: () {
-              ref.read(exerciseLogProvider.notifier).removeLog(exerciseLog.id);
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(content: Text(l10n.entryDeleted)),
-              );
-            },
-            child: Icon(
-              Icons.close,
-              size: 20,
-              color: context.textTertiaryColor,
-            ),
-          ),
+          // Removed delete button - users can manage exercises from detail screens
         ],
       ),
     );

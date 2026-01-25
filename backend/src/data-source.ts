@@ -1,6 +1,6 @@
 import 'dotenv/config';
 import { DataSource } from 'typeorm';
-import { UserEntity, FoodEntryEntity, WeightLogEntity } from './entities';
+import { UserEntity, FoodEntryEntity, WeightLogEntity, GroupEntity, GroupMemberEntity, GroupMessageEntity } from './entities';
 
 export const AppDataSource = new DataSource({
   type: 'postgres',
@@ -8,7 +8,7 @@ export const AppDataSource = new DataSource({
   ssl: {
     rejectUnauthorized: false,
   },
-  entities: [UserEntity, FoodEntryEntity, WeightLogEntity],
+  entities: [UserEntity, FoodEntryEntity, WeightLogEntity, GroupEntity, GroupMemberEntity, GroupMessageEntity],
   migrations: ['src/migrations/*.ts'],
   synchronize: false,
   logging: true,

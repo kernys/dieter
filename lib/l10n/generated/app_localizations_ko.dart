@@ -530,6 +530,15 @@ class AppLocalizationsKo extends AppLocalizations {
   }
 
   @override
+  String get registeringFood => '음식 등록 중...';
+
+  @override
+  String get foodRegistered => '음식이 성공적으로 등록되었습니다!';
+
+  @override
+  String get failedToRegisterFood => '음식 등록 실패';
+
+  @override
   String get howToUse => '사용 방법';
 
   @override

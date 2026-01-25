@@ -55,6 +55,7 @@ dependencies:
 
   # HTTP
   http: ^1.2.0
+  connectivity_plus: ^6.1.2
 
   # Speech
   speech_to_text: ^7.0.0

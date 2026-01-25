@@ -535,6 +535,15 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
+  String get registeringFood => 'Registering food...';
+
+  @override
+  String get foodRegistered => 'Food registered successfully!';
+
+  @override
+  String get failedToRegisterFood => 'Failed to register food';
+
+  @override
   String get howToUse => 'How to use';
 
   @override

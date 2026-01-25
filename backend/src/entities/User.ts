@@ -132,7 +132,7 @@ export const UserEntity = new EntitySchema<User>({
       type: 'varchar',
       length: 5,
       nullable: true,
-      default: "'08:30'",
+      default: '08:30',
     },
     lunch_reminder_enabled: {
       type: 'boolean',
@@ -142,7 +142,7 @@ export const UserEntity = new EntitySchema<User>({
       type: 'varchar',
       length: 5,
       nullable: true,
-      default: "'11:30'",
+      default: '11:30',
     },
     snack_reminder_enabled: {
       type: 'boolean',
@@ -152,7 +152,7 @@ export const UserEntity = new EntitySchema<User>({
       type: 'varchar',
       length: 5,
       nullable: true,
-      default: "'16:00'",
+      default: '16:00',
     },
     dinner_reminder_enabled: {
       type: 'boolean',
@@ -162,7 +162,7 @@ export const UserEntity = new EntitySchema<User>({
       type: 'varchar',
       length: 5,
       nullable: true,
-      default: "'18:00'",
+      default: '18:00',
     },
     end_of_day_reminder_enabled: {
       type: 'boolean',
@@ -172,7 +172,7 @@ export const UserEntity = new EntitySchema<User>({
       type: 'varchar',
       length: 5,
       nullable: true,
-      default: "'21:00'",
+      default: '21:00',
     },
     created_at: {
       type: 'timestamp with time zone',
