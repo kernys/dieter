@@ -228,24 +228,23 @@ class ProfileScreen extends ConsumerWidget {
                         context.push('/weight-history');
                       },
                     ),
-                    if (Platform.isIOS)
-                      _HealthTile(
-                        label: l10n.appleHealth,
-                        onTap: () async {
-                          final healthService = ref.read(healthServiceProvider);
-                          final success = await healthService.requestAuthorization();
-                          if (context.mounted) {
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              SnackBar(
-                                content: Text(
-                                  success ? l10n.healthConnected : l10n.healthConnectionFailed,
-                                ),
-                                backgroundColor: success ? Colors.green : null,
+                    _HealthTile(
+                      label: Platform.isIOS ? l10n.appleHealth : l10n.healthConnect,
+                      onTap: () async {
+                        final healthService = ref.read(healthServiceProvider);
+                        final success = await healthService.requestAuthorization();
+                        if (context.mounted) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(
+                              content: Text(
+                                success ? l10n.healthConnected : l10n.healthConnectionFailed,
                               ),
-                            );
-                          }
-                        },
-                      ),
+                              backgroundColor: success ? Colors.green : null,
+                            ),
+                          );
+                        }
+                      },
+                    ),
                   ],
                 ),
               ),

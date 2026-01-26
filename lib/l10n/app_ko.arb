@@ -414,7 +414,8 @@
   "weightData": "체중",
   "activeEnergy": "활동 에너지",
   "nutritionData": "영양",
-  "healthConnected": "Apple 건강에 성공적으로 연결되었습니다",
-  "healthDisconnected": "Apple 건강 연결이 해제되었습니다",
-  "healthConnectionFailed": "Apple 건강 연결에 실패했습니다"
+  "healthConnect": "Health Connect",
+  "healthConnected": "건강 앱에 성공적으로 연결되었습니다",
+  "healthDisconnected": "건강 앱 연결이 해제되었습니다",
+  "healthConnectionFailed": "건강 앱 연결에 실패했습니다"
 }

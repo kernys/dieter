@@ -2354,22 +2354,28 @@ abstract class AppLocalizations {
   /// **'Nutrition'**
   String get nutritionData;
 
+  /// No description provided for @healthConnect.
+  ///
+  /// In en, this message translates to:
+  /// **'Health Connect'**
+  String get healthConnect;
+
   /// No description provided for @healthConnected.
   ///
   /// In en, this message translates to:
-  /// **'Successfully connected to Apple Health'**
+  /// **'Successfully connected to Health'**
   String get healthConnected;
 
   /// No description provided for @healthDisconnected.
   ///
   /// In en, this message translates to:
-  /// **'Disconnected from Apple Health'**
+  /// **'Disconnected from Health'**
   String get healthDisconnected;
 
   /// No description provided for @healthConnectionFailed.
   ///
   /// In en, this message translates to:
-  /// **'Failed to connect to Apple Health'**
+  /// **'Failed to connect to Health'**
   String get healthConnectionFailed;
 }
 

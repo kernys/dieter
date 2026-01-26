@@ -1,5 +1,12 @@
 import { DataSource, EntitySchema, Repository } from 'typeorm';
-import { UserEntity, FoodEntryEntity, WeightLogEntity } from '@/entities';
+import { 
+  UserEntity, 
+  FoodEntryEntity, 
+  WeightLogEntity,
+  GroupEntity,
+  GroupMemberEntity,
+  GroupMessageEntity,
+} from '@/entities';
 import pg from 'pg';
 import dotenv from 'dotenv';
 dotenv.config();
@@ -20,7 +27,14 @@ export async function getDataSource(): Promise<DataSource> {
     ssl: {
       rejectUnauthorized: false,
     },
-    entities: [UserEntity, FoodEntryEntity, WeightLogEntity],
+    entities: [
+      UserEntity, 
+      FoodEntryEntity, 
+      WeightLogEntity,
+      GroupEntity,
+      GroupMemberEntity,
+      GroupMessageEntity,
+    ],
     synchronize: false,
     logging: process.env.NODE_ENV === 'development',
   });

@@ -1177,11 +1177,14 @@ class AppLocalizationsKo extends AppLocalizations {
   String get nutritionData => '영양';
 
   @override
-  String get healthConnected => 'Apple 건강에 성공적으로 연결되었습니다';
+  String get healthConnect => 'Health Connect';
 
   @override
-  String get healthDisconnected => 'Apple 건강 연결이 해제되었습니다';
+  String get healthConnected => '건강 앱에 성공적으로 연결되었습니다';
 
   @override
-  String get healthConnectionFailed => 'Apple 건강 연결에 실패했습니다';
+  String get healthDisconnected => '건강 앱 연결이 해제되었습니다';
+
+  @override
+  String get healthConnectionFailed => '건강 앱 연결에 실패했습니다';
 }

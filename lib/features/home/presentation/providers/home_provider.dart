@@ -3,6 +3,7 @@ import '../../../../shared/models/food_entry_model.dart';
 import '../../../../core/constants/app_constants.dart';
 import '../../../../services/api_service.dart';
 import '../../../../services/cache_service.dart';
+import '../../../../services/health_service.dart';
 import '../../../../services/widget_service.dart';
 import '../../../auth/presentation/providers/auth_provider.dart';
 
@@ -139,6 +140,50 @@ final streakProvider = FutureProvider<int>((ref) async {
     return 0;
   }
 });
+
+// Apple Health data provider
+final healthDataProvider = FutureProvider<HealthData>((ref) async {
+  final healthService = ref.watch(healthServiceProvider);
+  
+  // Check if authorized
+  final isAuthorized = await healthService.checkAuthorization();
+  if (!isAuthorized) {
+    return const HealthData(
+      steps: 0,
+      activeCaloriesBurned: 0,
+      isConnected: false,
+    );
+  }
+
+  try {
+    final steps = await healthService.getTodaySteps();
+    final activeCalories = await healthService.getTodayActiveCaloriesBurned();
+    
+    return HealthData(
+      steps: steps,
+      activeCaloriesBurned: activeCalories.round(),
+      isConnected: true,
+    );
+  } catch (e) {
+    return const HealthData(
+      steps: 0,
+      activeCaloriesBurned: 0,
+      isConnected: false,
+    );
+  }
+});
+
+class HealthData {
+  final int steps;
+  final int activeCaloriesBurned;
+  final bool isConnected;
+
+  const HealthData({
+    required this.steps,
+    required this.activeCaloriesBurned,
+    required this.isConnected,
+  });
+}
 
 // Widget updater provider - updates home screen widget when data changes
 final widgetUpdaterProvider = Provider<void>((ref) {

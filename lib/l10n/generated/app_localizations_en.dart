@@ -1187,11 +1187,14 @@ class AppLocalizationsEn extends AppLocalizations {
   String get nutritionData => 'Nutrition';
 
   @override
-  String get healthConnected => 'Successfully connected to Apple Health';
+  String get healthConnect => 'Health Connect';
 
   @override
-  String get healthDisconnected => 'Disconnected from Apple Health';
+  String get healthConnected => 'Successfully connected to Health';
 
   @override
-  String get healthConnectionFailed => 'Failed to connect to Apple Health';
+  String get healthDisconnected => 'Disconnected from Health';
+
+  @override
+  String get healthConnectionFailed => 'Failed to connect to Health';
 }

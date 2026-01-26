@@ -226,7 +226,16 @@ ${l10n.sharedFromDieterAI}
 ''';
 
     try {
-      await Share.share(shareText.trim());
+      // Get the render box for iPad share popover positioning
+      final box = context.findRenderObject() as RenderBox?;
+      final sharePositionOrigin = box != null
+          ? box.localToGlobal(Offset.zero) & box.size
+          : null;
+
+      await Share.share(
+        shareText.trim(),
+        sharePositionOrigin: sharePositionOrigin,
+      );
       onShare?.call();
     } catch (e) {
       if (context.mounted) {

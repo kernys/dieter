@@ -30,6 +30,14 @@ class HomeScreen extends ConsumerWidget {
     
     // Watch widget updater to keep home screen widget in sync
     ref.watch(widgetUpdaterProvider);
+    
+    // Watch Apple Health data
+    final healthDataAsync = ref.watch(healthDataProvider);
+    final healthData = healthDataAsync.when(
+      data: (data) => data,
+      loading: () => const HealthData(steps: 0, activeCaloriesBurned: 0, isConnected: false),
+      error: (_, __) => const HealthData(steps: 0, activeCaloriesBurned: 0, isConnected: false),
+    );
 
     // Get exercise logs for selected date
     final allExerciseLogs = ref.watch(exerciseLogProvider);
@@ -38,7 +46,10 @@ class HomeScreen extends ConsumerWidget {
       log.loggedAt.month == selectedDate.month &&
       log.loggedAt.day == selectedDate.day
     ).toList();
-    final burnedCalories = exerciseLogsForDate.fold(0, (sum, log) => sum + log.caloriesBurned);
+    final manualBurnedCalories = exerciseLogsForDate.fold(0, (sum, log) => sum + log.caloriesBurned);
+    
+    // Total burned = Apple Health active calories + manual exercise logs
+    final burnedCalories = healthData.activeCaloriesBurned + manualBurnedCalories;
 
     // Get goals with defaults
     final userGoals = userGoalsAsync.when(
@@ -354,6 +365,114 @@ class HomeScreen extends ConsumerWidget {
                           ),
                         ],
                       ),
+                      
+                      // Apple Health Stats (Steps & Activity)
+                      if (healthData.isConnected) ...[
+                        const SizedBox(height: 16),
+                        Row(
+                          children: [
+                            Expanded(
+                              child: Container(
+                                padding: const EdgeInsets.all(16),
+                                decoration: BoxDecoration(
+                                  color: context.cardColor,
+                                  borderRadius: BorderRadius.circular(16),
+                                  border: Border.all(color: context.borderColor),
+                                ),
+                                child: Row(
+                                  children: [
+                                    Container(
+                                      padding: const EdgeInsets.all(8),
+                                      decoration: BoxDecoration(
+                                        color: Colors.blue.withValues(alpha: 0.1),
+                                        borderRadius: BorderRadius.circular(8),
+                                      ),
+                                      child: const Icon(
+                                        Icons.directions_walk,
+                                        color: Colors.blue,
+                                        size: 20,
+                                      ),
+                                    ),
+                                    const SizedBox(width: 12),
+                                    Expanded(
+                                      child: Column(
+                                        crossAxisAlignment: CrossAxisAlignment.start,
+                                        children: [
+                                          Text(
+                                            l10n.steps,
+                                            style: TextStyle(
+                                              fontSize: 12,
+                                              color: context.textSecondaryColor,
+                                            ),
+                                          ),
+                                          Text(
+                                            '${healthData.steps}',
+                                            style: TextStyle(
+                                              fontSize: 18,
+                                              fontWeight: FontWeight.bold,
+                                              color: context.textPrimaryColor,
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ),
+                            const SizedBox(width: 12),
+                            Expanded(
+                              child: Container(
+                                padding: const EdgeInsets.all(16),
+                                decoration: BoxDecoration(
+                                  color: context.cardColor,
+                                  borderRadius: BorderRadius.circular(16),
+                                  border: Border.all(color: context.borderColor),
+                                ),
+                                child: Row(
+                                  children: [
+                                    Container(
+                                      padding: const EdgeInsets.all(8),
+                                      decoration: BoxDecoration(
+                                        color: AppColors.success.withValues(alpha: 0.1),
+                                        borderRadius: BorderRadius.circular(8),
+                                      ),
+                                      child: Icon(
+                                        Icons.local_fire_department,
+                                        color: AppColors.success,
+                                        size: 20,
+                                      ),
+                                    ),
+                                    const SizedBox(width: 12),
+                                    Expanded(
+                                      child: Column(
+                                        crossAxisAlignment: CrossAxisAlignment.start,
+                                        children: [
+                                          Text(
+                                            l10n.burned,
+                                            style: TextStyle(
+                                              fontSize: 12,
+                                              color: context.textSecondaryColor,
+                                            ),
+                                          ),
+                                          Text(
+                                            '$burnedCalories ${l10n.cal}',
+                                            style: TextStyle(
+                                              fontSize: 18,
+                                              fontWeight: FontWeight.bold,
+                                              color: context.textPrimaryColor,
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ],
                       const SizedBox(height: 24),
 
                       // Recently uploaded
