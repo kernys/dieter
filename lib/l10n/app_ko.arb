@@ -397,7 +397,7 @@
   "dinner": "저녁",
   "endOfDay": "하루 마무리",
   "endOfDayDescription": "하루에 한 번 알림을 받고 모든 식사를 한꺼번에 기록하세요.",
-  "notificationsDisabledMessage": "Cal AI의 알림이 현재 비활성화되어 있습니다. 활성화하려면 시스템 설정으로 이동하세요.",
+  "notificationsDisabledMessage": "다이어트 AI의 알림이 현재 비활성화되어 있습니다. 활성화하려면 시스템 설정으로 이동하세요.",
   "openSettings": "설정 열기",
 
   "appleHealth": "Apple 건강",

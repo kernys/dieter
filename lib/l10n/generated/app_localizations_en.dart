@@ -1139,7 +1139,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get notificationsDisabledMessage =>
-      'Notifications are currently disabled for Cal AI. To enable, go to system settings.';
+      'Notifications are currently disabled for Diet AI. To enable, go to system settings.';
 
   @override
   String get openSettings => 'Open Settings';

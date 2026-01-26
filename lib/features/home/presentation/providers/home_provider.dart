@@ -12,7 +12,7 @@ final selectedDateProvider = StateProvider<DateTime>((ref) {
   return DateTime.now();
 });
 
-// Daily summary provider - fetches from real API
+// Daily summary provider - fetches from real API with cache-first strategy
 final dailySummaryProvider = FutureProvider.family<DailySummaryModel, DateTime>((ref, date) async {
   final apiService = ref.watch(apiServiceProvider);
   final cacheService = ref.watch(cacheServiceProvider);
@@ -32,6 +32,26 @@ final dailySummaryProvider = FutureProvider.family<DailySummaryModel, DateTime>(
       totalFat: 0,
       entries: [],
     );
+  }
+
+  // Helper to build model from cache
+  Future<DailySummaryModel?> getFromCache() async {
+    final cachedEntries = await cacheService.getCachedFoodEntries(userId, date);
+    final cachedSummary = await cacheService.getCachedDailySummary(userId, date);
+    
+    if (cachedEntries != null && cachedSummary != null) {
+      return DailySummaryModel(
+        id: 'cached-${date.toIso8601String()}',
+        userId: userId,
+        date: date,
+        totalCalories: cachedSummary['totalCalories'] ?? 0,
+        totalProtein: (cachedSummary['totalProtein'] as num?)?.toDouble() ?? 0.0,
+        totalCarbs: (cachedSummary['totalCarbs'] as num?)?.toDouble() ?? 0.0,
+        totalFat: (cachedSummary['totalFat'] as num?)?.toDouble() ?? 0.0,
+        entries: cachedEntries,
+      );
+    }
+    return null;
   }
 
   try {
@@ -57,23 +77,10 @@ final dailySummaryProvider = FutureProvider.family<DailySummaryModel, DateTime>(
       entries: response.entries,
     );
   } catch (e) {
-    // Try to load from cache on error
-    if (e is ApiException && e.isNetworkError) {
-      final cachedEntries = await cacheService.getCachedFoodEntries(userId, date);
-      final cachedSummary = await cacheService.getCachedDailySummary(userId, date);
-
-      if (cachedEntries != null && cachedSummary != null) {
-        return DailySummaryModel(
-          id: 'cached-${date.toIso8601String()}',
-          userId: userId,
-          date: date,
-          totalCalories: cachedSummary['totalCalories'] ?? 0,
-          totalProtein: (cachedSummary['totalProtein'] as num?)?.toDouble() ?? 0.0,
-          totalCarbs: (cachedSummary['totalCarbs'] as num?)?.toDouble() ?? 0.0,
-          totalFat: (cachedSummary['totalFat'] as num?)?.toDouble() ?? 0.0,
-          entries: cachedEntries,
-        );
-      }
+    // Try to load from cache on any error
+    final cached = await getFromCache();
+    if (cached != null) {
+      return cached;
     }
 
     // Return empty summary if no cache available
@@ -90,9 +97,10 @@ final dailySummaryProvider = FutureProvider.family<DailySummaryModel, DateTime>(
   }
 });
 
-// User goals provider - fetches from user settings
+// User goals provider - fetches from user settings with cache support
 final userGoalsProvider = FutureProvider<UserGoals>((ref) async {
   final apiService = ref.watch(apiServiceProvider);
+  final cacheService = ref.watch(cacheServiceProvider);
   final authState = ref.watch(authStateProvider);
 
   final userId = authState.userId;
@@ -105,8 +113,31 @@ final userGoalsProvider = FutureProvider<UserGoals>((ref) async {
     );
   }
 
+  // Helper to build from cache
+  Future<UserGoals?> getFromCache() async {
+    final cached = await cacheService.getCachedUserGoals(userId);
+    if (cached != null) {
+      return UserGoals(
+        calorieGoal: cached['calorieGoal'] ?? AppConstants.defaultCalorieGoal,
+        proteinGoal: cached['proteinGoal'] ?? AppConstants.defaultProteinGoal,
+        carbsGoal: cached['carbsGoal'] ?? AppConstants.defaultCarbsGoal,
+        fatGoal: cached['fatGoal'] ?? AppConstants.defaultFatGoal,
+      );
+    }
+    return null;
+  }
+
   try {
     final user = await apiService.getUser(userId);
+    
+    // Cache the goals
+    await cacheService.cacheUserGoals(userId, {
+      'calorieGoal': user.dailyCalorieGoal,
+      'proteinGoal': user.dailyProteinGoal,
+      'carbsGoal': user.dailyCarbsGoal,
+      'fatGoal': user.dailyFatGoal,
+    });
+    
     return UserGoals(
       calorieGoal: user.dailyCalorieGoal,
       proteinGoal: user.dailyProteinGoal,
@@ -114,6 +145,12 @@ final userGoalsProvider = FutureProvider<UserGoals>((ref) async {
       fatGoal: user.dailyFatGoal,
     );
   } catch (e) {
+    // Try cache on error
+    final cached = await getFromCache();
+    if (cached != null) {
+      return cached;
+    }
+    
     return UserGoals(
       calorieGoal: AppConstants.defaultCalorieGoal,
       proteinGoal: AppConstants.defaultProteinGoal,

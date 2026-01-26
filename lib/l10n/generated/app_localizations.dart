@@ -2261,7 +2261,7 @@ abstract class AppLocalizations {
   /// No description provided for @notificationsDisabledMessage.
   ///
   /// In en, this message translates to:
-  /// **'Notifications are currently disabled for Cal AI. To enable, go to system settings.'**
+  /// **'Notifications are currently disabled for Diet AI. To enable, go to system settings.'**
   String get notificationsDisabledMessage;
 
   /// No description provided for @openSettings.

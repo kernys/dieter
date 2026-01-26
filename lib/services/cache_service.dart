@@ -13,6 +13,8 @@ class CacheService {
   static const String _userPrefix = 'cached_user_';
   static const String _foodEntriesPrefix = 'cached_food_entries_';
   static const String _dailySummaryPrefix = 'cached_daily_summary_';
+  static const String _userGoalsPrefix = 'cached_user_goals_';
+  static const String _lastSyncPrefix = 'last_sync_';
 
   // Cache user data
   Future<void> cacheUser(String userId, UserModel user) async {
@@ -100,6 +102,64 @@ class CacheService {
     return null;
   }
 
+  // Cache user goals
+  Future<void> cacheUserGoals(String userId, Map<String, dynamic> goals) async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      final json = jsonEncode(goals);
+      await prefs.setString('$_userGoalsPrefix$userId', json);
+      debugPrint('CacheService: Cached user goals for $userId');
+    } catch (e) {
+      debugPrint('CacheService: Failed to cache user goals: $e');
+    }
+  }
+
+  // Get cached user goals
+  Future<Map<String, dynamic>?> getCachedUserGoals(String userId) async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      final json = prefs.getString('$_userGoalsPrefix$userId');
+      if (json != null) {
+        debugPrint('CacheService: Retrieved cached user goals for $userId');
+        return jsonDecode(json);
+      }
+    } catch (e) {
+      debugPrint('CacheService: Failed to get cached user goals: $e');
+    }
+    return null;
+  }
+
+  // Track last sync time for a key
+  Future<void> setLastSync(String key) async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      await prefs.setInt('$_lastSyncPrefix$key', DateTime.now().millisecondsSinceEpoch);
+    } catch (e) {
+      debugPrint('CacheService: Failed to set last sync: $e');
+    }
+  }
+
+  // Get last sync time
+  Future<DateTime?> getLastSync(String key) async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      final timestamp = prefs.getInt('$_lastSyncPrefix$key');
+      if (timestamp != null) {
+        return DateTime.fromMillisecondsSinceEpoch(timestamp);
+      }
+    } catch (e) {
+      debugPrint('CacheService: Failed to get last sync: $e');
+    }
+    return null;
+  }
+
+  // Check if cache is stale (older than maxAge)
+  Future<bool> isCacheStale(String key, Duration maxAge) async {
+    final lastSync = await getLastSync(key);
+    if (lastSync == null) return true;
+    return DateTime.now().difference(lastSync) > maxAge;
+  }
+
   // Clear all cached data for a user
   Future<void> clearUserCache(String userId) async {
     try {
@@ -109,7 +169,8 @@ class CacheService {
         key.contains(userId) ||
         key.startsWith(_userPrefix) ||
         key.startsWith(_foodEntriesPrefix) ||
-        key.startsWith(_dailySummaryPrefix)
+        key.startsWith(_dailySummaryPrefix) ||
+        key.startsWith(_userGoalsPrefix)
       ).toList();
 
       for (final key in userKeys) {
@@ -118,6 +179,34 @@ class CacheService {
       debugPrint('CacheService: Cleared cache for user $userId');
     } catch (e) {
       debugPrint('CacheService: Failed to clear cache: $e');
+    }
+  }
+
+  // Clean up old cache entries (older than 30 days)
+  Future<void> cleanupOldCache(String userId) async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      final keys = prefs.getKeys();
+      final now = DateTime.now();
+      final thirtyDaysAgo = now.subtract(const Duration(days: 30));
+
+      for (final key in keys) {
+        if (key.startsWith(_foodEntriesPrefix) || key.startsWith(_dailySummaryPrefix)) {
+          // Extract date from key
+          final dateMatch = RegExp(r'(\d{4}-\d{2}-\d{2})$').firstMatch(key);
+          if (dateMatch != null) {
+            final dateStr = dateMatch.group(1)!;
+            final parts = dateStr.split('-');
+            final date = DateTime(int.parse(parts[0]), int.parse(parts[1]), int.parse(parts[2]));
+            if (date.isBefore(thirtyDaysAgo)) {
+              await prefs.remove(key);
+              debugPrint('CacheService: Removed old cache entry: $key');
+            }
+          }
+        }
+      }
+    } catch (e) {
+      debugPrint('CacheService: Failed to cleanup old cache: $e');
     }
   }
 

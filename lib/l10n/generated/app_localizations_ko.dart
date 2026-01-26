@@ -1129,7 +1129,7 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String get notificationsDisabledMessage =>
-      'Cal AI의 알림이 현재 비활성화되어 있습니다. 활성화하려면 시스템 설정으로 이동하세요.';
+      '다이어트 AI의 알림이 현재 비활성화되어 있습니다. 활성화하려면 시스템 설정으로 이동하세요.';
 
   @override
   String get openSettings => '설정 열기';

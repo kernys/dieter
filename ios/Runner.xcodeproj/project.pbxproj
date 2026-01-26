@@ -820,7 +820,7 @@
 				DEVELOPMENT_TEAM = 23L5ATXM3T;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = CalAiWidget/Info.plist;
-				INFOPLIST_KEY_CFBundleDisplayName = "Cal AI Widget";
+				INFOPLIST_KEY_CFBundleDisplayName = "Diet AI Widget";
 				INFOPLIST_KEY_NSHumanReadableCopyright = "";
 				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -849,7 +849,7 @@
 				DEVELOPMENT_TEAM = 23L5ATXM3T;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = CalAiWidget/Info.plist;
-				INFOPLIST_KEY_CFBundleDisplayName = "Cal AI Widget";
+				INFOPLIST_KEY_CFBundleDisplayName = "Diet AI Widget";
 				INFOPLIST_KEY_NSHumanReadableCopyright = "";
 				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -878,7 +878,7 @@
 				DEVELOPMENT_TEAM = 23L5ATXM3T;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = CalAiWidget/Info.plist;
-				INFOPLIST_KEY_CFBundleDisplayName = "Cal AI Widget";
+				INFOPLIST_KEY_CFBundleDisplayName = "Diet AI Widget";
 				INFOPLIST_KEY_NSHumanReadableCopyright = "";
 				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
 				LD_RUNPATH_SEARCH_PATHS = (
