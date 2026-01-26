@@ -72,38 +72,38 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
       final updates = <String, dynamic>{};
 
       if (onboardingState.birthDate != null) {
-        updates['birth_date'] = onboardingState.birthDate!.toIso8601String();
+        updates['birthDate'] = onboardingState.birthDate!.toIso8601String();
       }
 
       if (onboardingState.goalWeight != null) {
-        updates['goal_weight'] = onboardingState.goalWeight;
+        updates['goalWeight'] = onboardingState.goalWeight;
       }
 
       if (onboardingState.heightFeet != null) {
-        updates['height_feet'] = onboardingState.heightFeet;
+        updates['heightFeet'] = onboardingState.heightFeet;
       }
 
       if (onboardingState.heightInches != null) {
-        updates['height_inches'] = onboardingState.heightInches;
+        updates['heightInches'] = onboardingState.heightInches;
       }
 
       if (onboardingState.heightCm != null) {
-        updates['height_cm'] = onboardingState.heightCm;
+        updates['heightCm'] = onboardingState.heightCm;
       }
 
       if (onboardingState.currentWeight != null) {
-        updates['current_weight'] = onboardingState.currentWeight;
+        updates['currentWeight'] = onboardingState.currentWeight;
       }
 
       if (onboardingState.gender != null) {
         updates['gender'] = onboardingState.gender;
       }
 
-      updates['daily_calorie_goal'] = onboardingState.dailyCalorieGoal;
-      updates['daily_protein_goal'] = onboardingState.dailyProteinGoal;
-      updates['daily_carbs_goal'] = onboardingState.dailyCarbsGoal;
-      updates['daily_fat_goal'] = onboardingState.dailyFatGoal;
-      updates['onboarding_completed'] = true;
+      updates['dailyCalorieGoal'] = onboardingState.dailyCalorieGoal;
+      updates['dailyProteinGoal'] = onboardingState.dailyProteinGoal;
+      updates['dailyCarbsGoal'] = onboardingState.dailyCarbsGoal;
+      updates['dailyFatGoal'] = onboardingState.dailyFatGoal;
+      updates['onboardingCompleted'] = true;
 
       await ref.read(authStateProvider.notifier).updateUser(updates);
       await ref.read(onboardingProvider.notifier).completeOnboarding();

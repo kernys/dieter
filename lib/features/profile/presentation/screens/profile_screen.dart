@@ -493,16 +493,16 @@ class ProfileScreen extends ConsumerWidget {
                   String fieldName;
                   switch (goalType) {
                     case 'calories':
-                      fieldName = 'daily_calorie_goal';
+                      fieldName = 'dailyCalorieGoal';
                       break;
                     case 'protein':
-                      fieldName = 'daily_protein_goal';
+                      fieldName = 'dailyProteinGoal';
                       break;
                     case 'carbs':
-                      fieldName = 'daily_carbs_goal';
+                      fieldName = 'dailyCarbsGoal';
                       break;
                     case 'fat':
-                      fieldName = 'daily_fat_goal';
+                      fieldName = 'dailyFatGoal';
                       break;
                     default:
                       fieldName = goalType;
