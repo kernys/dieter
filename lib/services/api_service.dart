@@ -177,35 +177,47 @@ class ApiService {
     }
   }
 
-  /// Upload a temporary image for food analysis.
+  /// Upload a temporary image for food analysis using Vercel Blob client upload.
+  /// 1. Get upload token from server
+  /// 2. Upload directly to Vercel Blob API
   /// The image will be deleted after analysis is complete.
   Future<String> uploadTempImage(Uint8List imageBytes) async {
-    final request = http.MultipartRequest(
-      'POST',
+    // Step 1: Get client token from our server
+    final tokenResponse = await http.post(
       Uri.parse('$baseUrl/upload/temp'),
+      headers: _headers,
     );
 
-    if (_authToken != null) {
-      request.headers['Authorization'] = 'Bearer $_authToken';
+    if (tokenResponse.statusCode != 200) {
+      final errorBody = jsonDecode(tokenResponse.body);
+      throw ApiException(tokenResponse.statusCode, errorBody['error'] ?? 'Failed to get upload token');
     }
 
-    request.files.add(
-      http.MultipartFile.fromBytes(
-        'file',
-        imageBytes,
-        filename: 'food_image.jpg',
-      ),
+    final tokenData = jsonDecode(tokenResponse.body);
+    final clientToken = tokenData['clientToken'] as String;
+    final pathname = tokenData['pathname'] as String;
+
+    // Step 2: Upload directly to Vercel Blob API using the client token
+    final uploadUrl = Uri.parse('https://vercel.com/api/blob').replace(
+      queryParameters: {'pathname': pathname},
+    );
+    
+    final uploadResponse = await http.put(
+      uploadUrl,
+      headers: {
+        'Authorization': 'Bearer $clientToken',
+        'Content-Type': 'image/jpeg',
+        'x-api-version': '11',
+      },
+      body: imageBytes,
     );
 
-    final streamedResponse = await request.send();
-    final response = await http.Response.fromStream(streamedResponse);
-
-    if (response.statusCode == 200) {
-      final data = jsonDecode(response.body);
+    if (uploadResponse.statusCode == 200) {
+      final data = jsonDecode(uploadResponse.body);
       return data['url'] as String;
     } else {
-      final errorBody = jsonDecode(response.body);
-      throw ApiException(response.statusCode, errorBody['error'] ?? 'Failed to upload image');
+      debugPrint('Blob upload failed: ${uploadResponse.statusCode} - ${uploadResponse.body}');
+      throw ApiException(uploadResponse.statusCode, 'Failed to upload image to storage');
     }
   }
 
