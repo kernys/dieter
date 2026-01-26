@@ -21,6 +21,7 @@ const createFoodEntrySchema = z.object({
     fat: z.number().nullable(),
   })).nullish(),
   servings: z.number().default(1),
+  loggedAt: z.string().datetime().optional(), // ISO 8601 datetime string for past date entries
 });
 
 export async function GET(request: NextRequest) {
@@ -105,6 +106,8 @@ export async function POST(request: NextRequest) {
       image_url: validatedData.imageUrl,
       ingredients: validatedData.ingredients || null,
       servings: validatedData.servings,
+      // Use provided loggedAt or default to now
+      logged_at: validatedData.loggedAt ? new Date(validatedData.loggedAt) : new Date(),
     });
 
     await foodEntryRepo.save(entry);

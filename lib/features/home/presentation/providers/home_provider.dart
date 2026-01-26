@@ -187,6 +187,7 @@ final addFoodEntryProvider = FutureProvider.family<FoodEntryModel?, AddFoodEntry
       imageUrl: params.imageUrl,
       ingredients: params.ingredients,
       servings: params.servings,
+      loggedAt: params.loggedAt,
     );
 
     // Invalidate the daily summary to refresh
@@ -235,6 +236,7 @@ class AddFoodEntryParams {
   final String? imageUrl;
   final List<Map<String, dynamic>>? ingredients;
   final int servings;
+  final DateTime? loggedAt;
 
   AddFoodEntryParams({
     required this.name,
@@ -245,6 +247,7 @@ class AddFoodEntryParams {
     this.imageUrl,
     this.ingredients,
     this.servings = 1,
+    this.loggedAt,
   });
 }
 

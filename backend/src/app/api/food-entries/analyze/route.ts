@@ -9,6 +9,7 @@ const analyzeSchema = z.object({
   imageUrl: z.string().url(), // URL of the uploaded image (permanent)
   locale: z.string().optional(), // User's locale for localized food names
   autoRegister: z.boolean().optional(), // If true, automatically create food entry
+  loggedAt: z.string().datetime().optional(), // ISO 8601 datetime for past date entries
 });
 
 export async function POST(request: NextRequest) {
@@ -22,7 +23,7 @@ export async function POST(request: NextRequest) {
     }
 
     const body = await request.json();
-    const { imageUrl, locale, autoRegister } = analyzeSchema.parse(body);
+    const { imageUrl, locale, autoRegister, loggedAt } = analyzeSchema.parse(body);
 
     const result = await analyzeFood(imageUrl, locale);
 
@@ -47,6 +48,8 @@ export async function POST(request: NextRequest) {
           fat: i.fat,
         })),
         servings: 1,
+        // Use provided loggedAt or default to now
+        logged_at: loggedAt ? new Date(loggedAt) : new Date(),
       });
 
       await foodEntryRepo.save(entry);

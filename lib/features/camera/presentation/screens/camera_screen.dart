@@ -338,19 +338,23 @@ class _CameraScreenState extends ConsumerState<CameraScreen> {
       final apiService = ref.read(apiServiceProvider);
       final locale = Localizations.localeOf(context).languageCode;
       final l10n = AppLocalizations.of(context)!;
+      
+      // Get the selected date from home screen
+      final selectedDate = ref.read(selectedDateProvider);
 
       // Analyze and auto-register the food in one API call
       final result = await apiService.analyzeFoodAndRegister(
         imageBytes,
         locale: locale,
         autoRegister: true,
+        loggedAt: selectedDate, // Use selected date for registration
       );
 
       ref.read(analysisResultProvider.notifier).state = result;
       ref.read(analysisStateProvider.notifier).state = AnalysisState.success;
 
-      // Refresh the daily summary since entry was auto-registered
-      ref.invalidate(dailySummaryProvider);
+      // Refresh the daily summary for the selected date
+      ref.invalidate(dailySummaryProvider(selectedDate));
 
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(

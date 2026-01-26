@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 import '../../../../core/constants/app_colors.dart';
 import '../../../../l10n/generated/app_localizations.dart';
 import '../../../../services/api_service.dart';
+import '../../../home/presentation/providers/home_provider.dart';
 import '../providers/exercise_log_provider.dart';
 
 class LogExerciseScreen extends ConsumerWidget {
@@ -214,6 +215,7 @@ class LogExerciseScreen extends ConsumerWidget {
                             caloriesPerMin = 11;
                         }
                         final caloriesBurned = duration * caloriesPerMin;
+                        final selectedDate = ref.read(selectedDateProvider);
 
                         ref.read(exerciseLogProvider.notifier).addLog(
                           ExerciseLog(
@@ -222,7 +224,7 @@ class LogExerciseScreen extends ConsumerWidget {
                             duration: duration,
                             caloriesBurned: caloriesBurned,
                             intensity: selectedIntensity,
-                            loggedAt: DateTime.now(),
+                            loggedAt: selectedDate,
                           ),
                         );
 
@@ -384,6 +386,7 @@ class LogExerciseScreen extends ConsumerWidget {
                             caloriesPerMin = 6;
                         }
                         final caloriesBurned = duration * caloriesPerMin;
+                        final selectedDate = ref.read(selectedDateProvider);
 
                         ref.read(exerciseLogProvider.notifier).addLog(
                           ExerciseLog(
@@ -392,7 +395,7 @@ class LogExerciseScreen extends ConsumerWidget {
                             duration: duration,
                             caloriesBurned: caloriesBurned,
                             intensity: selectedIntensity,
-                            loggedAt: DateTime.now(),
+                            loggedAt: selectedDate,
                           ),
                         );
 
@@ -546,6 +549,7 @@ class LogExerciseScreen extends ConsumerWidget {
                         ? null
                         : () async {
                             if (descriptionController.text.isEmpty) return;
+                            final selectedDate = ref.read(selectedDateProvider);
 
                             // If already analyzed, log the exercise
                             if (analysisResult != null) {
@@ -557,7 +561,7 @@ class LogExerciseScreen extends ConsumerWidget {
                                   caloriesBurned: analysisResult!.caloriesBurned,
                                   intensity: analysisResult!.intensity,
                                   description: descriptionController.text,
-                                  loggedAt: DateTime.now(),
+                                  loggedAt: selectedDate,
                                 ),
                               );
 
@@ -702,13 +706,14 @@ class LogExerciseScreen extends ConsumerWidget {
                   onPressed: () {
                     final calories = int.tryParse(caloriesController.text);
                     if (calories != null && calories > 0) {
+                      final selectedDate = ref.read(selectedDateProvider);
                       ref.read(exerciseLogProvider.notifier).addLog(
                         ExerciseLog(
                           id: DateTime.now().millisecondsSinceEpoch.toString(),
                           type: l10n.exercise,
                           duration: 0,
                           caloriesBurned: calories,
-                          loggedAt: DateTime.now(),
+                          loggedAt: selectedDate,
                         ),
                       );
 

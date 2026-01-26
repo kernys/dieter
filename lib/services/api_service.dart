@@ -140,6 +140,7 @@ class ApiService {
     String? imageUrl,
     List<Map<String, dynamic>>? ingredients,
     int servings = 1,
+    DateTime? loggedAt, // Optional: specify date for past entries
   }) async {
     final response = await http.post(
       Uri.parse('$baseUrl/food-entries'),
@@ -153,6 +154,7 @@ class ApiService {
         'imageUrl': imageUrl,
         'ingredients': ingredients,
         'servings': servings,
+        if (loggedAt != null) 'loggedAt': loggedAt.toUtc().toIso8601String(),
       }),
     );
 
@@ -226,6 +228,7 @@ class ApiService {
     Uint8List imageBytes, {
     String? locale,
     bool autoRegister = true,
+    DateTime? loggedAt, // Optional: specify date for past entries
   }) async {
     // Step 1: Upload the image permanently
     final imageUrl = await _uploadImageToBlob(imageBytes);
@@ -238,6 +241,7 @@ class ApiService {
         'imageUrl': imageUrl,
         if (locale != null) 'locale': locale,
         'autoRegister': autoRegister,
+        if (loggedAt != null) 'loggedAt': loggedAt.toUtc().toIso8601String(),
       }),
     );
 
