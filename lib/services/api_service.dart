@@ -177,14 +177,13 @@ class ApiService {
     }
   }
 
-  /// Upload a temporary image for food analysis using Vercel Blob client upload.
+  /// Upload an image using Vercel Blob client upload.
   /// 1. Get upload token from server
   /// 2. Upload directly to Vercel Blob API
-  /// The image will be deleted after analysis is complete.
-  Future<String> uploadTempImage(Uint8List imageBytes) async {
+  Future<String> _uploadImageToBlob(Uint8List imageBytes) async {
     // Step 1: Get client token from our server
     final tokenResponse = await http.post(
-      Uri.parse('$baseUrl/upload/temp'),
+      Uri.parse('$baseUrl/upload'),
       headers: _headers,
     );
 
@@ -221,22 +220,55 @@ class ApiService {
     }
   }
 
-  Future<FoodAnalysisResult> analyzeFood(Uint8List imageBytes, {String? locale}) async {
-    // Step 1: Upload the image to get a URL
-    final imageUrl = await uploadTempImage(imageBytes);
+  /// Analyze food image and optionally auto-register the food entry.
+  /// Returns both analysis result and the created entry if autoRegister is true.
+  Future<FoodAnalysisWithEntryResult> analyzeFoodAndRegister(
+    Uint8List imageBytes, {
+    String? locale,
+    bool autoRegister = true,
+  }) async {
+    // Step 1: Upload the image permanently
+    final imageUrl = await _uploadImageToBlob(imageBytes);
 
-    // Step 2: Send the URL for analysis (server will delete after analysis)
+    // Step 2: Send the URL for analysis with autoRegister flag
     final response = await http.post(
       Uri.parse('$baseUrl/food-entries/analyze'),
       headers: _headers,
       body: jsonEncode({
         'imageUrl': imageUrl,
         if (locale != null) 'locale': locale,
+        'autoRegister': autoRegister,
       }),
     );
 
     if (response.statusCode == 200) {
-      return FoodAnalysisResult.fromJson(jsonDecode(response.body));
+      return FoodAnalysisWithEntryResult.fromJson(jsonDecode(response.body));
+    } else {
+      throw ApiException(response.statusCode, 'Failed to analyze food');
+    }
+  }
+
+  /// Analyze food image without registering (for preview/editing before save)
+  Future<FoodAnalysisResult> analyzeFood(Uint8List imageBytes, {String? locale}) async {
+    // Step 1: Upload the image permanently
+    final imageUrl = await _uploadImageToBlob(imageBytes);
+
+    // Step 2: Send the URL for analysis without autoRegister
+    final response = await http.post(
+      Uri.parse('$baseUrl/food-entries/analyze'),
+      headers: _headers,
+      body: jsonEncode({
+        'imageUrl': imageUrl,
+        if (locale != null) 'locale': locale,
+        'autoRegister': false,
+      }),
+    );
+
+    if (response.statusCode == 200) {
+      final data = jsonDecode(response.body);
+      // Add imageUrl to the result for later use
+      data['imageUrl'] = imageUrl;
+      return FoodAnalysisResult.fromJson(data);
     } else {
       throw ApiException(response.statusCode, 'Failed to analyze food');
     }
@@ -259,30 +291,9 @@ class ApiService {
     }
   }
 
-  // Image Upload API
+  // Image Upload API (uses client-side Blob upload)
   Future<String> uploadImage(Uint8List imageBytes) async {
-    final request = http.MultipartRequest(
-      'POST',
-      Uri.parse('$baseUrl/upload'),
-    );
-
-    request.files.add(
-      http.MultipartFile.fromBytes(
-        'file',
-        imageBytes,
-        filename: 'food_image.jpg',
-      ),
-    );
-
-    final streamedResponse = await request.send();
-    final response = await http.Response.fromStream(streamedResponse);
-
-    if (response.statusCode == 200) {
-      final data = jsonDecode(response.body);
-      return data['url'] as String;
-    } else {
-      throw ApiException(response.statusCode, 'Failed to upload image');
-    }
+    return _uploadImageToBlob(imageBytes);
   }
 
   // Weight Log APIs
@@ -875,6 +886,7 @@ class FoodAnalysisResult {
   final double sodium;
   final int healthScore;
   final List<IngredientAnalysis> ingredients;
+  final String? imageUrl; // URL of the uploaded image
 
   FoodAnalysisResult({
     required this.name,
@@ -887,6 +899,7 @@ class FoodAnalysisResult {
     required this.sodium,
     required this.healthScore,
     required this.ingredients,
+    this.imageUrl,
   });
 
   factory FoodAnalysisResult.fromJson(Map<String, dynamic> json) {
@@ -903,6 +916,46 @@ class FoodAnalysisResult {
       ingredients: (json['ingredients'] as List?)
           ?.map((e) => IngredientAnalysis.fromJson(e))
           .toList() ?? [],
+      imageUrl: json['imageUrl'],
+    );
+  }
+}
+
+/// Result of food analysis with auto-registered entry
+class FoodAnalysisWithEntryResult extends FoodAnalysisResult {
+  final FoodEntryModel? entry; // The created food entry if autoRegister was true
+
+  FoodAnalysisWithEntryResult({
+    required super.name,
+    required super.calories,
+    required super.protein,
+    required super.carbs,
+    required super.fat,
+    required super.fiber,
+    required super.sugar,
+    required super.sodium,
+    required super.healthScore,
+    required super.ingredients,
+    super.imageUrl,
+    this.entry,
+  });
+
+  factory FoodAnalysisWithEntryResult.fromJson(Map<String, dynamic> json) {
+    return FoodAnalysisWithEntryResult(
+      name: json['name'] ?? 'Unknown Food',
+      calories: json['calories'] ?? 0,
+      protein: (json['protein'] as num?)?.toDouble() ?? 0.0,
+      carbs: (json['carbs'] as num?)?.toDouble() ?? 0.0,
+      fat: (json['fat'] as num?)?.toDouble() ?? 0.0,
+      fiber: (json['fiber'] as num?)?.toDouble() ?? 0.0,
+      sugar: (json['sugar'] as num?)?.toDouble() ?? 0.0,
+      sodium: (json['sodium'] as num?)?.toDouble() ?? 0.0,
+      healthScore: (json['health_score'] as num?)?.toInt() ?? 5,
+      ingredients: (json['ingredients'] as List?)
+          ?.map((e) => IngredientAnalysis.fromJson(e))
+          .toList() ?? [],
+      imageUrl: json['imageUrl'],
+      entry: json['entry'] != null ? FoodEntryModel.fromJson(json['entry']) : null,
     );
   }
 }
