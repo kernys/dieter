@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { analyzeFood } from '@/lib/gemini';
 import { getUserFromRequest } from '@/lib/auth';
 import { getRepository } from '@/lib/database';
-import { FoodEntryEntity, type FoodEntry } from '@/entities';
+import { FoodEntryEntity, type FoodEntry, dumpFoodEntry } from '@/entities';
 import { z } from 'zod';
 
 const analyzeSchema = z.object({
@@ -54,19 +54,7 @@ export async function POST(request: NextRequest) {
       // Return both analysis result and the created entry
       return NextResponse.json({
         ...result,
-        entry: {
-          id: entry.id,
-          userId: entry.user_id,
-          name: entry.name,
-          calories: Number(entry.calories),
-          protein: Number(entry.protein),
-          carbs: Number(entry.carbs),
-          fat: Number(entry.fat),
-          imageUrl: entry.image_url,
-          ingredients: entry.ingredients,
-          servings: Number(entry.servings),
-          loggedAt: entry.logged_at,
-        },
+        entry: dumpFoodEntry(entry),
       });
     }
 

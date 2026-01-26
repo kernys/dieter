@@ -8,6 +8,26 @@ export interface WeightLog {
   logged_at: Date;
 }
 
+/** API response format for WeightLog */
+export interface WeightLogResponse {
+  id: string;
+  userId: string;
+  weight: number;
+  note: string | null;
+  loggedAt: Date;
+}
+
+/** Convert WeightLog entity to API response format (camelCase) */
+export function dumpWeightLog(log: WeightLog): WeightLogResponse {
+  return {
+    id: log.id,
+    userId: log.user_id,
+    weight: Number(log.weight),
+    note: log.note,
+    loggedAt: log.logged_at,
+  };
+}
+
 export const WeightLogEntity = new EntitySchema<WeightLog>({
   name: 'WeightLog',
   tableName: 'weight_logs',

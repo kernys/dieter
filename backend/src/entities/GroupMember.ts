@@ -9,6 +9,35 @@ export interface GroupMember {
   joinedAt: Date;
 }
 
+/** API response format for GroupMember (with user info) */
+export interface GroupMemberResponse {
+  id: string;
+  groupId: string;
+  userId: string;
+  userName?: string;
+  avatarUrl?: string | null;
+  score: number;
+  role: string;
+  rank?: number;
+  joinedAt: Date;
+}
+
+/** Convert GroupMember entity to API response format */
+export function dumpGroupMember(
+  member: GroupMember,
+  extras?: { userName?: string; avatarUrl?: string | null; rank?: number }
+): GroupMemberResponse {
+  return {
+    id: member.id,
+    groupId: member.groupId,
+    userId: member.userId,
+    score: Number(member.score),
+    role: member.role,
+    joinedAt: member.joinedAt,
+    ...extras,
+  };
+}
+
 export const GroupMemberEntity = new EntitySchema<GroupMember>({
   name: 'GroupMember',
   tableName: 'group_members',

@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { z } from 'zod';
 import { getRepository } from '@/lib/database';
 import { getUserFromRequest } from '@/lib/auth';
-import { WeightLogEntity, UserEntity, type WeightLog, type User } from '@/entities';
+import { WeightLogEntity, UserEntity, type WeightLog, type User, dumpWeightLog } from '@/entities';
 import { MoreThanOrEqual } from 'typeorm';
 
 const createWeightLogSchema = z.object({
@@ -67,17 +67,8 @@ export async function GET(request: NextRequest) {
       ? weights.reduce((a, b) => a + b, 0) / weights.length
       : 0;
 
-    // Map to camelCase for frontend compatibility
-    const mappedLogs = logs.map(log => ({
-      id: log.id,
-      userId: log.user_id,
-      weight: Number(log.weight),
-      note: log.note,
-      loggedAt: log.logged_at,
-    }));
-
     return NextResponse.json({
-      logs: mappedLogs,
+      logs: logs.map(dumpWeightLog),
       stats: {
         currentWeight,
         startWeight,
@@ -126,13 +117,7 @@ export async function POST(request: NextRequest) {
       { current_weight: validatedData.weight }
     );
 
-    return NextResponse.json({
-      id: log.id,
-      userId: log.user_id,
-      weight: Number(log.weight),
-      note: log.note,
-      loggedAt: log.logged_at,
-    }, { status: 201 });
+    return NextResponse.json(dumpWeightLog(log), { status: 201 });
   } catch (error) {
     if (error instanceof z.ZodError) {
       return NextResponse.json(

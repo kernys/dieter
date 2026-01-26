@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { z } from 'zod';
 import { getRepository } from '@/lib/database';
 import { getUserFromRequest } from '@/lib/auth';
-import { FoodEntryEntity, type FoodEntry } from '@/entities';
+import { FoodEntryEntity, type FoodEntry, dumpFoodEntry } from '@/entities';
 import { Between } from 'typeorm';
 
 const createFoodEntrySchema = z.object({
@@ -62,23 +62,8 @@ export async function GET(request: NextRequest) {
     const totalCarbs = entries.reduce((sum, entry) => sum + Number(entry.carbs) * Number(entry.servings), 0);
     const totalFat = entries.reduce((sum, entry) => sum + Number(entry.fat) * Number(entry.servings), 0);
 
-    // Map to camelCase for frontend compatibility
-    const mappedEntries = entries.map(entry => ({
-      id: entry.id,
-      userId: entry.user_id,
-      name: entry.name,
-      calories: Number(entry.calories),
-      protein: Number(entry.protein),
-      carbs: Number(entry.carbs),
-      fat: Number(entry.fat),
-      imageUrl: entry.image_url,
-      ingredients: entry.ingredients,
-      servings: Number(entry.servings),
-      loggedAt: entry.logged_at,
-    }));
-
     return NextResponse.json({
-      entries: mappedEntries,
+      entries: entries.map(dumpFoodEntry),
       summary: {
         totalCalories,
         totalProtein,
@@ -124,20 +109,7 @@ export async function POST(request: NextRequest) {
 
     await foodEntryRepo.save(entry);
 
-    // Return camelCase for frontend compatibility
-    return NextResponse.json({
-      id: entry.id,
-      userId: entry.user_id,
-      name: entry.name,
-      calories: Number(entry.calories),
-      protein: Number(entry.protein),
-      carbs: Number(entry.carbs),
-      fat: Number(entry.fat),
-      imageUrl: entry.image_url,
-      ingredients: entry.ingredients,
-      servings: Number(entry.servings),
-      loggedAt: entry.logged_at,
-    }, { status: 201 });
+    return NextResponse.json(dumpFoodEntry(entry), { status: 201 });
   } catch (error) {
     if (error instanceof z.ZodError) {
       return NextResponse.json(

@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getRepository } from '@/lib/database';
 import { getUserFromRequest } from '@/lib/auth';
-import { GroupEntity, GroupMemberEntity, type Group, type GroupMember } from '@/entities';
+import { GroupEntity, GroupMemberEntity, type Group, type GroupMember, dumpGroup } from '@/entities';
 
 export async function GET(
   request: NextRequest,
@@ -48,16 +48,10 @@ export async function GET(
       where: { groupId: id },
     });
 
-    return NextResponse.json({
-      id: group.id,
-      name: group.name,
-      description: group.description,
-      imageUrl: group.imageUrl,
-      isPrivate: group.isPrivate,
+    return NextResponse.json(dumpGroup(group, {
       isMember: !!membership,
       memberCount,
-      createdAt: group.createdAt,
-    });
+    }));
   } catch (error) {
     console.error('Get group error:', error);
     return NextResponse.json(

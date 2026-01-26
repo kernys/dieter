@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { z } from 'zod';
 import { getRepository } from '@/lib/database';
 import { getUserFromRequest } from '@/lib/auth';
-import { UserEntity, type User } from '@/entities';
+import { UserEntity, type User, dumpUser } from '@/entities';
 
 const updateUserSchema = z.object({
   name: z.string().optional(),
@@ -63,60 +63,6 @@ function toSnakeCase(updates: z.infer<typeof updateUserSchema>): Partial<User> {
   return result;
 }
 
-// Safely format birth_date from DB (can be Date, string, or null)
-function formatBirthDate(birthDate: Date | string | null | undefined): string | null {
-  if (!birthDate) return null;
-  try {
-    // If it's already a string in YYYY-MM-DD format, return it
-    if (typeof birthDate === 'string') {
-      return birthDate.split('T')[0];
-    }
-    // If it's a Date object
-    if (birthDate instanceof Date && !isNaN(birthDate.getTime())) {
-      return birthDate.toISOString().split('T')[0];
-    }
-    // Try to convert to string as fallback
-    return String(birthDate).split('T')[0];
-  } catch {
-    return null;
-  }
-}
-
-// Format user for API response (snake_case to camelCase)
-function formatUserResponse(user: User) {
-  return {
-    id: user.id,
-    email: user.email,
-    name: user.name,
-    avatarUrl: user.avatar_url,
-    dailyCalorieGoal: Number(user.daily_calorie_goal),
-    dailyProteinGoal: Number(user.daily_protein_goal),
-    dailyCarbsGoal: Number(user.daily_carbs_goal),
-    dailyFatGoal: Number(user.daily_fat_goal),
-    currentWeight: user.current_weight ? Number(user.current_weight) : null,
-    goalWeight: user.goal_weight ? Number(user.goal_weight) : null,
-    heightFeet: user.height_feet ? Number(user.height_feet) : null,
-    heightInches: user.height_inches ? Number(user.height_inches) : null,
-    heightCm: user.height_cm ? Number(user.height_cm) : null,
-    birthDate: formatBirthDate(user.birth_date as Date | string | null),
-    gender: user.gender,
-    dailyStepGoal: Number(user.daily_step_goal ?? 10000),
-    onboardingCompleted: user.onboarding_completed,
-    // Notification settings
-    breakfastReminderEnabled: user.breakfast_reminder_enabled ?? true,
-    breakfastReminderTime: user.breakfast_reminder_time ?? '08:30',
-    lunchReminderEnabled: user.lunch_reminder_enabled ?? true,
-    lunchReminderTime: user.lunch_reminder_time ?? '11:30',
-    snackReminderEnabled: user.snack_reminder_enabled ?? false,
-    snackReminderTime: user.snack_reminder_time ?? '16:00',
-    dinnerReminderEnabled: user.dinner_reminder_enabled ?? true,
-    dinnerReminderTime: user.dinner_reminder_time ?? '18:00',
-    endOfDayReminderEnabled: user.end_of_day_reminder_enabled ?? false,
-    endOfDayReminderTime: user.end_of_day_reminder_time ?? '21:00',
-    createdAt: user.created_at,
-  };
-}
-
 export async function GET(
   request: NextRequest,
   { params }: { params: Promise<{ userId: string }> }
@@ -150,7 +96,7 @@ export async function GET(
       );
     }
 
-    return NextResponse.json(formatUserResponse(user));
+    return NextResponse.json(dumpUser(user));
   } catch (error) {
     console.error('Get user error:', error);
     return NextResponse.json(
@@ -200,7 +146,7 @@ export async function PATCH(
     Object.assign(user, snakeCaseUpdates);
     await userRepo.save(user);
 
-    return NextResponse.json(formatUserResponse(user));
+    return NextResponse.json(dumpUser(user));
   } catch (error) {
     if (error instanceof z.ZodError) {
       return NextResponse.json(

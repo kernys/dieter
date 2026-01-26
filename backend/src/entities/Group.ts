@@ -11,6 +11,35 @@ export interface Group {
   updatedAt: Date;
 }
 
+/** API response format for Group */
+export interface GroupResponse {
+  id: string;
+  name: string;
+  description: string;
+  imageUrl: string | null;
+  isPrivate: boolean;
+  createdById: string;
+  createdAt: Date;
+  updatedAt: Date;
+  memberCount?: number;
+  isMember?: boolean;
+}
+
+/** Convert Group entity to API response format */
+export function dumpGroup(group: Group, extras?: { memberCount?: number; isMember?: boolean }): GroupResponse {
+  return {
+    id: group.id,
+    name: group.name,
+    description: group.description,
+    imageUrl: group.imageUrl,
+    isPrivate: group.isPrivate,
+    createdById: group.createdById,
+    createdAt: group.createdAt,
+    updatedAt: group.updatedAt,
+    ...extras,
+  };
+}
+
 export const GroupEntity = new EntitySchema<Group>({
   name: 'Group',
   tableName: 'groups',

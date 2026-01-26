@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { z } from 'zod';
 import { getRepository } from '@/lib/database';
 import { getUserFromRequest } from '@/lib/auth';
-import { GroupEntity, GroupMemberEntity, type Group, type GroupMember } from '@/entities';
+import { GroupEntity, GroupMemberEntity, type Group, type GroupMember, dumpGroup } from '@/entities';
 
 const createGroupSchema = z.object({
   name: z.string().min(1),
@@ -47,16 +47,10 @@ export async function GET(request: NextRequest) {
             where: { groupId: group.id },
           });
 
-          return {
-            id: group.id,
-            name: group.name,
-            description: group.description,
-            imageUrl: group.imageUrl,
-            isPrivate: group.isPrivate,
+          return dumpGroup(group, {
             isMember: membershipMap.has(group.id),
             memberCount,
-            createdAt: group.createdAt,
-          };
+          });
         })
     );
 
@@ -107,16 +101,10 @@ export async function POST(request: NextRequest) {
 
     await groupMemberRepo.save(member);
 
-    return NextResponse.json({
-      id: group.id,
-      name: group.name,
-      description: group.description,
-      imageUrl: group.imageUrl,
-      isPrivate: group.isPrivate,
-      isMember: true,
-      memberCount: 1,
-      createdAt: group.createdAt,
-    }, { status: 201 });
+    return NextResponse.json(
+      dumpGroup(group, { isMember: true, memberCount: 1 }),
+      { status: 201 }
+    );
   } catch (error) {
     if (error instanceof z.ZodError) {
       return NextResponse.json(

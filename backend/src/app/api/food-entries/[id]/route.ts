@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { z } from 'zod';
 import { getRepository } from '@/lib/database';
 import { getUserFromRequest } from '@/lib/auth';
-import { FoodEntryEntity, type FoodEntry } from '@/entities';
+import { FoodEntryEntity, type FoodEntry, dumpFoodEntry } from '@/entities';
 
 const updateFoodEntrySchema = z.object({
   name: z.string().optional(),
@@ -54,7 +54,7 @@ export async function GET(
       );
     }
 
-    return NextResponse.json(entry);
+    return NextResponse.json(dumpFoodEntry(entry));
   } catch (error) {
     console.error('Get food entry error:', error);
     return NextResponse.json(
@@ -102,7 +102,7 @@ export async function PATCH(
     Object.assign(entry, updates);
     await foodEntryRepo.save(entry);
 
-    return NextResponse.json(entry);
+    return NextResponse.json(dumpFoodEntry(entry));
   } catch (error) {
     if (error instanceof z.ZodError) {
       return NextResponse.json(

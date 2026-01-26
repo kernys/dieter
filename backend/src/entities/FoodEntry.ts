@@ -14,6 +14,38 @@ export interface FoodEntry {
   logged_at: Date;
 }
 
+/** API response format for FoodEntry */
+export interface FoodEntryResponse {
+  id: string;
+  userId: string;
+  name: string;
+  calories: number;
+  protein: number;
+  carbs: number;
+  fat: number;
+  imageUrl: string | null;
+  ingredients: object | null;
+  servings: number;
+  loggedAt: Date;
+}
+
+/** Convert FoodEntry entity to API response format (camelCase) */
+export function dumpFoodEntry(entry: FoodEntry): FoodEntryResponse {
+  return {
+    id: entry.id,
+    userId: entry.user_id,
+    name: entry.name,
+    calories: Number(entry.calories),
+    protein: Number(entry.protein),
+    carbs: Number(entry.carbs),
+    fat: Number(entry.fat),
+    imageUrl: entry.image_url,
+    ingredients: entry.ingredients,
+    servings: Number(entry.servings),
+    loggedAt: entry.logged_at,
+  };
+}
+
 export const FoodEntryEntity = new EntitySchema<FoodEntry>({
   name: 'FoodEntry',
   tableName: 'food_entries',

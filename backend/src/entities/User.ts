@@ -33,6 +33,88 @@ export interface User {
   created_at: Date;
 }
 
+/** API response format for User (excludes password) */
+export interface UserResponse {
+  id: string;
+  email: string;
+  name: string | null;
+  avatarUrl: string | null;
+  dailyCalorieGoal: number;
+  dailyProteinGoal: number;
+  dailyCarbsGoal: number;
+  dailyFatGoal: number;
+  currentWeight: number | null;
+  goalWeight: number | null;
+  heightFeet: number | null;
+  heightInches: number | null;
+  heightCm: number | null;
+  birthDate: string | null; // YYYY-MM-DD format
+  gender: string | null;
+  dailyStepGoal: number;
+  onboardingCompleted: boolean | null;
+  breakfastReminderEnabled: boolean;
+  breakfastReminderTime: string | null;
+  lunchReminderEnabled: boolean;
+  lunchReminderTime: string | null;
+  snackReminderEnabled: boolean;
+  snackReminderTime: string | null;
+  dinnerReminderEnabled: boolean;
+  dinnerReminderTime: string | null;
+  endOfDayReminderEnabled: boolean;
+  endOfDayReminderTime: string | null;
+  createdAt: Date;
+}
+
+/** Format birth_date from DB (can be Date, string, or null) to YYYY-MM-DD */
+function formatBirthDate(birthDate: Date | string | null | undefined): string | null {
+  if (!birthDate) return null;
+  try {
+    if (typeof birthDate === 'string') {
+      return birthDate.split('T')[0];
+    }
+    if (birthDate instanceof Date && !isNaN(birthDate.getTime())) {
+      return birthDate.toISOString().split('T')[0];
+    }
+    return String(birthDate).split('T')[0];
+  } catch {
+    return null;
+  }
+}
+
+/** Convert User entity to API response format (camelCase, excludes password) */
+export function dumpUser(user: User): UserResponse {
+  return {
+    id: user.id,
+    email: user.email,
+    name: user.name,
+    avatarUrl: user.avatar_url,
+    dailyCalorieGoal: Number(user.daily_calorie_goal),
+    dailyProteinGoal: Number(user.daily_protein_goal),
+    dailyCarbsGoal: Number(user.daily_carbs_goal),
+    dailyFatGoal: Number(user.daily_fat_goal),
+    currentWeight: user.current_weight ? Number(user.current_weight) : null,
+    goalWeight: user.goal_weight ? Number(user.goal_weight) : null,
+    heightFeet: user.height_feet ? Number(user.height_feet) : null,
+    heightInches: user.height_inches ? Number(user.height_inches) : null,
+    heightCm: user.height_cm ? Number(user.height_cm) : null,
+    birthDate: formatBirthDate(user.birth_date as Date | string | null),
+    gender: user.gender,
+    dailyStepGoal: Number(user.daily_step_goal ?? 10000),
+    onboardingCompleted: user.onboarding_completed,
+    breakfastReminderEnabled: user.breakfast_reminder_enabled ?? true,
+    breakfastReminderTime: user.breakfast_reminder_time ?? '08:30',
+    lunchReminderEnabled: user.lunch_reminder_enabled ?? true,
+    lunchReminderTime: user.lunch_reminder_time ?? '11:30',
+    snackReminderEnabled: user.snack_reminder_enabled ?? false,
+    snackReminderTime: user.snack_reminder_time ?? '16:00',
+    dinnerReminderEnabled: user.dinner_reminder_enabled ?? true,
+    dinnerReminderTime: user.dinner_reminder_time ?? '18:00',
+    endOfDayReminderEnabled: user.end_of_day_reminder_enabled ?? false,
+    endOfDayReminderTime: user.end_of_day_reminder_time ?? '21:00',
+    createdAt: user.created_at,
+  };
+}
+
 export const UserEntity = new EntitySchema<User>({
   name: 'User',
   tableName: 'users',
