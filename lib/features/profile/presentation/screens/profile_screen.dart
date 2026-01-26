@@ -6,6 +6,7 @@ import 'package:url_launcher/url_launcher.dart';
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/constants/app_constants.dart';
 import '../../../../l10n/generated/app_localizations.dart';
+import '../../../../services/health_service.dart';
 import '../../../auth/presentation/providers/auth_provider.dart';
 import '../../../home/presentation/providers/home_provider.dart';
 import '../providers/settings_provider.dart';
@@ -230,8 +231,19 @@ class ProfileScreen extends ConsumerWidget {
                     if (Platform.isIOS)
                       _HealthTile(
                         label: l10n.appleHealth,
-                        onTap: () {
-                          context.push('/apple-health');
+                        onTap: () async {
+                          final healthService = ref.read(healthServiceProvider);
+                          final success = await healthService.requestAuthorization();
+                          if (context.mounted) {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(
+                                content: Text(
+                                  success ? l10n.healthConnected : l10n.healthConnectionFailed,
+                                ),
+                                backgroundColor: success ? Colors.green : null,
+                              ),
+                            );
+                          }
                         },
                       ),
                   ],
