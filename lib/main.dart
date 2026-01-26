@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'app.dart';
+import 'services/notification_service.dart';
 
 void main() async {
   await runZonedGuarded(() async {
@@ -17,6 +18,9 @@ void main() async {
         debugPrint('Flutter error: ${details.exception}');
       }
     };
+
+    // Initialize notification service
+    await NotificationService().initialize();
 
     // Set system UI style
     SystemChrome.setSystemUIOverlayStyle(

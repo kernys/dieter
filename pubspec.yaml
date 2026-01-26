@@ -70,6 +70,11 @@ dependencies:
   # Widgets
   home_widget: ^0.7.0
 
+  # Local Notifications
+  flutter_local_notifications: ^18.0.1
+  timezone: ^0.10.0
+  flutter_timezone: ^3.0.1
+
 dev_dependencies:
   flutter_test:
     sdk: flutter

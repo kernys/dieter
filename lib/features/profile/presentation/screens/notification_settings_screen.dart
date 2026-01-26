@@ -1,9 +1,11 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:permission_handler/permission_handler.dart';
 import '../../../../core/constants/app_colors.dart';
 import '../../../../l10n/generated/app_localizations.dart';
+import '../../../../services/notification_service.dart';
 import '../../../auth/presentation/providers/auth_provider.dart';
 
 class NotificationSettingsScreen extends ConsumerStatefulWidget {
@@ -226,6 +228,102 @@ class _NotificationSettingsScreenState
                 ),
               ),
             ),
+            // Debug section - only in debug mode
+            if (kDebugMode) ...[
+              const SizedBox(height: 32),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 16),
+                child: Text(
+                  'Debug',
+                  style: TextStyle(
+                    fontSize: 24,
+                    fontWeight: FontWeight.bold,
+                    color: context.textPrimaryColor,
+                  ),
+                ),
+              ),
+              const SizedBox(height: 16),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 16),
+                child: Container(
+                  decoration: BoxDecoration(
+                    color: context.cardColor,
+                    borderRadius: BorderRadius.circular(16),
+                    border: Border.all(color: context.borderColor),
+                  ),
+                  child: Column(
+                    children: [
+                      ListTile(
+                        title: Text(
+                          'Test Notification',
+                          style: TextStyle(color: context.textPrimaryColor),
+                        ),
+                        subtitle: Text(
+                          'Send a test notification now',
+                          style: TextStyle(color: context.textSecondaryColor),
+                        ),
+                        trailing: Icon(Icons.send, color: context.textSecondaryColor),
+                        onTap: () async {
+                          final notificationService = ref.read(notificationServiceProvider);
+                          await notificationService.showTestNotification();
+                          if (mounted) {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(content: Text('Test notification sent!')),
+                            );
+                          }
+                        },
+                      ),
+                      Divider(height: 1, color: context.borderColor),
+                      ListTile(
+                        title: Text(
+                          'View Pending Notifications',
+                          style: TextStyle(color: context.textPrimaryColor),
+                        ),
+                        subtitle: Text(
+                          'Show scheduled notifications',
+                          style: TextStyle(color: context.textSecondaryColor),
+                        ),
+                        trailing: Icon(Icons.schedule, color: context.textSecondaryColor),
+                        onTap: () async {
+                          final notificationService = ref.read(notificationServiceProvider);
+                          final pending = await notificationService.getPendingNotifications();
+                          if (mounted) {
+                            showDialog(
+                              context: context,
+                              builder: (context) => AlertDialog(
+                                title: const Text('Pending Notifications'),
+                                content: SizedBox(
+                                  width: double.maxFinite,
+                                  child: pending.isEmpty
+                                      ? const Text('No scheduled notifications')
+                                      : ListView.builder(
+                                          shrinkWrap: true,
+                                          itemCount: pending.length,
+                                          itemBuilder: (context, index) {
+                                            final n = pending[index];
+                                            return ListTile(
+                                              title: Text(n.title ?? 'No title'),
+                                              subtitle: Text('ID: ${n.id}'),
+                                            );
+                                          },
+                                        ),
+                                ),
+                                actions: [
+                                  TextButton(
+                                    onPressed: () => Navigator.pop(context),
+                                    child: const Text('OK'),
+                                  ),
+                                ],
+                              ),
+                            );
+                          }
+                        },
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ],
             const SizedBox(height: 100),
           ],
         ),
