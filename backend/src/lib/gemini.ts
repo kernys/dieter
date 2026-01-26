@@ -230,7 +230,7 @@ Important:
   }
 }
 
-export async function analyzeFood(imageBase64: string, locale: string = 'en'): Promise<FoodAnalysisResult> {
+export async function analyzeFood(imageUrl: string, locale: string = 'en'): Promise<FoodAnalysisResult> {
   const languageInstruction = getLanguageInstruction(locale);
 
   const prompt = `
@@ -291,7 +291,7 @@ Important:
               {
                 type: 'image_url',
                 image_url: {
-                  url: `data:image/jpeg;base64,${imageBase64}`,
+                  url: imageUrl,
                 },
               },
             ],

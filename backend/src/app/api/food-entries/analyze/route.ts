@@ -1,14 +1,17 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { analyzeFood } from '@/lib/gemini';
 import { getUserFromRequest } from '@/lib/auth';
+import { del } from '@vercel/blob';
 import { z } from 'zod';
 
 const analyzeSchema = z.object({
-  image: z.string(), // Base64 encoded image
+  imageUrl: z.string().url(), // URL of the uploaded image
   locale: z.string().optional(), // User's locale for localized food names
 });
 
 export async function POST(request: NextRequest) {
+  let imageUrl: string | null = null;
+
   try {
     const userId = getUserFromRequest(request);
     if (!userId) {
@@ -19,18 +22,30 @@ export async function POST(request: NextRequest) {
     }
 
     const body = await request.json();
-    const { image, locale } = analyzeSchema.parse(body);
+    const parsed = analyzeSchema.parse(body);
+    imageUrl = parsed.imageUrl;
 
-    // Remove data URL prefix if present
-    let imageBase64 = image;
-    if (imageBase64.includes(',')) {
-      imageBase64 = imageBase64.split(',')[1];
+    const result = await analyzeFood(imageUrl, parsed.locale);
+
+    // Delete the temporary image after successful analysis
+    try {
+      await del(imageUrl);
+    } catch (deleteError) {
+      // Log but don't fail the request if deletion fails
+      console.warn('Failed to delete temp image:', deleteError);
     }
-
-    const result = await analyzeFood(imageBase64, locale);
 
     return NextResponse.json(result);
   } catch (error) {
+    // Try to delete the image even if analysis fails
+    if (imageUrl) {
+      try {
+        await del(imageUrl);
+      } catch (deleteError) {
+        console.warn('Failed to delete temp image on error:', deleteError);
+      }
+    }
+
     if (error instanceof z.ZodError) {
       return NextResponse.json(
         { error: 'Invalid request data', details: error.issues },

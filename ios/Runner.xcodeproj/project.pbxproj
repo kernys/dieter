@@ -248,10 +248,10 @@
 				97C146EB1CF9000F007C117D /* Frameworks */,
 				97C146EC1CF9000F007C117D /* Resources */,
 				9705A1C41CF9048500538489 /* Embed Frameworks */,
+				WIDGET00100000000000000B /* Embed Foundation Extensions */,
 				3B06AD1E1E4923F5004D2608 /* Thin Binary */,
 				848098B71C90DEA3BEC348ED /* [CP] Embed Pods Frameworks */,
 				3933D8239EF015E531751DA7 /* [CP] Copy Pods Resources */,
-				WIDGET00100000000000000B /* Embed Foundation Extensions */,
 			);
 			buildRules = (
 			);
@@ -817,6 +817,7 @@
 				INFOPLIST_FILE = CalAiWidget/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = "Cal AI Widget";
 				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -845,6 +846,7 @@
 				INFOPLIST_FILE = CalAiWidget/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = "Cal AI Widget";
 				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -873,6 +875,7 @@
 				INFOPLIST_FILE = CalAiWidget/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = "Cal AI Widget";
 				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",

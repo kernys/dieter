@@ -4,7 +4,7 @@ part 'group_model.freezed.dart';
 part 'group_model.g.dart';
 
 @freezed
-class GroupModel with _$GroupModel {
+abstract class GroupModel with _$GroupModel {
   const factory GroupModel({
     required String id,
     required String name,
@@ -21,7 +21,7 @@ class GroupModel with _$GroupModel {
 }
 
 @freezed
-class GroupMember with _$GroupMember {
+abstract class GroupMember with _$GroupMember {
   const factory GroupMember({
     required String id,
     required String userId,
@@ -36,7 +36,7 @@ class GroupMember with _$GroupMember {
 }
 
 @freezed
-class GroupMessage with _$GroupMessage {
+abstract class GroupMessage with _$GroupMessage {
   const factory GroupMessage({
     required String id,
     required String groupId,

@@ -177,14 +177,48 @@ class ApiService {
     }
   }
 
-  Future<FoodAnalysisResult> analyzeFood(Uint8List imageBytes, {String? locale}) async {
-    final base64Image = base64Encode(imageBytes);
+  /// Upload a temporary image for food analysis.
+  /// The image will be deleted after analysis is complete.
+  Future<String> uploadTempImage(Uint8List imageBytes) async {
+    final request = http.MultipartRequest(
+      'POST',
+      Uri.parse('$baseUrl/upload/temp'),
+    );
 
+    if (_authToken != null) {
+      request.headers['Authorization'] = 'Bearer $_authToken';
+    }
+
+    request.files.add(
+      http.MultipartFile.fromBytes(
+        'file',
+        imageBytes,
+        filename: 'food_image.jpg',
+      ),
+    );
+
+    final streamedResponse = await request.send();
+    final response = await http.Response.fromStream(streamedResponse);
+
+    if (response.statusCode == 200) {
+      final data = jsonDecode(response.body);
+      return data['url'] as String;
+    } else {
+      final errorBody = jsonDecode(response.body);
+      throw ApiException(response.statusCode, errorBody['error'] ?? 'Failed to upload image');
+    }
+  }
+
+  Future<FoodAnalysisResult> analyzeFood(Uint8List imageBytes, {String? locale}) async {
+    // Step 1: Upload the image to get a URL
+    final imageUrl = await uploadTempImage(imageBytes);
+
+    // Step 2: Send the URL for analysis (server will delete after analysis)
     final response = await http.post(
       Uri.parse('$baseUrl/food-entries/analyze'),
       headers: _headers,
       body: jsonEncode({
-        'image': base64Image,
+        'imageUrl': imageUrl,
         if (locale != null) 'locale': locale,
       }),
     );
