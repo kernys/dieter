@@ -27,6 +27,9 @@ class HomeScreen extends ConsumerWidget {
     final streakAsync = ref.watch(streakProvider);
     final roleModelImage = ref.watch(roleModelProvider);
     final pendingFoodEntries = ref.watch(pendingFoodEntriesProvider);
+    
+    // Watch widget updater to keep home screen widget in sync
+    ref.watch(widgetUpdaterProvider);
 
     // Get exercise logs for selected date
     final allExerciseLogs = ref.watch(exerciseLogProvider);

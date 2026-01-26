@@ -52,32 +52,43 @@ class HealthService {
 
   /// Request authorization to access health data
   Future<bool> requestAuthorization() async {
-    if (!isHealthAvailable) return false;
+    if (!isHealthAvailable) {
+      debugPrint('Health: Platform not supported');
+      return false;
+    }
 
     try {
       // Configure the health plugin before use
+      debugPrint('Health: Configuring...');
       await _configure();
+      debugPrint('Health: Configuration complete');
 
       // Request read permissions
+      debugPrint('Health: Requesting read permissions for ${_readTypes.length} types');
       final readAuthorized = await _health.requestAuthorization(
         _readTypes,
         permissions: _readTypes.map((_) => HealthDataAccess.READ).toList(),
       );
+      debugPrint('Health: Read authorization result: $readAuthorized');
 
       if (readAuthorized) {
         // Also request write permissions
+        debugPrint('Health: Requesting write permissions for ${_writeTypes.length} types');
         final writeAuthorized = await _health.requestAuthorization(
           _writeTypes,
           permissions: _writeTypes.map((_) => HealthDataAccess.WRITE).toList(),
         );
+        debugPrint('Health: Write authorization result: $writeAuthorized');
         _isAuthorized = writeAuthorized;
       } else {
         _isAuthorized = false;
       }
 
+      debugPrint('Health: Final authorization status: $_isAuthorized');
       return _isAuthorized;
-    } catch (e) {
+    } catch (e, stackTrace) {
       debugPrint('Health authorization error: $e');
+      debugPrint('Stack trace: $stackTrace');
       return false;
     }
   }

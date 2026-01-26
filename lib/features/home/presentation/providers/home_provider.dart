@@ -3,6 +3,7 @@ import '../../../../shared/models/food_entry_model.dart';
 import '../../../../core/constants/app_constants.dart';
 import '../../../../services/api_service.dart';
 import '../../../../services/cache_service.dart';
+import '../../../../services/widget_service.dart';
 import '../../../auth/presentation/providers/auth_provider.dart';
 
 // Selected date provider
@@ -137,6 +138,36 @@ final streakProvider = FutureProvider<int>((ref) async {
   } catch (e) {
     return 0;
   }
+});
+
+// Widget updater provider - updates home screen widget when data changes
+final widgetUpdaterProvider = Provider<void>((ref) {
+  final today = DateTime.now();
+  final todayNormalized = DateTime(today.year, today.month, today.day);
+  
+  final dailySummaryAsync = ref.watch(dailySummaryProvider(todayNormalized));
+  final userGoalsAsync = ref.watch(userGoalsProvider);
+  final streakAsync = ref.watch(streakProvider);
+  final widgetService = ref.watch(widgetServiceProvider);
+  
+  dailySummaryAsync.whenData((summary) {
+    userGoalsAsync.whenData((goals) {
+      streakAsync.whenData((streak) {
+        final caloriesConsumed = summary.totalCalories;
+        final caloriesLeft = (goals.calorieGoal - caloriesConsumed).clamp(0, goals.calorieGoal);
+        
+        widgetService.updateWidgetData(
+          caloriesLeft: caloriesLeft,
+          caloriesGoal: goals.calorieGoal,
+          caloriesConsumed: caloriesConsumed,
+          streak: streak,
+          protein: summary.totalProtein,
+          carbs: summary.totalCarbs,
+          fat: summary.totalFat,
+        );
+      });
+    });
+  });
 });
 
 // Dates with food data for the current week
