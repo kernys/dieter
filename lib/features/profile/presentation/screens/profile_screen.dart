@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -826,26 +827,30 @@ class _LiveActivityTileState extends ConsumerState<_LiveActivityTile> {
       final summaryAsync = ref.read(dailySummaryProvider(todayNormalized));
       final goalsAsync = ref.read(userGoalsProvider);
       
-      int caloriesLeft = 0;
+      int caloriesLeft = 2000;
       int caloriesGoal = 2000;
       int caloriesConsumed = 0;
-      int proteinLeft = 0;
-      int carbsLeft = 0;
-      int fatLeft = 0;
+      int proteinLeft = 100;
+      int carbsLeft = 250;
+      int fatLeft = 65;
       
-      summaryAsync.whenData((summary) {
-        goalsAsync.whenData((goals) {
-          caloriesConsumed = summary.totalCalories;
-          caloriesGoal = goals.calorieGoal;
-          caloriesLeft = (goals.calorieGoal - caloriesConsumed).clamp(0, goals.calorieGoal);
-          proteinLeft = (goals.proteinGoal - summary.totalProtein).clamp(0.0, goals.proteinGoal.toDouble()).toInt();
-          carbsLeft = (goals.carbsGoal - summary.totalCarbs).clamp(0.0, goals.carbsGoal.toDouble()).toInt();
-          fatLeft = (goals.fatGoal - summary.totalFat).clamp(0.0, goals.fatGoal.toDouble()).toInt();
-        });
-      });
+      // Synchronously extract data if available
+      final summaryValue = summaryAsync.valueOrNull;
+      final goalsValue = goalsAsync.valueOrNull;
+      
+      if (summaryValue != null && goalsValue != null) {
+        caloriesConsumed = summaryValue.totalCalories;
+        caloriesGoal = goalsValue.calorieGoal;
+        caloriesLeft = (goalsValue.calorieGoal - caloriesConsumed).clamp(0, goalsValue.calorieGoal);
+        proteinLeft = (goalsValue.proteinGoal - summaryValue.totalProtein).clamp(0.0, goalsValue.proteinGoal.toDouble()).toInt();
+        carbsLeft = (goalsValue.carbsGoal - summaryValue.totalCarbs).clamp(0.0, goalsValue.carbsGoal.toDouble()).toInt();
+        fatLeft = (goalsValue.fatGoal - summaryValue.totalFat).clamp(0.0, goalsValue.fatGoal.toDouble()).toInt();
+      }
+      
+      debugPrint('Live Activity Toggle: Starting with caloriesLeft=$caloriesLeft, caloriesGoal=$caloriesGoal');
       
       // Start activity with current data
-      await liveActivityService.startActivity(
+      final started = await liveActivityService.startActivity(
         caloriesLeft: caloriesLeft,
         caloriesGoal: caloriesGoal,
         caloriesConsumed: caloriesConsumed,
@@ -853,6 +858,8 @@ class _LiveActivityTileState extends ConsumerState<_LiveActivityTile> {
         carbsLeft: carbsLeft,
         fatLeft: fatLeft,
       );
+      
+      debugPrint('Live Activity Toggle: startActivity returned $started');
       
       // Save enabled state
       final prefs = await SharedPreferences.getInstance();

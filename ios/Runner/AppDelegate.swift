@@ -3,7 +3,7 @@ import UIKit
 import ActivityKit
 import flutter_local_notifications
 
-// Live Activity Attributes - must match CalAiWidget
+// Live Activity Attributes - must EXACTLY match CalAiWidget
 struct CalAiActivityAttributes: ActivityAttributes {
     public struct ContentState: Codable, Hashable {
         var caloriesLeft: Int
@@ -84,6 +84,18 @@ struct CalAiActivityAttributes: ActivityAttributes {
   
   @available(iOS 16.2, *)
   private func startLiveActivity(args: [String: Any], result: @escaping FlutterResult) {
+    print("🔥 [LiveActivity] startLiveActivity called with args: \(args)")
+    
+    // Check if Live Activities are enabled
+    let authInfo = ActivityAuthorizationInfo()
+    print("🔥 [LiveActivity] areActivitiesEnabled: \(authInfo.areActivitiesEnabled)")
+    
+    guard authInfo.areActivitiesEnabled else {
+      print("🔥 [LiveActivity] Live Activities are NOT enabled in Settings")
+      result(FlutterError(code: "NOT_ENABLED", message: "Live Activities are not enabled. Please enable in Settings > Cal AI > Live Activities", details: nil))
+      return
+    }
+    
     // End any existing activity first
     endAllActivities()
     
@@ -93,6 +105,8 @@ struct CalAiActivityAttributes: ActivityAttributes {
     let proteinLeft = args["proteinLeft"] as? Int ?? 0
     let carbsLeft = args["carbsLeft"] as? Int ?? 0
     let fatLeft = args["fatLeft"] as? Int ?? 0
+    
+    print("🔥 [LiveActivity] Creating activity with caloriesLeft: \(caloriesLeft), caloriesGoal: \(caloriesGoal)")
     
     let attributes = CalAiActivityAttributes(activityName: "Cal AI")
     let contentState = CalAiActivityAttributes.ContentState(
@@ -113,9 +127,11 @@ struct CalAiActivityAttributes: ActivityAttributes {
         pushType: nil
       )
       currentActivity = activity
+      print("🔥 [LiveActivity] Activity started successfully with ID: \(activity.id)")
       result(activity.id)
     } catch {
-      result(FlutterError(code: "START_ERROR", message: error.localizedDescription, details: nil))
+      print("🔥 [LiveActivity] Failed to start activity: \(error.localizedDescription)")
+      result(FlutterError(code: "START_ERROR", message: error.localizedDescription, details: "\(error)"))
     }
   }
   

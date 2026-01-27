@@ -2,17 +2,6 @@ import WidgetKit
 import SwiftUI
 import ActivityKit
 
-// MARK: - Data Models
-struct WidgetData: Codable {
-    let caloriesLeft: Int
-    let caloriesGoal: Int
-    let caloriesConsumed: Int
-    let streak: Int
-    let protein: Double
-    let carbs: Double
-    let fat: Double
-}
-
 // MARK: - Live Activity Attributes
 struct CalAiActivityAttributes: ActivityAttributes {
     public struct ContentState: Codable, Hashable {
@@ -26,6 +15,17 @@ struct CalAiActivityAttributes: ActivityAttributes {
     
     // Fixed attributes (don't change during activity)
     var activityName: String
+}
+
+// MARK: - Data Models
+struct WidgetData: Codable {
+    let caloriesLeft: Int
+    let caloriesGoal: Int
+    let caloriesConsumed: Int
+    let streak: Int
+    let protein: Double
+    let carbs: Double
+    let fat: Double
 }
 
 // MARK: - Timeline Entry
@@ -64,7 +64,7 @@ struct CalAiProvider: TimelineProvider {
     }
 
     private func loadWidgetData() -> WidgetData {
-        let userDefaults = UserDefaults(suiteName: "group.net.kernys.dietai")
+        let userDefaults = UserDefaults(suiteName: "group.dietai")
 
         if let jsonString = userDefaults?.string(forKey: "widget_data"),
            let data = jsonString.data(using: .utf8),
