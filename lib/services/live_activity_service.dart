@@ -13,12 +13,9 @@ final liveActivityInitProvider = FutureProvider<bool>((ref) async {
   final service = ref.watch(liveActivityServiceProvider);
   final enabled = await service.isEnabled();
   
-  // Start activity if it was enabled
-  if (enabled && service.isSupported) {
-    await service.startActivity();
-  }
-  
   ref.read(liveActivityEnabledProvider.notifier).state = enabled;
+  
+  // Don't start here - it will be started by widgetUpdaterProvider with actual data
   return enabled;
 });
 
@@ -68,6 +65,8 @@ class LiveActivityService {
       return false;
     }
 
+    debugPrint('Live Activity: Starting with caloriesLeft=$caloriesLeft, caloriesGoal=$caloriesGoal');
+
     try {
       final result = await _channel.invokeMethod<String>('startActivity', {
         'caloriesLeft': caloriesLeft,
@@ -84,9 +83,13 @@ class LiveActivityService {
         debugPrint('Live Activity started with ID: $result');
         return true;
       }
+      debugPrint('Live Activity: startActivity returned null');
       return false;
     } on PlatformException catch (e) {
-      debugPrint('Live Activity start error: ${e.message}');
+      debugPrint('Live Activity start error: ${e.message} (code: ${e.code}, details: ${e.details})');
+      return false;
+    } catch (e) {
+      debugPrint('Live Activity unexpected error: $e');
       return false;
     }
   }

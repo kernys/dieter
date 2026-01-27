@@ -2,6 +2,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/constants/app_constants.dart';
@@ -818,9 +819,52 @@ class _LiveActivityTileState extends ConsumerState<_LiveActivityTile> {
         setState(() => _isLoading = false);
         return;
       }
+      
+      // Get current data to start with
+      final today = DateTime.now();
+      final todayNormalized = DateTime(today.year, today.month, today.day);
+      final summaryAsync = ref.read(dailySummaryProvider(todayNormalized));
+      final goalsAsync = ref.read(userGoalsProvider);
+      
+      int caloriesLeft = 0;
+      int caloriesGoal = 2000;
+      int caloriesConsumed = 0;
+      int proteinLeft = 0;
+      int carbsLeft = 0;
+      int fatLeft = 0;
+      
+      summaryAsync.whenData((summary) {
+        goalsAsync.whenData((goals) {
+          caloriesConsumed = summary.totalCalories;
+          caloriesGoal = goals.calorieGoal;
+          caloriesLeft = (goals.calorieGoal - caloriesConsumed).clamp(0, goals.calorieGoal);
+          proteinLeft = (goals.proteinGoal - summary.totalProtein).clamp(0.0, goals.proteinGoal.toDouble()).toInt();
+          carbsLeft = (goals.carbsGoal - summary.totalCarbs).clamp(0.0, goals.carbsGoal.toDouble()).toInt();
+          fatLeft = (goals.fatGoal - summary.totalFat).clamp(0.0, goals.fatGoal.toDouble()).toInt();
+        });
+      });
+      
+      // Start activity with current data
+      await liveActivityService.startActivity(
+        caloriesLeft: caloriesLeft,
+        caloriesGoal: caloriesGoal,
+        caloriesConsumed: caloriesConsumed,
+        proteinLeft: proteinLeft,
+        carbsLeft: carbsLeft,
+        fatLeft: fatLeft,
+      );
+      
+      // Save enabled state
+      final prefs = await SharedPreferences.getInstance();
+      await prefs.setBool('live_activity_enabled', true);
+    } else {
+      await liveActivityService.endActivity();
+      
+      // Save disabled state
+      final prefs = await SharedPreferences.getInstance();
+      await prefs.setBool('live_activity_enabled', false);
     }
     
-    await liveActivityService.setEnabled(value);
     ref.read(liveActivityEnabledProvider.notifier).state = value;
     
     if (mounted) {
