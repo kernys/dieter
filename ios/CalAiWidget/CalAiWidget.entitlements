@@ -4,7 +4,7 @@
 <dict>
 	<key>com.apple.security.application-groups</key>
 	<array>
-		<string>group.com.calai.calAi</string>
+		<string>group.net.kernys.dietai</string>
 	</array>
 </dict>
 </plist>

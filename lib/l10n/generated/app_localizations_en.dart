@@ -1316,4 +1316,15 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get systemDefault => 'System Default';
+
+  @override
+  String get liveActivity => 'Live Activity';
+
+  @override
+  String get liveActivityDescription =>
+      'Show calories on Lock Screen & Dynamic Island';
+
+  @override
+  String get liveActivityNotSupported =>
+      'Live Activity is not supported on this device';
 }

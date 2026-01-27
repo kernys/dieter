@@ -7,6 +7,7 @@ import '../../../../core/constants/app_colors.dart';
 import '../../../../core/constants/app_constants.dart';
 import '../../../../l10n/generated/app_localizations.dart';
 import '../../../../services/health_service.dart';
+import '../../../../services/live_activity_service.dart';
 import '../../../auth/presentation/providers/auth_provider.dart';
 import '../../../home/presentation/providers/home_provider.dart';
 import '../providers/settings_provider.dart';
@@ -275,6 +276,9 @@ class ProfileScreen extends ConsumerWidget {
                       label: l10n.notifications,
                       onTap: () => context.push('/notification-settings'),
                     ),
+                    // Live Activity toggle (iOS only)
+                    if (Platform.isIOS)
+                      _LiveActivityTile(l10n: l10n),
                     _SettingsTile(
                       icon: Icons.language,
                       label: l10n.language,
@@ -762,6 +766,121 @@ class _SettingsTile extends StatelessWidget {
             ),
           ],
         ),
+      ),
+    );
+  }
+}
+
+class _LiveActivityTile extends ConsumerStatefulWidget {
+  final AppLocalizations l10n;
+
+  const _LiveActivityTile({required this.l10n});
+
+  @override
+  ConsumerState<_LiveActivityTile> createState() => _LiveActivityTileState();
+}
+
+class _LiveActivityTileState extends ConsumerState<_LiveActivityTile> {
+  bool _isEnabled = false;
+  bool _isLoading = true;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadState();
+  }
+
+  Future<void> _loadState() async {
+    final liveActivityService = ref.read(liveActivityServiceProvider);
+    final enabled = await liveActivityService.isEnabled();
+    if (mounted) {
+      setState(() {
+        _isEnabled = enabled;
+        _isLoading = false;
+      });
+    }
+  }
+
+  Future<void> _toggleLiveActivity(bool value) async {
+    setState(() => _isLoading = true);
+    
+    final liveActivityService = ref.read(liveActivityServiceProvider);
+    
+    // Check if supported first
+    if (value) {
+      final isSupported = await liveActivityService.checkSupport();
+      if (!isSupported) {
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text(widget.l10n.liveActivityNotSupported)),
+          );
+        }
+        setState(() => _isLoading = false);
+        return;
+      }
+    }
+    
+    await liveActivityService.setEnabled(value);
+    ref.read(liveActivityEnabledProvider.notifier).state = value;
+    
+    if (mounted) {
+      setState(() {
+        _isEnabled = value;
+        _isLoading = false;
+      });
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      margin: const EdgeInsets.only(bottom: 8),
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: context.cardColor,
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: context.borderColor),
+      ),
+      child: Row(
+        children: [
+          Icon(Icons.timer_outlined, color: context.textSecondaryColor, size: 22),
+          const SizedBox(width: 12),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  widget.l10n.liveActivity,
+                  style: TextStyle(
+                    fontSize: 14,
+                    fontWeight: FontWeight.w500,
+                    color: context.textPrimaryColor,
+                  ),
+                ),
+                const SizedBox(height: 2),
+                Text(
+                  widget.l10n.liveActivityDescription,
+                  style: TextStyle(
+                    fontSize: 11,
+                    color: context.textSecondaryColor,
+                  ),
+                ),
+              ],
+            ),
+          ),
+          if (_isLoading)
+            const SizedBox(
+              width: 20,
+              height: 20,
+              child: CircularProgressIndicator(strokeWidth: 2),
+            )
+          else
+            Switch.adaptive(
+              value: _isEnabled,
+              onChanged: _toggleLiveActivity,
+              activeColor: AppColors.primary,
+            ),
+        ],
       ),
     );
   }

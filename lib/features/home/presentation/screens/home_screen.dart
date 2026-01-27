@@ -9,6 +9,7 @@ import '../../../../core/constants/app_constants.dart';
 import '../../../../shared/widgets/circular_progress_indicator_widget.dart';
 import '../../../../shared/widgets/food_entry_card.dart';
 import '../../../../l10n/generated/app_localizations.dart';
+import '../../../../services/live_activity_service.dart';
 import '../../../exercise/presentation/providers/exercise_log_provider.dart';
 import '../providers/home_provider.dart';
 import '../providers/role_model_provider.dart';
@@ -30,6 +31,9 @@ class HomeScreen extends ConsumerWidget {
     
     // Watch widget updater to keep home screen widget in sync
     ref.watch(widgetUpdaterProvider);
+    
+    // Initialize Live Activity if enabled
+    ref.watch(liveActivityInitProvider);
     
     // Watch Apple Health data
     final healthDataAsync = ref.watch(healthDataProvider);

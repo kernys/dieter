@@ -1,4 +1,4 @@
-package com.calai.cal_ai
+package net.kernys.dietai
 
 import android.appwidget.AppWidgetManager
 import android.appwidget.AppWidgetProvider

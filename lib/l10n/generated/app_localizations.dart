@@ -2599,6 +2599,24 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'System Default'**
   String get systemDefault;
+
+  /// No description provided for @liveActivity.
+  ///
+  /// In en, this message translates to:
+  /// **'Live Activity'**
+  String get liveActivity;
+
+  /// No description provided for @liveActivityDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Show calories on Lock Screen & Dynamic Island'**
+  String get liveActivityDescription;
+
+  /// No description provided for @liveActivityNotSupported.
+  ///
+  /// In en, this message translates to:
+  /// **'Live Activity is not supported on this device'**
+  String get liveActivityNotSupported;
 }
 
 class _AppLocalizationsDelegate

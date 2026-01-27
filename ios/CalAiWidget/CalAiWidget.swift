@@ -1,5 +1,6 @@
 import WidgetKit
 import SwiftUI
+import ActivityKit
 
 // MARK: - Data Models
 struct WidgetData: Codable {
@@ -10,6 +11,21 @@ struct WidgetData: Codable {
     let protein: Double
     let carbs: Double
     let fat: Double
+}
+
+// MARK: - Live Activity Attributes
+struct CalAiActivityAttributes: ActivityAttributes {
+    public struct ContentState: Codable, Hashable {
+        var caloriesLeft: Int
+        var caloriesGoal: Int
+        var caloriesConsumed: Int
+        var proteinLeft: Int
+        var carbsLeft: Int
+        var fatLeft: Int
+    }
+    
+    // Fixed attributes (don't change during activity)
+    var activityName: String
 }
 
 // MARK: - Timeline Entry
@@ -48,7 +64,7 @@ struct CalAiProvider: TimelineProvider {
     }
 
     private func loadWidgetData() -> WidgetData {
-        let userDefaults = UserDefaults(suiteName: "group.com.calai.calAi")
+        let userDefaults = UserDefaults(suiteName: "group.net.kernys.dietai")
 
         if let jsonString = userDefaults?.string(forKey: "widget_data"),
            let data = jsonString.data(using: .utf8),
@@ -273,12 +289,192 @@ struct StreakWidget: Widget {
     }
 }
 
+// MARK: - Live Activity Widget
+struct CalAiLiveActivity: Widget {
+    var body: some WidgetConfiguration {
+        ActivityConfiguration(for: CalAiActivityAttributes.self) { context in
+            // Lock screen / banner UI
+            LockScreenLiveActivityView(context: context)
+        } dynamicIsland: { context in
+            DynamicIsland {
+                // Expanded UI
+                DynamicIslandExpandedRegion(.leading) {
+                    HStack(spacing: 4) {
+                        Image(systemName: "flame.fill")
+                            .foregroundColor(.orange)
+                            .font(.system(size: 16))
+                        Text("\(context.state.caloriesLeft)")
+                            .font(.system(size: 18, weight: .bold))
+                            .foregroundColor(.white)
+                    }
+                }
+                
+                DynamicIslandExpandedRegion(.trailing) {
+                    Text("left")
+                        .font(.system(size: 12))
+                        .foregroundColor(.secondary)
+                }
+                
+                DynamicIslandExpandedRegion(.center) {
+                    Text("Cal AI")
+                        .font(.system(size: 14, weight: .semibold))
+                        .foregroundColor(.white)
+                }
+                
+                DynamicIslandExpandedRegion(.bottom) {
+                    HStack(spacing: 16) {
+                        MacroItem(label: "Protein", value: context.state.proteinLeft, color: .blue)
+                        MacroItem(label: "Carbs", value: context.state.carbsLeft, color: .orange)
+                        MacroItem(label: "Fat", value: context.state.fatLeft, color: .purple)
+                    }
+                    .padding(.top, 8)
+                }
+            } compactLeading: {
+                // Compact leading (left side of pill)
+                HStack(spacing: 4) {
+                    Image(systemName: "flame.fill")
+                        .foregroundColor(.orange)
+                        .font(.system(size: 12))
+                    Text("\(context.state.caloriesLeft)")
+                        .font(.system(size: 14, weight: .bold))
+                        .foregroundColor(.white)
+                }
+            } compactTrailing: {
+                // Compact trailing (right side of pill)
+                Text("kcal")
+                    .font(.system(size: 10))
+                    .foregroundColor(.secondary)
+            } minimal: {
+                // Minimal (just icon when another activity is showing)
+                Image(systemName: "flame.fill")
+                    .foregroundColor(.orange)
+                    .font(.system(size: 14))
+            }
+        }
+    }
+}
+
+// MARK: - Lock Screen Live Activity View
+struct LockScreenLiveActivityView: View {
+    let context: ActivityViewContext<CalAiActivityAttributes>
+    
+    var progress: Double {
+        guard context.state.caloriesGoal > 0 else { return 0 }
+        return Double(context.state.caloriesConsumed) / Double(context.state.caloriesGoal)
+    }
+    
+    var body: some View {
+        HStack(spacing: 16) {
+            // Left - Calories info
+            VStack(alignment: .leading, spacing: 4) {
+                HStack(spacing: 4) {
+                    Image(systemName: "flame.fill")
+                        .foregroundColor(.orange)
+                        .font(.system(size: 14))
+                    Text("Cal AI")
+                        .font(.system(size: 12, weight: .semibold))
+                        .foregroundColor(.secondary)
+                }
+                
+                Text("\(context.state.caloriesLeft)")
+                    .font(.system(size: 32, weight: .bold))
+                    .foregroundColor(.primary)
+                
+                Text("Calories left")
+                    .font(.system(size: 11))
+                    .foregroundColor(.secondary)
+            }
+            
+            Spacer()
+            
+            // Middle - Macros
+            VStack(alignment: .leading, spacing: 6) {
+                HStack(spacing: 4) {
+                    Circle().fill(.blue).frame(width: 6, height: 6)
+                    Text("\(context.state.proteinLeft)g")
+                        .font(.system(size: 12, weight: .medium))
+                    Text("Protein left")
+                        .font(.system(size: 10))
+                        .foregroundColor(.secondary)
+                }
+                HStack(spacing: 4) {
+                    Circle().fill(.orange).frame(width: 6, height: 6)
+                    Text("\(context.state.carbsLeft)g")
+                        .font(.system(size: 12, weight: .medium))
+                    Text("Carbs left")
+                        .font(.system(size: 10))
+                        .foregroundColor(.secondary)
+                }
+                HStack(spacing: 4) {
+                    Circle().fill(.purple).frame(width: 6, height: 6)
+                    Text("\(context.state.fatLeft)g")
+                        .font(.system(size: 12, weight: .medium))
+                    Text("Fats left")
+                        .font(.system(size: 10))
+                        .foregroundColor(.secondary)
+                }
+            }
+            
+            // Right - Circular progress
+            ZStack {
+                Circle()
+                    .stroke(Color.gray.opacity(0.3), lineWidth: 4)
+                    .frame(width: 50, height: 50)
+                
+                Circle()
+                    .trim(from: 0, to: min(progress, 1.0))
+                    .stroke(progressColor, style: StrokeStyle(lineWidth: 4, lineCap: .round))
+                    .rotationEffect(.degrees(-90))
+                    .frame(width: 50, height: 50)
+                
+                Image(systemName: "flame.fill")
+                    .foregroundColor(progressColor)
+                    .font(.system(size: 18))
+            }
+        }
+        .padding(16)
+        .activityBackgroundTint(.black.opacity(0.6))
+    }
+    
+    var progressColor: Color {
+        if progress > 1.0 {
+            return .red
+        } else if progress >= 0.8 {
+            return .yellow
+        } else {
+            return .green
+        }
+    }
+}
+
+// MARK: - Macro Item for Dynamic Island
+struct MacroItem: View {
+    let label: String
+    let value: Int
+    let color: Color
+    
+    var body: some View {
+        VStack(spacing: 2) {
+            HStack(spacing: 4) {
+                Circle().fill(color).frame(width: 6, height: 6)
+                Text("\(value)g")
+                    .font(.system(size: 12, weight: .semibold))
+                    .foregroundColor(.white)
+            }
+            Text(label)
+                .font(.system(size: 9))
+                .foregroundColor(.secondary)
+        }
+    }
+}
+
 // MARK: - Widget Bundle
 @main
 struct CalAiWidgetBundle: WidgetBundle {
     var body: some Widget {
         CalAiWidget()
         StreakWidget()
+        CalAiLiveActivity()
     }
 }
 

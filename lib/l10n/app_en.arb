@@ -480,5 +480,9 @@
   "languageSettings": "Language Settings",
   "systemDefault": "System Default",
   "english": "English",
-  "korean": "한국어"
+  "korean": "한국어",
+
+  "liveActivity": "Live Activity",
+  "liveActivityDescription": "Show calories on Lock Screen & Dynamic Island",
+  "liveActivityNotSupported": "Live Activity is not supported on this device"
 }

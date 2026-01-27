@@ -1304,4 +1304,13 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String get systemDefault => '시스템 기본값';
+
+  @override
+  String get liveActivity => '라이브 액티비티';
+
+  @override
+  String get liveActivityDescription => '잠금화면과 Dynamic Island에 칼로리 표시';
+
+  @override
+  String get liveActivityNotSupported => '이 기기에서는 라이브 액티비티를 지원하지 않습니다';
 }

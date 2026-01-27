@@ -9,7 +9,7 @@ final widgetServiceProvider = Provider<WidgetService>((ref) {
 });
 
 class WidgetService {
-  static const String _appGroupId = 'group.com.calai.calAi';
+  static const String _appGroupId = 'group.net.kernys.dietai';
   static const String _iOSWidgetName = 'CalAiWidget';
   static const String _androidWidgetName = 'CalAiWidgetProvider';
 

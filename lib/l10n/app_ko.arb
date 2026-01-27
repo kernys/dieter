@@ -462,5 +462,9 @@
   "languageSettings": "언어 설정",
   "systemDefault": "시스템 기본값",
   "english": "English",
-  "korean": "한국어"
+  "korean": "한국어",
+
+  "liveActivity": "라이브 액티비티",
+  "liveActivityDescription": "잠금화면과 Dynamic Island에 칼로리 표시",
+  "liveActivityNotSupported": "이 기기에서는 라이브 액티비티를 지원하지 않습니다"
 }

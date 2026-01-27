@@ -4,6 +4,7 @@ import '../../../../core/constants/app_constants.dart';
 import '../../../../services/api_service.dart';
 import '../../../../services/cache_service.dart';
 import '../../../../services/health_service.dart';
+import '../../../../services/live_activity_service.dart';
 import '../../../../services/widget_service.dart';
 import '../../../auth/presentation/providers/auth_provider.dart';
 
@@ -222,7 +223,7 @@ class HealthData {
   });
 }
 
-// Widget updater provider - updates home screen widget when data changes
+// Widget updater provider - updates home screen widget and Live Activity when data changes
 final widgetUpdaterProvider = Provider<void>((ref) {
   final today = DateTime.now();
   final todayNormalized = DateTime(today.year, today.month, today.day);
@@ -231,6 +232,8 @@ final widgetUpdaterProvider = Provider<void>((ref) {
   final userGoalsAsync = ref.watch(userGoalsProvider);
   final streakAsync = ref.watch(streakProvider);
   final widgetService = ref.watch(widgetServiceProvider);
+  final liveActivityService = ref.watch(liveActivityServiceProvider);
+  final liveActivityEnabled = ref.watch(liveActivityEnabledProvider);
   
   dailySummaryAsync.whenData((summary) {
     userGoalsAsync.whenData((goals) {
@@ -243,6 +246,7 @@ final widgetUpdaterProvider = Provider<void>((ref) {
         final carbsLeft = (goals.carbsGoal - summary.totalCarbs).clamp(0.0, goals.carbsGoal.toDouble());
         final fatLeft = (goals.fatGoal - summary.totalFat).clamp(0.0, goals.fatGoal.toDouble());
         
+        // Update home screen widget
         widgetService.updateWidgetData(
           caloriesLeft: caloriesLeft,
           caloriesGoal: goals.calorieGoal,
@@ -252,6 +256,18 @@ final widgetUpdaterProvider = Provider<void>((ref) {
           carbs: carbsLeft,
           fat: fatLeft,
         );
+        
+        // Update Live Activity if enabled
+        if (liveActivityEnabled && liveActivityService.isActivityRunning) {
+          liveActivityService.updateActivity(
+            caloriesLeft: caloriesLeft,
+            caloriesGoal: goals.calorieGoal,
+            caloriesConsumed: caloriesConsumed,
+            proteinLeft: proteinLeft.toInt(),
+            carbsLeft: carbsLeft.toInt(),
+            fatLeft: fatLeft.toInt(),
+          );
+        }
       });
     });
   });

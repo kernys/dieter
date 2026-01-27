@@ -57,5 +57,7 @@
 	<string>Diet AI needs to read your health data to sync steps, weight, and nutrition information.</string>
 	<key>NSHealthUpdateUsageDescription</key>
 	<string>Diet AI needs to write health data to sync your weight and nutrition logs with Apple Health.</string>
+	<key>NSSupportsLiveActivities</key>
+	<true/>
 </dict>
 </plist>
