@@ -75,7 +75,7 @@ ${context ? `User Context:
         'X-Title': 'Diet AI Coach',
       },
       body: JSON.stringify({
-        model: 'google/gemini-flash-1.5',
+        model: 'google/gemini-2.5-flash',
         messages: [
           { role: 'system', content: systemPrompt },
           { role: 'user', content: message },

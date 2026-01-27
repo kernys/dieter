@@ -1212,4 +1212,20 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get coachSuggestion3 => 'Recommend exercises';
+
+  @override
+  String get editExercise => 'Edit Exercise';
+
+  @override
+  String get deleteExercise => 'Delete Exercise';
+
+  @override
+  String get deleteExerciseConfirmation =>
+      'Are you sure you want to delete this exercise?';
+
+  @override
+  String get exerciseUpdated => 'Exercise updated';
+
+  @override
+  String get exerciseDeleted => 'Exercise deleted';
 }

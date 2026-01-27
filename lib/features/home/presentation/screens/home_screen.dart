@@ -602,19 +602,6 @@ class HomeScreen extends ConsumerWidget {
           ],
         ),
       ),
-      // Floating Coach Button
-      floatingActionButton: FloatingActionButton.extended(
-        onPressed: () => context.push('/coach'),
-        backgroundColor: AppColors.primary,
-        icon: const Icon(Icons.psychology, color: Colors.white),
-        label: Text(
-          l10n.dietCoach,
-          style: const TextStyle(
-            color: Colors.white,
-            fontWeight: FontWeight.w600,
-          ),
-        ),
-      ),
     );
   }
 
@@ -737,86 +724,328 @@ class HomeScreen extends ConsumerWidget {
   }
 
   Widget _buildExerciseCard(BuildContext context, AppLocalizations l10n, WidgetRef ref, ExerciseLog exerciseLog) {
-    return Container(
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: context.cardColor,
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: context.borderColor),
-      ),
-      child: Row(
-        children: [
-          Container(
-            width: 50,
-            height: 50,
-            decoration: BoxDecoration(
-              color: AppColors.success.withValues(alpha: 0.1),
-              borderRadius: BorderRadius.circular(12),
+    return GestureDetector(
+      onTap: () => _showExerciseOptions(context, l10n, ref, exerciseLog),
+      child: Container(
+        padding: const EdgeInsets.all(16),
+        decoration: BoxDecoration(
+          color: context.cardColor,
+          borderRadius: BorderRadius.circular(16),
+          border: Border.all(color: context.borderColor),
+        ),
+        child: Row(
+          children: [
+            Container(
+              width: 50,
+              height: 50,
+              decoration: BoxDecoration(
+                color: AppColors.success.withValues(alpha: 0.1),
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: Icon(
+                Icons.fitness_center,
+                color: AppColors.success,
+                size: 24,
+              ),
             ),
-            child: Icon(
-              Icons.fitness_center,
-              color: AppColors.success,
-              size: 24,
-            ),
-          ),
-          const SizedBox(width: 12),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  exerciseLog.type,
-                  style: TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.w600,
-                    color: context.textPrimaryColor,
-                  ),
-                ),
-                const SizedBox(height: 4),
-                Row(
-                  children: [
-                    Text(
-                      '${exerciseLog.duration} min',
-                      style: TextStyle(
-                        fontSize: 12,
-                        color: context.textSecondaryColor,
-                      ),
+            const SizedBox(width: 12),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    exerciseLog.type,
+                    style: TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.w600,
+                      color: context.textPrimaryColor,
                     ),
-                    if (exerciseLog.intensity != null) ...[
+                  ),
+                  const SizedBox(height: 4),
+                  Row(
+                    children: [
                       Text(
-                        ' • ${exerciseLog.intensity}',
+                        '${exerciseLog.duration} min',
                         style: TextStyle(
                           fontSize: 12,
                           color: context.textSecondaryColor,
                         ),
                       ),
+                      if (exerciseLog.intensity != null) ...[
+                        Text(
+                          ' • ${exerciseLog.intensity}',
+                          style: TextStyle(
+                            fontSize: 12,
+                            color: context.textSecondaryColor,
+                          ),
+                        ),
+                      ],
                     ],
-                  ],
+                  ),
+                ],
+              ),
+            ),
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.end,
+              children: [
+                Text(
+                  '-${exerciseLog.caloriesBurned}',
+                  style: TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                    color: AppColors.success,
+                  ),
+                ),
+                Text(
+                  'kcal',
+                  style: TextStyle(
+                    fontSize: 12,
+                    color: context.textSecondaryColor,
+                  ),
                 ),
               ],
             ),
-          ),
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.end,
+          ],
+        ),
+      ),
+    );
+  }
+
+  void _showExerciseOptions(BuildContext context, AppLocalizations l10n, WidgetRef ref, ExerciseLog exerciseLog) {
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: Colors.transparent,
+      builder: (sheetContext) => Container(
+        decoration: BoxDecoration(
+          color: context.cardColor,
+          borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
+        ),
+        child: SafeArea(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
             children: [
-              Text(
-                '-${exerciseLog.caloriesBurned}',
-                style: TextStyle(
-                  fontSize: 18,
-                  fontWeight: FontWeight.bold,
-                  color: AppColors.success,
+              const SizedBox(height: 8),
+              Container(
+                width: 40,
+                height: 4,
+                decoration: BoxDecoration(
+                  color: context.borderColor,
+                  borderRadius: BorderRadius.circular(2),
                 ),
               ),
-              Text(
-                'kcal',
-                style: TextStyle(
-                  fontSize: 12,
-                  color: context.textSecondaryColor,
+              const SizedBox(height: 16),
+              // Exercise info header
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 20),
+                child: Row(
+                  children: [
+                    Container(
+                      width: 50,
+                      height: 50,
+                      decoration: BoxDecoration(
+                        color: AppColors.success.withValues(alpha: 0.1),
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      child: Icon(
+                        Icons.fitness_center,
+                        color: AppColors.success,
+                        size: 24,
+                      ),
+                    ),
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            exerciseLog.type,
+                            style: TextStyle(
+                              fontSize: 18,
+                              fontWeight: FontWeight.bold,
+                              color: context.textPrimaryColor,
+                            ),
+                          ),
+                          Text(
+                            '${exerciseLog.duration} min • ${exerciseLog.caloriesBurned} kcal',
+                            style: TextStyle(
+                              fontSize: 14,
+                              color: context.textSecondaryColor,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
                 ),
               ),
+              const SizedBox(height: 20),
+              Divider(height: 1, color: context.borderColor),
+              // Edit option
+              ListTile(
+                leading: Icon(Icons.edit, color: context.textPrimaryColor),
+                title: Text(
+                  l10n.edit,
+                  style: TextStyle(color: context.textPrimaryColor),
+                ),
+                onTap: () {
+                  Navigator.pop(sheetContext);
+                  _showEditExerciseDialog(context, l10n, ref, exerciseLog);
+                },
+              ),
+              // Delete option
+              ListTile(
+                leading: const Icon(Icons.delete, color: AppColors.error),
+                title: Text(
+                  l10n.delete,
+                  style: const TextStyle(color: AppColors.error),
+                ),
+                onTap: () {
+                  Navigator.pop(sheetContext);
+                  _confirmDeleteExercise(context, l10n, ref, exerciseLog);
+                },
+              ),
+              const SizedBox(height: 8),
             ],
           ),
-          // Removed delete button - users can manage exercises from detail screens
+        ),
+      ),
+    );
+  }
+
+  void _showEditExerciseDialog(BuildContext context, AppLocalizations l10n, WidgetRef ref, ExerciseLog exerciseLog) {
+    final caloriesController = TextEditingController(text: exerciseLog.caloriesBurned.toString());
+    final durationController = TextEditingController(text: exerciseLog.duration.toString());
+
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (sheetContext) => Container(
+        padding: EdgeInsets.only(
+          bottom: MediaQuery.of(sheetContext).viewInsets.bottom,
+        ),
+        decoration: BoxDecoration(
+          color: context.cardColor,
+          borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
+        ),
+        child: Padding(
+          padding: const EdgeInsets.all(24),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Center(
+                child: Container(
+                  width: 40,
+                  height: 4,
+                  decoration: BoxDecoration(
+                    color: context.borderColor,
+                    borderRadius: BorderRadius.circular(2),
+                  ),
+                ),
+              ),
+              const SizedBox(height: 20),
+              Text(
+                l10n.editExercise,
+                style: TextStyle(
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold,
+                  color: context.textPrimaryColor,
+                ),
+              ),
+              const SizedBox(height: 20),
+              TextField(
+                controller: durationController,
+                keyboardType: TextInputType.number,
+                decoration: InputDecoration(
+                  labelText: l10n.durationMinutes,
+                  suffixText: 'min',
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                ),
+              ),
+              const SizedBox(height: 16),
+              TextField(
+                controller: caloriesController,
+                keyboardType: TextInputType.number,
+                decoration: InputDecoration(
+                  labelText: l10n.caloriesBurned,
+                  suffixText: 'kcal',
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                ),
+              ),
+              const SizedBox(height: 24),
+              SizedBox(
+                width: double.infinity,
+                child: ElevatedButton(
+                  onPressed: () {
+                    final newCalories = int.tryParse(caloriesController.text);
+                    final newDuration = int.tryParse(durationController.text);
+                    
+                    if (newCalories != null && newCalories > 0) {
+                      // Remove old and add updated
+                      ref.read(exerciseLogProvider.notifier).removeLog(exerciseLog.id);
+                      ref.read(exerciseLogProvider.notifier).addLog(
+                        ExerciseLog(
+                          id: exerciseLog.id,
+                          type: exerciseLog.type,
+                          duration: newDuration ?? exerciseLog.duration,
+                          caloriesBurned: newCalories,
+                          intensity: exerciseLog.intensity,
+                          description: exerciseLog.description,
+                          loggedAt: exerciseLog.loggedAt,
+                        ),
+                      );
+                      Navigator.pop(sheetContext);
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(content: Text(l10n.exerciseUpdated)),
+                      );
+                    }
+                  },
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: AppColors.primary,
+                    foregroundColor: Colors.white,
+                    padding: const EdgeInsets.symmetric(vertical: 16),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                  ),
+                  child: Text(l10n.save),
+                ),
+              ),
+              const SizedBox(height: 16),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  void _confirmDeleteExercise(BuildContext context, AppLocalizations l10n, WidgetRef ref, ExerciseLog exerciseLog) {
+    showDialog(
+      context: context,
+      builder: (dialogContext) => AlertDialog(
+        title: Text(l10n.deleteExercise),
+        content: Text(l10n.deleteExerciseConfirmation),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(dialogContext),
+            child: Text(l10n.cancel),
+          ),
+          TextButton(
+            onPressed: () {
+              ref.read(exerciseLogProvider.notifier).removeLog(exerciseLog.id);
+              Navigator.pop(dialogContext);
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(content: Text(l10n.exerciseDeleted)),
+              );
+            },
+            style: TextButton.styleFrom(foregroundColor: AppColors.error),
+            child: Text(l10n.delete),
+          ),
         ],
       ),
     );

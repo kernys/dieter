@@ -423,5 +423,11 @@
   "typeMessage": "메시지를 입력하세요...",
   "coachSuggestion1": "오늘 뭘 먹어야 할까요?",
   "coachSuggestion2": "살 빼는 팁 알려주세요",
-  "coachSuggestion3": "운동 추천해주세요"
+  "coachSuggestion3": "운동 추천해주세요",
+
+  "editExercise": "운동 수정",
+  "deleteExercise": "운동 삭제",
+  "deleteExerciseConfirmation": "이 운동 기록을 삭제하시겠습니까?",
+  "exerciseUpdated": "운동이 수정되었습니다",
+  "exerciseDeleted": "운동이 삭제되었습니다"
 }

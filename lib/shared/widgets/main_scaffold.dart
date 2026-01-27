@@ -236,6 +236,16 @@ class _MainScaffoldState extends ConsumerState<MainScaffold>
       padding: const EdgeInsets.symmetric(horizontal: 24),
       child: Column(
         children: [
+          // Coach button - full width
+          _FabMenuItem(
+            icon: Icons.psychology,
+            label: l10n.dietCoach,
+            onTap: () {
+              _closeFabMenu();
+              context.push('/coach');
+            },
+          ),
+          const SizedBox(height: 12),
           Row(
             children: [
               Expanded(

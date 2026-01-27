@@ -108,12 +108,6 @@ final routerProvider = Provider<GoRouter>((ref) {
             ),
           ),
           GoRoute(
-            path: '/coach',
-            pageBuilder: (context, state) => const NoTransitionPage(
-              child: CoachChatScreen(),
-            ),
-          ),
-          GoRoute(
             path: '/profile',
             pageBuilder: (context, state) => const NoTransitionPage(
               child: ProfileScreen(),
@@ -188,6 +182,12 @@ final routerProvider = Provider<GoRouter>((ref) {
           final groupId = state.pathParameters['id']!;
           return GroupDetailScreen(groupId: groupId);
         },
+      ),
+
+      // Coach Chat Route (Full Screen without bottom nav)
+      GoRoute(
+        path: '/coach',
+        builder: (context, state) => const CoachChatScreen(),
       ),
     ],
     errorBuilder: (context, state) => Scaffold(

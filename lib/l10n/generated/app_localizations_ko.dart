@@ -1202,4 +1202,19 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String get coachSuggestion3 => '운동 추천해주세요';
+
+  @override
+  String get editExercise => '운동 수정';
+
+  @override
+  String get deleteExercise => '운동 삭제';
+
+  @override
+  String get deleteExerciseConfirmation => '이 운동 기록을 삭제하시겠습니까?';
+
+  @override
+  String get exerciseUpdated => '운동이 수정되었습니다';
+
+  @override
+  String get exerciseDeleted => '운동이 삭제되었습니다';
 }

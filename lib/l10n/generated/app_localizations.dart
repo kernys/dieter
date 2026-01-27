@@ -2407,6 +2407,36 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Recommend exercises'**
   String get coachSuggestion3;
+
+  /// No description provided for @editExercise.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit Exercise'**
+  String get editExercise;
+
+  /// No description provided for @deleteExercise.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete Exercise'**
+  String get deleteExercise;
+
+  /// No description provided for @deleteExerciseConfirmation.
+  ///
+  /// In en, this message translates to:
+  /// **'Are you sure you want to delete this exercise?'**
+  String get deleteExerciseConfirmation;
+
+  /// No description provided for @exerciseUpdated.
+  ///
+  /// In en, this message translates to:
+  /// **'Exercise updated'**
+  String get exerciseUpdated;
+
+  /// No description provided for @exerciseDeleted.
+  ///
+  /// In en, this message translates to:
+  /// **'Exercise deleted'**
+  String get exerciseDeleted;
 }
 
 class _AppLocalizationsDelegate
