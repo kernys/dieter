@@ -1,5 +1,7 @@
+import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import '../../../../core/constants/app_colors.dart';
 import '../../../../l10n/generated/app_localizations.dart';
 import '../../../../services/api_service.dart';
@@ -17,6 +19,18 @@ class ChatMessage {
     required this.isUser,
     required this.timestamp,
   });
+
+  Map<String, dynamic> toJson() => {
+    'text': text,
+    'isUser': isUser,
+    'timestamp': timestamp.toIso8601String(),
+  };
+
+  factory ChatMessage.fromJson(Map<String, dynamic> json) => ChatMessage(
+    text: json['text'] as String,
+    isUser: json['isUser'] as bool,
+    timestamp: DateTime.parse(json['timestamp'] as String),
+  );
 }
 
 class CoachChatScreen extends ConsumerStatefulWidget {
@@ -27,6 +41,8 @@ class CoachChatScreen extends ConsumerStatefulWidget {
 }
 
 class _CoachChatScreenState extends ConsumerState<CoachChatScreen> {
+  static const String _chatStorageKey = 'coach_chat_messages';
+  
   final TextEditingController _messageController = TextEditingController();
   final ScrollController _scrollController = ScrollController();
   final List<ChatMessage> _messages = [];
@@ -35,12 +51,7 @@ class _CoachChatScreenState extends ConsumerState<CoachChatScreen> {
   @override
   void initState() {
     super.initState();
-    // Add initial greeting
-    _messages.add(ChatMessage(
-      text: "안녕하세요! 저는 다이어트 AI 코치입니다. 🌟\n식단, 운동, 건강 관련 질문이 있으시면 편하게 물어보세요!",
-      isUser: false,
-      timestamp: DateTime.now(),
-    ));
+    _loadMessages();
   }
 
   @override
@@ -48,6 +59,82 @@ class _CoachChatScreenState extends ConsumerState<CoachChatScreen> {
     _messageController.dispose();
     _scrollController.dispose();
     super.dispose();
+  }
+
+  Future<void> _loadMessages() async {
+    final prefs = await SharedPreferences.getInstance();
+    final messagesJson = prefs.getString(_chatStorageKey);
+    
+    if (messagesJson != null) {
+      try {
+        final List<dynamic> decoded = jsonDecode(messagesJson);
+        final loadedMessages = decoded
+            .map((json) => ChatMessage.fromJson(json as Map<String, dynamic>))
+            .toList();
+        
+        if (loadedMessages.isNotEmpty) {
+          setState(() {
+            _messages.addAll(loadedMessages);
+          });
+          _scrollToBottom();
+          return;
+        }
+      } catch (e) {
+        debugPrint('Error loading chat messages: $e');
+      }
+    }
+    
+    // Add initial greeting if no saved messages
+    setState(() {
+      _messages.add(ChatMessage(
+        text: "안녕하세요! 저는 다이어트 AI 코치입니다. 🌟\n식단, 운동, 건강 관련 질문이 있으시면 편하게 물어보세요!",
+        isUser: false,
+        timestamp: DateTime.now(),
+      ));
+    });
+  }
+
+  Future<void> _saveMessages() async {
+    final prefs = await SharedPreferences.getInstance();
+    final messagesJson = jsonEncode(_messages.map((m) => m.toJson()).toList());
+    await prefs.setString(_chatStorageKey, messagesJson);
+  }
+
+  Future<void> _clearMessages() async {
+    final l10n = AppLocalizations.of(context)!;
+    
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: Text(l10n.clearChatHistory),
+        content: Text(l10n.clearChatHistoryConfirm),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context, false),
+            child: Text(l10n.cancel),
+          ),
+          TextButton(
+            onPressed: () => Navigator.pop(context, true),
+            style: TextButton.styleFrom(foregroundColor: Colors.red),
+            child: Text(l10n.delete),
+          ),
+        ],
+      ),
+    );
+
+    if (confirmed == true) {
+      final prefs = await SharedPreferences.getInstance();
+      await prefs.remove(_chatStorageKey);
+      
+      setState(() {
+        _messages.clear();
+        _messages.add(ChatMessage(
+          text: "안녕하세요! 저는 다이어트 AI 코치입니다. 🌟\n식단, 운동, 건강 관련 질문이 있으시면 편하게 물어보세요!",
+          isUser: false,
+          timestamp: DateTime.now(),
+        ));
+      });
+    }
   }
 
   void _scrollToBottom() {
@@ -120,6 +207,7 @@ class _CoachChatScreenState extends ConsumerState<CoachChatScreen> {
         _isLoading = false;
       });
       _scrollToBottom();
+      _saveMessages();
     } catch (e) {
       setState(() {
         _messages.add(ChatMessage(
@@ -130,6 +218,7 @@ class _CoachChatScreenState extends ConsumerState<CoachChatScreen> {
         _isLoading = false;
       });
       _scrollToBottom();
+      _saveMessages();
     }
   }
 
@@ -195,6 +284,31 @@ class _CoachChatScreenState extends ConsumerState<CoachChatScreen> {
             ),
           ],
         ),
+        actions: [
+          PopupMenuButton<String>(
+            icon: Icon(Icons.more_vert, color: context.textPrimaryColor),
+            onSelected: (value) {
+              if (value == 'clear') {
+                _clearMessages();
+              }
+            },
+            itemBuilder: (context) => [
+              PopupMenuItem(
+                value: 'clear',
+                child: Row(
+                  children: [
+                    const Icon(Icons.delete_outline, size: 20, color: Colors.red),
+                    const SizedBox(width: 8),
+                    Text(
+                      l10n.clearChatHistory,
+                      style: const TextStyle(color: Colors.red),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        ],
       ),
       body: Column(
         children: [

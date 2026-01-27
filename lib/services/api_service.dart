@@ -862,6 +862,7 @@ class FoodSearchItem {
   final double sodium;
   final String servingSize;
   final String? imageUrl;
+  final String source; // 'database' or 'ai'
 
   FoodSearchItem({
     required this.id,
@@ -875,7 +876,10 @@ class FoodSearchItem {
     required this.sodium,
     required this.servingSize,
     this.imageUrl,
+    this.source = 'database',
   });
+
+  bool get isAiGenerated => source == 'ai';
 
   factory FoodSearchItem.fromJson(Map<String, dynamic> json) {
     return FoodSearchItem(
@@ -890,6 +894,7 @@ class FoodSearchItem {
       sodium: (json['sodium'] as num?)?.toDouble() ?? 0.0,
       servingSize: json['servingSize'] ?? '100g',
       imageUrl: json['imageUrl'],
+      source: json['source'] ?? 'database',
     );
   }
 }

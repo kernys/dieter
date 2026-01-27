@@ -424,6 +424,8 @@
   "coachSuggestion1": "오늘 뭘 먹어야 할까요?",
   "coachSuggestion2": "살 빼는 팁 알려주세요",
   "coachSuggestion3": "운동 추천해주세요",
+  "clearChatHistory": "대화 기록 삭제",
+  "clearChatHistoryConfirm": "모든 대화 기록을 삭제하시겠습니까? 이 작업은 되돌릴 수 없습니다.",
 
   "editExercise": "운동 수정",
   "deleteExercise": "운동 삭제",

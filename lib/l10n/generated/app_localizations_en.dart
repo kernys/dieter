@@ -1214,6 +1214,13 @@ class AppLocalizationsEn extends AppLocalizations {
   String get coachSuggestion3 => 'Recommend exercises';
 
   @override
+  String get clearChatHistory => 'Clear Chat History';
+
+  @override
+  String get clearChatHistoryConfirm =>
+      'Are you sure you want to clear all chat history? This action cannot be undone.';
+
+  @override
   String get editExercise => 'Edit Exercise';
 
   @override

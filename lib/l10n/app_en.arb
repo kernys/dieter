@@ -440,6 +440,8 @@
   "coachSuggestion1": "What should I eat today?",
   "coachSuggestion2": "Tips for losing weight",
   "coachSuggestion3": "Recommend exercises",
+  "clearChatHistory": "Clear Chat History",
+  "clearChatHistoryConfirm": "Are you sure you want to clear all chat history? This action cannot be undone.",
 
   "editExercise": "Edit Exercise",
   "deleteExercise": "Delete Exercise",

@@ -2408,6 +2408,18 @@ abstract class AppLocalizations {
   /// **'Recommend exercises'**
   String get coachSuggestion3;
 
+  /// No description provided for @clearChatHistory.
+  ///
+  /// In en, this message translates to:
+  /// **'Clear Chat History'**
+  String get clearChatHistory;
+
+  /// No description provided for @clearChatHistoryConfirm.
+  ///
+  /// In en, this message translates to:
+  /// **'Are you sure you want to clear all chat history? This action cannot be undone.'**
+  String get clearChatHistoryConfirm;
+
   /// No description provided for @editExercise.
   ///
   /// In en, this message translates to:

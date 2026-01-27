@@ -1204,6 +1204,12 @@ class AppLocalizationsKo extends AppLocalizations {
   String get coachSuggestion3 => '운동 추천해주세요';
 
   @override
+  String get clearChatHistory => '대화 기록 삭제';
+
+  @override
+  String get clearChatHistoryConfirm => '모든 대화 기록을 삭제하시겠습니까? 이 작업은 되돌릴 수 없습니다.';
+
+  @override
   String get editExercise => '운동 수정';
 
   @override
