@@ -453,6 +453,7 @@ class _LogFoodScreenState extends ConsumerState<LogFoodScreen>
         sugar: food.sugar,
         sodium: food.sodium,
         imageUrl: food.imageUrl,
+        ingredients: food.ingredients,
         loggedAt: selectedDate,
       )).future);
 

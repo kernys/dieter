@@ -869,6 +869,7 @@ class FoodSearchItem {
   final String servingSize;
   final String? imageUrl;
   final String source; // 'database' or 'ai'
+  final List<Map<String, dynamic>> ingredients;
 
   FoodSearchItem({
     required this.id,
@@ -883,6 +884,7 @@ class FoodSearchItem {
     required this.servingSize,
     this.imageUrl,
     this.source = 'database',
+    this.ingredients = const [],
   });
 
   bool get isAiGenerated => source == 'ai';
@@ -901,6 +903,9 @@ class FoodSearchItem {
       servingSize: json['servingSize'] ?? '100g',
       imageUrl: json['imageUrl'],
       source: json['source'] ?? 'database',
+      ingredients: (json['ingredients'] as List<dynamic>?)
+          ?.map((e) => Map<String, dynamic>.from(e as Map))
+          .toList() ?? [],
     );
   }
 }
