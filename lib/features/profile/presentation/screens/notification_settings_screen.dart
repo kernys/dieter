@@ -17,22 +17,39 @@ class NotificationSettingsScreen extends ConsumerStatefulWidget {
 }
 
 class _NotificationSettingsScreenState
-    extends ConsumerState<NotificationSettingsScreen> {
+    extends ConsumerState<NotificationSettingsScreen> with WidgetsBindingObserver {
   bool _notificationsEnabled = true;
   bool _isCheckingPermission = true;
 
   @override
   void initState() {
     super.initState();
+    WidgetsBinding.instance.addObserver(this);
     _checkNotificationPermission();
+  }
+
+  @override
+  void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
+    super.dispose();
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    // Re-check permission when app resumes (e.g., returning from Settings)
+    if (state == AppLifecycleState.resumed) {
+      _checkNotificationPermission();
+    }
   }
 
   Future<void> _checkNotificationPermission() async {
     final status = await Permission.notification.status;
-    setState(() {
-      _notificationsEnabled = status.isGranted;
-      _isCheckingPermission = false;
-    });
+    if (mounted) {
+      setState(() {
+        _notificationsEnabled = status.isGranted;
+        _isCheckingPermission = false;
+      });
+    }
   }
 
   Future<void> _openAppSettings() async {
