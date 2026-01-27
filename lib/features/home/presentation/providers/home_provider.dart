@@ -257,28 +257,16 @@ final widgetUpdaterProvider = Provider<void>((ref) {
           fat: fatLeft,
         );
         
-        // Update or start Live Activity if enabled
+        // Update or create Live Activity if enabled
         if (liveActivityEnabled) {
-          if (liveActivityService.isActivityRunning) {
-            liveActivityService.updateActivity(
-              caloriesLeft: caloriesLeft,
-              caloriesGoal: goals.calorieGoal,
-              caloriesConsumed: caloriesConsumed,
-              proteinLeft: proteinLeft.toInt(),
-              carbsLeft: carbsLeft.toInt(),
-              fatLeft: fatLeft.toInt(),
-            );
-          } else {
-            // Start Live Activity with current data
-            liveActivityService.startActivity(
-              caloriesLeft: caloriesLeft,
-              caloriesGoal: goals.calorieGoal,
-              caloriesConsumed: caloriesConsumed,
-              proteinLeft: proteinLeft.toInt(),
-              carbsLeft: carbsLeft.toInt(),
-              fatLeft: fatLeft.toInt(),
-            );
-          }
+          liveActivityService.createOrUpdateActivity(
+            caloriesLeft: caloriesLeft,
+            caloriesGoal: goals.calorieGoal,
+            caloriesConsumed: caloriesConsumed,
+            proteinLeft: proteinLeft.toInt(),
+            carbsLeft: carbsLeft.toInt(),
+            fatLeft: fatLeft.toInt(),
+          );
         }
       });
     });

@@ -1,9 +1,7 @@
 import 'dart:io';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/constants/app_constants.dart';
@@ -821,6 +819,9 @@ class _LiveActivityTileState extends ConsumerState<_LiveActivityTile> {
         return;
       }
       
+      // Enable Live Activity - actual activity will be created by home_provider
+      await liveActivityService.setEnabled(true);
+      
       // Get current data to start with
       final today = DateTime.now();
       final todayNormalized = DateTime(today.year, today.month, today.day);
@@ -847,10 +848,8 @@ class _LiveActivityTileState extends ConsumerState<_LiveActivityTile> {
         fatLeft = (goalsValue.fatGoal - summaryValue.totalFat).clamp(0.0, goalsValue.fatGoal.toDouble()).toInt();
       }
       
-      debugPrint('Live Activity Toggle: Starting with caloriesLeft=$caloriesLeft, caloriesGoal=$caloriesGoal');
-      
-      // Start activity with current data
-      final started = await liveActivityService.startActivity(
+      // Create initial activity with current data
+      await liveActivityService.createOrUpdateActivity(
         caloriesLeft: caloriesLeft,
         caloriesGoal: caloriesGoal,
         caloriesConsumed: caloriesConsumed,
@@ -858,18 +857,8 @@ class _LiveActivityTileState extends ConsumerState<_LiveActivityTile> {
         carbsLeft: carbsLeft,
         fatLeft: fatLeft,
       );
-      
-      debugPrint('Live Activity Toggle: startActivity returned $started');
-      
-      // Save enabled state
-      final prefs = await SharedPreferences.getInstance();
-      await prefs.setBool('live_activity_enabled', true);
     } else {
-      await liveActivityService.endActivity();
-      
-      // Save disabled state
-      final prefs = await SharedPreferences.getInstance();
-      await prefs.setBool('live_activity_enabled', false);
+      await liveActivityService.setEnabled(false);
     }
     
     ref.read(liveActivityEnabledProvider.notifier).state = value;

@@ -2,8 +2,20 @@ import WidgetKit
 import SwiftUI
 import ActivityKit
 
-// CalAiActivityAttributes is defined in Shared/LiveActivityAttributes.swift
-// That file must be added to BOTH Runner and CalAiWidgetExtension targets
+// MARK: - Live Activity Attributes (MUST be named LiveActivitiesAppAttributes)
+struct LiveActivitiesAppAttributes: ActivityAttributes, Identifiable {
+    public typealias LiveDeliveryData = ContentState
+    
+    public struct ContentState: Codable, Hashable { }
+    
+    var id = UUID()
+}
+
+extension LiveActivitiesAppAttributes {
+    func prefixedKey(_ key: String) -> String {
+        return "\(id)_\(key)"
+    }
+}
 
 // MARK: - Data Models
 struct WidgetData: Codable {
@@ -90,114 +102,120 @@ struct CaloriesWidgetView: View {
     }
 }
 
+// MARK: - Small Widget View
 struct SmallCaloriesView: View {
     var entry: CalAiEntry
 
+    var progress: Double {
+        guard entry.data.caloriesGoal > 0 else { return 0 }
+        return Double(entry.data.caloriesConsumed) / Double(entry.data.caloriesGoal)
+    }
+
     var body: some View {
-        VStack(alignment: .leading, spacing: 8) {
+        VStack(spacing: 8) {
             HStack {
                 Image(systemName: "flame.fill")
                     .foregroundColor(.orange)
-                    .font(.system(size: 16))
+                    .font(.system(size: 12))
+                Text("Diet AI")
+                    .font(.system(size: 12, weight: .semibold))
+                    .foregroundColor(.secondary)
                 Spacer()
             }
 
-            Spacer()
+            ZStack {
+                Circle()
+                    .stroke(Color.gray.opacity(0.3), lineWidth: 8)
 
-            Text("\(entry.data.caloriesLeft)")
-                .font(.system(size: 36, weight: .bold))
-                .foregroundColor(.primary)
+                Circle()
+                    .trim(from: 0, to: min(progress, 1.0))
+                    .stroke(
+                        progress > 1.0 ? Color.red : Color.green,
+                        style: StrokeStyle(lineWidth: 8, lineCap: .round)
+                    )
+                    .rotationEffect(.degrees(-90))
 
-            Text("Calories left")
-                .font(.system(size: 12))
-                .foregroundColor(.secondary)
-
-            Spacer()
-
-            // Progress bar
-            GeometryReader { geometry in
-                ZStack(alignment: .leading) {
-                    RoundedRectangle(cornerRadius: 4)
-                        .fill(Color.gray.opacity(0.3))
-                        .frame(height: 6)
-
-                    RoundedRectangle(cornerRadius: 4)
-                        .fill(Color.green)
-                        .frame(width: progressWidth(geometry.size.width), height: 6)
+                VStack(spacing: 2) {
+                    Text("\(entry.data.caloriesLeft)")
+                        .font(.system(size: 24, weight: .bold))
+                        .foregroundColor(.primary)
+                    Text("left")
+                        .font(.system(size: 10))
+                        .foregroundColor(.secondary)
                 }
             }
-            .frame(height: 6)
+            .frame(width: 80, height: 80)
         }
-        .padding(16)
-        .containerBackground(.fill.tertiary, for: .widget)
-    }
-
-    private func progressWidth(_ totalWidth: CGFloat) -> CGFloat {
-        let progress = Double(entry.data.caloriesConsumed) / Double(entry.data.caloriesGoal)
-        return min(totalWidth * CGFloat(progress), totalWidth)
+        .padding()
+        .containerBackground(for: .widget) {
+            Color(.systemBackground)
+        }
     }
 }
 
+// MARK: - Medium Widget View
 struct MediumCaloriesView: View {
     var entry: CalAiEntry
 
+    var progress: Double {
+        guard entry.data.caloriesGoal > 0 else { return 0 }
+        return Double(entry.data.caloriesConsumed) / Double(entry.data.caloriesGoal)
+    }
+
     var body: some View {
         HStack(spacing: 16) {
-            // Left side - Calories
+            // Left - Ring
+            ZStack {
+                Circle()
+                    .stroke(Color.gray.opacity(0.3), lineWidth: 10)
+
+                Circle()
+                    .trim(from: 0, to: min(progress, 1.0))
+                    .stroke(
+                        progress > 1.0 ? Color.red : Color.green,
+                        style: StrokeStyle(lineWidth: 10, lineCap: .round)
+                    )
+                    .rotationEffect(.degrees(-90))
+
+                VStack(spacing: 2) {
+                    Text("\(entry.data.caloriesLeft)")
+                        .font(.system(size: 28, weight: .bold))
+                        .foregroundColor(.primary)
+                    Text("kcal left")
+                        .font(.system(size: 10))
+                        .foregroundColor(.secondary)
+                }
+            }
+            .frame(width: 100, height: 100)
+
+            // Right - Macros
             VStack(alignment: .leading, spacing: 8) {
                 HStack {
                     Image(systemName: "flame.fill")
                         .foregroundColor(.orange)
-                        .font(.system(size: 16))
-                    Text("Calories")
-                        .font(.system(size: 14, weight: .medium))
+                        .font(.system(size: 14))
+                    Text("Diet AI")
+                        .font(.system(size: 14, weight: .semibold))
                         .foregroundColor(.secondary)
                 }
 
-                Text("\(entry.data.caloriesLeft)")
-                    .font(.system(size: 36, weight: .bold))
-                    .foregroundColor(.primary)
-
-                Text("left of \(entry.data.caloriesGoal)")
-                    .font(.system(size: 12))
-                    .foregroundColor(.secondary)
-
-                // Progress bar
-                GeometryReader { geometry in
-                    ZStack(alignment: .leading) {
-                        RoundedRectangle(cornerRadius: 4)
-                            .fill(Color.gray.opacity(0.3))
-                            .frame(height: 6)
-
-                        RoundedRectangle(cornerRadius: 4)
-                            .fill(Color.green)
-                            .frame(width: progressWidth(geometry.size.width), height: 6)
-                    }
-                }
-                .frame(height: 6)
+                MacroRow(label: "Protein", value: entry.data.protein, color: .blue)
+                MacroRow(label: "Carbs", value: entry.data.carbs, color: .orange)
+                MacroRow(label: "Fat", value: entry.data.fat, color: .purple)
             }
-            .frame(maxWidth: .infinity, alignment: .leading)
 
-            // Right side - Macros remaining
-            VStack(alignment: .leading, spacing: 8) {
-                MacroRow(name: "Protein left", value: entry.data.protein, color: .blue)
-                MacroRow(name: "Carbs left", value: entry.data.carbs, color: .orange)
-                MacroRow(name: "Fat left", value: entry.data.fat, color: .purple)
-            }
-            .frame(maxWidth: .infinity, alignment: .leading)
+            Spacer()
         }
-        .padding(16)
-        .containerBackground(.fill.tertiary, for: .widget)
-    }
-
-    private func progressWidth(_ totalWidth: CGFloat) -> CGFloat {
-        let progress = Double(entry.data.caloriesConsumed) / Double(entry.data.caloriesGoal)
-        return min(totalWidth * CGFloat(progress), totalWidth)
+        .padding()
+        .containerBackground(for: .widget) {
+            Color(.systemBackground)
+        }
     }
 }
 
+// MARK: - Macro Row
 struct MacroRow: View {
-    let name: String
+    let label: String
     let value: Double
     let color: Color
 
@@ -206,46 +224,49 @@ struct MacroRow: View {
             Circle()
                 .fill(color)
                 .frame(width: 8, height: 8)
-
-            VStack(alignment: .leading, spacing: 0) {
-                Text(name)
-                    .font(.system(size: 10))
-                    .foregroundColor(.secondary)
-                Text("\(Int(value))g")
-                    .font(.system(size: 14, weight: .semibold))
-                    .foregroundColor(.primary)
-            }
+            Text(label)
+                .font(.system(size: 12))
+                .foregroundColor(.secondary)
+            Spacer()
+            Text("\(Int(value))g")
+                .font(.system(size: 12, weight: .semibold))
+                .foregroundColor(.primary)
         }
     }
 }
 
-// MARK: - Streak Widget View
+// MARK: - Streak Widget
 struct StreakWidgetView: View {
     var entry: CalAiEntry
-
+    
     var body: some View {
-        VStack(alignment: .center, spacing: 8) {
-            Spacer()
-
-            HStack(spacing: 4) {
+        VStack(spacing: 8) {
+            HStack {
                 Image(systemName: "flame.fill")
                     .foregroundColor(.orange)
-                    .font(.system(size: 32))
-
-                Text("\(entry.data.streak)")
-                    .font(.system(size: 48, weight: .bold))
-                    .foregroundColor(.primary)
+                    .font(.system(size: 12))
+                Text("Streak")
+                    .font(.system(size: 12, weight: .semibold))
+                    .foregroundColor(.secondary)
+                Spacer()
             }
-
-            Text("Day Streak")
-                .font(.system(size: 14, weight: .medium))
+            
+            Spacer()
+            
+            Text("\(entry.data.streak)")
+                .font(.system(size: 48, weight: .bold))
+                .foregroundColor(.orange)
+            
+            Text("days")
+                .font(.system(size: 14))
                 .foregroundColor(.secondary)
-
+            
             Spacer()
         }
-        .frame(maxWidth: .infinity)
-        .padding(16)
-        .containerBackground(.fill.tertiary, for: .widget)
+        .padding()
+        .containerBackground(for: .widget) {
+            Color(.systemBackground)
+        }
     }
 }
 
@@ -258,7 +279,7 @@ struct CalAiWidget: Widget {
             CaloriesWidgetView(entry: entry)
         }
         .configurationDisplayName("Calories")
-        .description("Track your remaining calories for today.")
+        .description("Track your daily calorie intake")
         .supportedFamilies([.systemSmall, .systemMedium])
     }
 }
@@ -266,32 +287,36 @@ struct CalAiWidget: Widget {
 // MARK: - Streak Widget
 struct StreakWidget: Widget {
     let kind: String = "StreakWidget"
-
+    
     var body: some WidgetConfiguration {
         StaticConfiguration(kind: kind, provider: CalAiProvider()) { entry in
             StreakWidgetView(entry: entry)
         }
         .configurationDisplayName("Streak")
-        .description("Track your logging streak.")
+        .description("Track your logging streak")
         .supportedFamilies([.systemSmall])
     }
 }
 
 // MARK: - Live Activity Widget
 struct CalAiLiveActivity: Widget {
+    // Create shared default with custom group
+    let sharedDefault = UserDefaults(suiteName: "group.dietai")!
+    
     var body: some WidgetConfiguration {
-        ActivityConfiguration(for: CalAiActivityAttributes.self) { context in
+        ActivityConfiguration(for: LiveActivitiesAppAttributes.self) { context in
             // Lock screen / banner UI
-            LockScreenLiveActivityView(context: context)
+            LockScreenLiveActivityView(context: context, sharedDefault: sharedDefault)
         } dynamicIsland: { context in
             DynamicIsland {
                 // Expanded UI
                 DynamicIslandExpandedRegion(.leading) {
+                    let caloriesLeft = sharedDefault.integer(forKey: context.attributes.prefixedKey("caloriesLeft"))
                     HStack(spacing: 4) {
                         Image(systemName: "flame.fill")
                             .foregroundColor(.orange)
                             .font(.system(size: 16))
-                        Text("\(context.state.caloriesLeft)")
+                        Text("\(caloriesLeft)")
                             .font(.system(size: 18, weight: .bold))
                             .foregroundColor(.white)
                     }
@@ -304,26 +329,31 @@ struct CalAiLiveActivity: Widget {
                 }
                 
                 DynamicIslandExpandedRegion(.center) {
-                    Text("Cal AI")
+                    Text("Diet AI")
                         .font(.system(size: 14, weight: .semibold))
                         .foregroundColor(.white)
                 }
                 
                 DynamicIslandExpandedRegion(.bottom) {
+                    let proteinLeft = sharedDefault.integer(forKey: context.attributes.prefixedKey("proteinLeft"))
+                    let carbsLeft = sharedDefault.integer(forKey: context.attributes.prefixedKey("carbsLeft"))
+                    let fatLeft = sharedDefault.integer(forKey: context.attributes.prefixedKey("fatLeft"))
+                    
                     HStack(spacing: 16) {
-                        MacroItem(label: "Protein", value: context.state.proteinLeft, color: .blue)
-                        MacroItem(label: "Carbs", value: context.state.carbsLeft, color: .orange)
-                        MacroItem(label: "Fat", value: context.state.fatLeft, color: .purple)
+                        LiveActivityMacroItem(label: "Protein", value: proteinLeft, color: .blue)
+                        LiveActivityMacroItem(label: "Carbs", value: carbsLeft, color: .orange)
+                        LiveActivityMacroItem(label: "Fat", value: fatLeft, color: .purple)
                     }
                     .padding(.top, 8)
                 }
             } compactLeading: {
                 // Compact leading (left side of pill)
+                let caloriesLeft = sharedDefault.integer(forKey: context.attributes.prefixedKey("caloriesLeft"))
                 HStack(spacing: 4) {
                     Image(systemName: "flame.fill")
                         .foregroundColor(.orange)
                         .font(.system(size: 12))
-                    Text("\(context.state.caloriesLeft)")
+                    Text("\(caloriesLeft)")
                         .font(.system(size: 14, weight: .bold))
                         .foregroundColor(.white)
                 }
@@ -344,11 +374,36 @@ struct CalAiLiveActivity: Widget {
 
 // MARK: - Lock Screen Live Activity View
 struct LockScreenLiveActivityView: View {
-    let context: ActivityViewContext<CalAiActivityAttributes>
+    let context: ActivityViewContext<LiveActivitiesAppAttributes>
+    let sharedDefault: UserDefaults
+    
+    var caloriesLeft: Int {
+        sharedDefault.integer(forKey: context.attributes.prefixedKey("caloriesLeft"))
+    }
+    
+    var caloriesGoal: Int {
+        sharedDefault.integer(forKey: context.attributes.prefixedKey("caloriesGoal"))
+    }
+    
+    var caloriesConsumed: Int {
+        sharedDefault.integer(forKey: context.attributes.prefixedKey("caloriesConsumed"))
+    }
+    
+    var proteinLeft: Int {
+        sharedDefault.integer(forKey: context.attributes.prefixedKey("proteinLeft"))
+    }
+    
+    var carbsLeft: Int {
+        sharedDefault.integer(forKey: context.attributes.prefixedKey("carbsLeft"))
+    }
+    
+    var fatLeft: Int {
+        sharedDefault.integer(forKey: context.attributes.prefixedKey("fatLeft"))
+    }
     
     var progress: Double {
-        guard context.state.caloriesGoal > 0 else { return 0 }
-        return Double(context.state.caloriesConsumed) / Double(context.state.caloriesGoal)
+        guard caloriesGoal > 0 else { return 0 }
+        return Double(caloriesConsumed) / Double(caloriesGoal)
     }
     
     var body: some View {
@@ -359,12 +414,12 @@ struct LockScreenLiveActivityView: View {
                     Image(systemName: "flame.fill")
                         .foregroundColor(.orange)
                         .font(.system(size: 14))
-                    Text("Cal AI")
+                    Text("Diet AI")
                         .font(.system(size: 12, weight: .semibold))
                         .foregroundColor(.secondary)
                 }
                 
-                Text("\(context.state.caloriesLeft)")
+                Text("\(caloriesLeft)")
                     .font(.system(size: 32, weight: .bold))
                     .foregroundColor(.primary)
                 
@@ -375,80 +430,69 @@ struct LockScreenLiveActivityView: View {
             
             Spacer()
             
-            // Middle - Macros
-            VStack(alignment: .leading, spacing: 6) {
-                HStack(spacing: 4) {
-                    Circle().fill(.blue).frame(width: 6, height: 6)
-                    Text("\(context.state.proteinLeft)g")
-                        .font(.system(size: 12, weight: .medium))
-                    Text("Protein left")
-                        .font(.system(size: 10))
-                        .foregroundColor(.secondary)
-                }
-                HStack(spacing: 4) {
-                    Circle().fill(.orange).frame(width: 6, height: 6)
-                    Text("\(context.state.carbsLeft)g")
-                        .font(.system(size: 12, weight: .medium))
-                    Text("Carbs left")
-                        .font(.system(size: 10))
-                        .foregroundColor(.secondary)
-                }
-                HStack(spacing: 4) {
-                    Circle().fill(.purple).frame(width: 6, height: 6)
-                    Text("\(context.state.fatLeft)g")
-                        .font(.system(size: 12, weight: .medium))
-                    Text("Fats left")
-                        .font(.system(size: 10))
-                        .foregroundColor(.secondary)
-                }
+            // Right - Macros
+            VStack(alignment: .trailing, spacing: 6) {
+                LiveActivityMacroRow(label: "P", value: proteinLeft, color: .blue)
+                LiveActivityMacroRow(label: "C", value: carbsLeft, color: .orange)
+                LiveActivityMacroRow(label: "F", value: fatLeft, color: .purple)
             }
             
-            // Right - Circular progress
+            // Progress Ring
             ZStack {
                 Circle()
-                    .stroke(Color.gray.opacity(0.3), lineWidth: 4)
-                    .frame(width: 50, height: 50)
+                    .stroke(Color.gray.opacity(0.3), lineWidth: 6)
                 
                 Circle()
                     .trim(from: 0, to: min(progress, 1.0))
-                    .stroke(progressColor, style: StrokeStyle(lineWidth: 4, lineCap: .round))
+                    .stroke(
+                        progress > 1.0 ? Color.red : Color.green,
+                        style: StrokeStyle(lineWidth: 6, lineCap: .round)
+                    )
                     .rotationEffect(.degrees(-90))
-                    .frame(width: 50, height: 50)
                 
-                Image(systemName: "flame.fill")
-                    .foregroundColor(progressColor)
-                    .font(.system(size: 18))
+                Text("\(Int(progress * 100))%")
+                    .font(.system(size: 12, weight: .bold))
+                    .foregroundColor(.primary)
             }
+            .frame(width: 50, height: 50)
         }
         .padding(16)
-        .activityBackgroundTint(.black.opacity(0.6))
-    }
-    
-    var progressColor: Color {
-        if progress > 1.0 {
-            return .red
-        } else if progress >= 0.8 {
-            return .yellow
-        } else {
-            return .green
-        }
+        .activityBackgroundTint(Color.black.opacity(0.8))
     }
 }
 
-// MARK: - Macro Item for Dynamic Island
-struct MacroItem: View {
+// MARK: - Live Activity Macro Row
+struct LiveActivityMacroRow: View {
     let label: String
     let value: Int
     let color: Color
     
     var body: some View {
-        VStack(spacing: 2) {
-            HStack(spacing: 4) {
-                Circle().fill(color).frame(width: 6, height: 6)
-                Text("\(value)g")
-                    .font(.system(size: 12, weight: .semibold))
-                    .foregroundColor(.white)
-            }
+        HStack(spacing: 4) {
+            Circle()
+                .fill(color)
+                .frame(width: 6, height: 6)
+            Text("\(label): \(value)g")
+                .font(.system(size: 11))
+                .foregroundColor(.secondary)
+        }
+    }
+}
+
+// MARK: - Live Activity Macro Item (for Dynamic Island expanded)
+struct LiveActivityMacroItem: View {
+    let label: String
+    let value: Int
+    let color: Color
+    
+    var body: some View {
+        VStack(spacing: 4) {
+            Circle()
+                .fill(color)
+                .frame(width: 8, height: 8)
+            Text("\(value)g")
+                .font(.system(size: 12, weight: .semibold))
+                .foregroundColor(.white)
             Text(label)
                 .font(.system(size: 9))
                 .foregroundColor(.secondary)

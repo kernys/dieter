@@ -1,21 +1,21 @@
 import 'dart:io';
 import 'package:flutter/foundation.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:live_activities/live_activities.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 final liveActivityServiceProvider = Provider<LiveActivityService>((ref) {
   return LiveActivityService();
 });
 
-// Async provider that loads the saved state and initializes Live Activity
+// Provider that initializes Live Activity on app start
 final liveActivityInitProvider = FutureProvider<bool>((ref) async {
   final service = ref.watch(liveActivityServiceProvider);
-  final enabled = await service.isEnabled();
+  await service.init();
   
+  final enabled = await service.isEnabled();
   ref.read(liveActivityEnabledProvider.notifier).state = enabled;
   
-  // Don't start here - it will be started by widgetUpdaterProvider with actual data
   return enabled;
 });
 
@@ -24,14 +24,28 @@ final liveActivityEnabledProvider = StateProvider<bool>((ref) {
 });
 
 class LiveActivityService {
-  static const _channel = MethodChannel('net.kernys.dietai/live_activity');
+  final _liveActivities = LiveActivities();
   static const _prefsKey = 'live_activity_enabled';
+  static const _appGroupId = 'group.dietai';
+  static const _activityId = 'calai_daily_tracker';
   
-  bool _isActivityRunning = false;
-  String? _activityId;
+  bool _isInitialized = false;
 
-  bool get isActivityRunning => _isActivityRunning;
   bool get isSupported => Platform.isIOS;
+
+  /// Initialize the Live Activities plugin
+  Future<void> init() async {
+    if (!isSupported || _isInitialized) return;
+    
+    try {
+      await _liveActivities.init(appGroupId: _appGroupId);
+      _isInitialized = true;
+      
+      debugPrint('LiveActivity: Initialized with appGroupId: $_appGroupId');
+    } catch (e) {
+      debugPrint('LiveActivity: Init error: $e');
+    }
+  }
 
   /// Check if Live Activity is enabled in settings
   Future<bool> isEnabled() async {
@@ -39,63 +53,30 @@ class LiveActivityService {
     return prefs.getBool(_prefsKey) ?? false;
   }
 
+  /// Check if device supports Live Activities
+  Future<bool> checkSupport() async {
+    if (!isSupported) return false;
+    
+    try {
+      return await _liveActivities.areActivitiesEnabled();
+    } catch (e) {
+      debugPrint('LiveActivity: checkSupport error: $e');
+      return false;
+    }
+  }
+
   /// Set Live Activity enabled/disabled
   Future<void> setEnabled(bool enabled) async {
     final prefs = await SharedPreferences.getInstance();
     await prefs.setBool(_prefsKey, enabled);
     
-    if (enabled) {
-      await startActivity();
-    } else {
+    if (!enabled) {
       await endActivity();
     }
   }
 
-  /// Start a Live Activity
-  Future<bool> startActivity({
-    int caloriesLeft = 0,
-    int caloriesGoal = 2000,
-    int caloriesConsumed = 0,
-    int proteinLeft = 0,
-    int carbsLeft = 0,
-    int fatLeft = 0,
-  }) async {
-    if (!isSupported) {
-      debugPrint('Live Activity: Not supported on this platform');
-      return false;
-    }
-
-    debugPrint('Live Activity: Starting with caloriesLeft=$caloriesLeft, caloriesGoal=$caloriesGoal');
-
-    try {
-      final result = await _channel.invokeMethod<String>('startActivity', {
-        'caloriesLeft': caloriesLeft,
-        'caloriesGoal': caloriesGoal,
-        'caloriesConsumed': caloriesConsumed,
-        'proteinLeft': proteinLeft,
-        'carbsLeft': carbsLeft,
-        'fatLeft': fatLeft,
-      });
-      
-      if (result != null) {
-        _activityId = result;
-        _isActivityRunning = true;
-        debugPrint('Live Activity started with ID: $result');
-        return true;
-      }
-      debugPrint('Live Activity: startActivity returned null');
-      return false;
-    } on PlatformException catch (e) {
-      debugPrint('Live Activity start error: ${e.message} (code: ${e.code}, details: ${e.details})');
-      return false;
-    } catch (e) {
-      debugPrint('Live Activity unexpected error: $e');
-      return false;
-    }
-  }
-
-  /// Update the Live Activity
-  Future<bool> updateActivity({
+  /// Create or update a Live Activity
+  Future<bool> createOrUpdateActivity({
     required int caloriesLeft,
     required int caloriesGoal,
     required int caloriesConsumed,
@@ -103,58 +84,80 @@ class LiveActivityService {
     required int carbsLeft,
     required int fatLeft,
   }) async {
-    if (!isSupported || !_isActivityRunning) {
+    if (!isSupported || !_isInitialized) {
+      debugPrint('LiveActivity: Not supported or not initialized');
+      return false;
+    }
+
+    final enabled = await isEnabled();
+    if (!enabled) {
+      debugPrint('LiveActivity: Not enabled');
+      return false;
+    }
+
+    final supported = await checkSupport();
+    if (!supported) {
+      debugPrint('LiveActivity: Not supported on this device');
       return false;
     }
 
     try {
-      await _channel.invokeMethod('updateActivity', {
-        'activityId': _activityId,
+      final activityData = <String, dynamic>{
         'caloriesLeft': caloriesLeft,
         'caloriesGoal': caloriesGoal,
         'caloriesConsumed': caloriesConsumed,
         'proteinLeft': proteinLeft,
         'carbsLeft': carbsLeft,
         'fatLeft': fatLeft,
-      });
-      debugPrint('Live Activity updated');
+        'progress': caloriesGoal > 0 
+            ? (caloriesConsumed / caloriesGoal).clamp(0.0, 1.0) 
+            : 0.0,
+      };
+
+      debugPrint('LiveActivity: Creating/updating with data: $activityData');
+
+      // Use createOrUpdateActivity - it handles both create and update
+      await _liveActivities.createOrUpdateActivity(
+        _activityId,
+        activityData,
+        removeWhenAppIsKilled: false,
+      );
+      
+      debugPrint('LiveActivity: Created/updated activity $_activityId');
       return true;
-    } on PlatformException catch (e) {
-      debugPrint('Live Activity update error: ${e.message}');
+    } catch (e) {
+      debugPrint('LiveActivity: Create/update error: $e');
       return false;
     }
   }
 
-  /// End the Live Activity
+  /// End the current Live Activity
   Future<bool> endActivity() async {
-    if (!isSupported || !_isActivityRunning) {
-      return false;
-    }
+    if (!isSupported || !_isInitialized) return false;
 
     try {
-      await _channel.invokeMethod('endActivity', {
-        'activityId': _activityId,
-      });
-      _isActivityRunning = false;
-      _activityId = null;
-      debugPrint('Live Activity ended');
+      await _liveActivities.endActivity(_activityId);
+      debugPrint('LiveActivity: Ended activity $_activityId');
+      
+      // Also end all activities to be safe
+      await _liveActivities.endAllActivities();
+      
       return true;
-    } on PlatformException catch (e) {
-      debugPrint('Live Activity end error: ${e.message}');
+    } catch (e) {
+      debugPrint('LiveActivity: End error: $e');
       return false;
     }
   }
 
-  /// Check if Live Activities are supported and authorized
-  Future<bool> checkSupport() async {
-    if (!isSupported) return false;
-
+  /// End all Live Activities
+  Future<void> endAllActivities() async {
+    if (!isSupported || !_isInitialized) return;
+    
     try {
-      final result = await _channel.invokeMethod<bool>('checkSupport');
-      return result ?? false;
-    } on PlatformException catch (e) {
-      debugPrint('Live Activity check support error: ${e.message}');
-      return false;
+      await _liveActivities.endAllActivities();
+      debugPrint('LiveActivity: Ended all activities');
+    } catch (e) {
+      debugPrint('LiveActivity: End all error: $e');
     }
   }
 }

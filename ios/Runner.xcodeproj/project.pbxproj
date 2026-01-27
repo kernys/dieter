@@ -16,8 +16,6 @@
 		97C146FC1CF9000F007C117D /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 97C146FA1CF9000F007C117D /* Main.storyboard */; };
 		97C146FE1CF9000F007C117D /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 97C146FD1CF9000F007C117D /* Assets.xcassets */; };
 		97C147011CF9000F007C117D /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 97C146FF1CF9000F007C117D /* LaunchScreen.storyboard */; };
-		ED9A381E2F291BDC00E7D473 /* LiveActivityAttributes.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED9A381C2F291BDC00E7D473 /* LiveActivityAttributes.swift */; };
-		ED9A381F2F291BDC00E7D473 /* LiveActivityAttributes.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED9A381C2F291BDC00E7D473 /* LiveActivityAttributes.swift */; };
 		WIDGET001000000000000001 /* CalAiWidget.swift in Sources */ = {isa = PBXBuildFile; fileRef = WIDGET001000000000000002 /* CalAiWidget.swift */; };
 		WIDGET001000000000000003 /* WidgetKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = WIDGET001000000000000004 /* WidgetKit.framework */; };
 		WIDGET001000000000000005 /* SwiftUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = WIDGET001000000000000006 /* SwiftUI.framework */; };
@@ -86,7 +84,6 @@
 		A0A82B2809AD0909B50B35C7 /* Pods-RunnerTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-RunnerTests.debug.xcconfig"; path = "Target Support Files/Pods-RunnerTests/Pods-RunnerTests.debug.xcconfig"; sourceTree = "<group>"; };
 		C2650698EB48F0A6CDCF4B91 /* Pods-Runner.profile.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Runner.profile.xcconfig"; path = "Target Support Files/Pods-Runner/Pods-Runner.profile.xcconfig"; sourceTree = "<group>"; };
 		D8803733160102BDD2121E90 /* Pods-RunnerTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-RunnerTests.release.xcconfig"; path = "Target Support Files/Pods-RunnerTests/Pods-RunnerTests.release.xcconfig"; sourceTree = "<group>"; };
-		ED9A381C2F291BDC00E7D473 /* LiveActivityAttributes.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LiveActivityAttributes.swift; sourceTree = "<group>"; };
 		EF6F90F5F1506C81CD17C884 /* Pods_Runner.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_Runner.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		F186B06FFB50B15124FDAC90 /* Pods-Runner.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Runner.debug.xcconfig"; path = "Target Support Files/Pods-Runner/Pods-Runner.debug.xcconfig"; sourceTree = "<group>"; };
 		F4E3A195B8ACF5988CECC8BE /* Pods-Runner.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Runner.release.xcconfig"; path = "Target Support Files/Pods-Runner/Pods-Runner.release.xcconfig"; sourceTree = "<group>"; };
@@ -174,7 +171,6 @@
 		97C146E51CF9000F007C117D = {
 			isa = PBXGroup;
 			children = (
-				ED9A381D2F291BDC00E7D473 /* Shared */,
 				9740EEB11CF90186004384FC /* Flutter */,
 				97C146F01CF9000F007C117D /* Runner */,
 				WIDGET00100000000000000F /* CalAiWidget */,
@@ -209,14 +205,6 @@
 				74858FAD1ED2DC5600515810 /* Runner-Bridging-Header.h */,
 			);
 			path = Runner;
-			sourceTree = "<group>";
-		};
-		ED9A381D2F291BDC00E7D473 /* Shared */ = {
-			isa = PBXGroup;
-			children = (
-				ED9A381C2F291BDC00E7D473 /* LiveActivityAttributes.swift */,
-			);
-			path = Shared;
 			sourceTree = "<group>";
 		};
 		WIDGET00100000000000000F /* CalAiWidget */ = {
@@ -491,7 +479,6 @@
 			files = (
 				74858FAF1ED2DC5600515810 /* AppDelegate.swift in Sources */,
 				1498D2341E8E89220040F4C2 /* GeneratedPluginRegistrant.m in Sources */,
-				ED9A381F2F291BDC00E7D473 /* LiveActivityAttributes.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -500,7 +487,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				WIDGET001000000000000001 /* CalAiWidget.swift in Sources */,
-				ED9A381E2F291BDC00E7D473 /* LiveActivityAttributes.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
