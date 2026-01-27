@@ -29,14 +29,22 @@ class _LogFoodScreenState extends ConsumerState<LogFoodScreen>
   Timer? _debounceTimer;
 
   final List<_FoodSuggestion> _defaultSuggestions = [
-    _FoodSuggestion(name: 'Peanut Butter', calories: 94, unit: 'tbsp'),
-    _FoodSuggestion(name: 'Avocado', calories: 130, unit: 'serving'),
-    _FoodSuggestion(name: 'Chicken Breast', calories: 165, unit: '100g'),
-    _FoodSuggestion(name: 'Brown Rice', calories: 216, unit: 'cup'),
-    _FoodSuggestion(name: 'Greek Yogurt', calories: 100, unit: 'container'),
-    _FoodSuggestion(name: 'Banana', calories: 105, unit: 'medium'),
-    _FoodSuggestion(name: 'Eggs', calories: 78, unit: 'large'),
-    _FoodSuggestion(name: 'Salmon', calories: 208, unit: '100g'),
+    _FoodSuggestion(name: 'Peanut Butter', calories: 94, unit: 'tbsp', protein: 4.0, carbs: 3.0, fats: 8.0, fiber: 1.0, sugar: 1.0, sodium: 73),
+    _FoodSuggestion(name: 'Avocado', calories: 160, unit: 'half', protein: 2.0, carbs: 9.0, fats: 15.0, fiber: 7.0, sugar: 0.7, sodium: 7),
+    _FoodSuggestion(name: 'Chicken Breast', calories: 165, unit: '100g', protein: 31.0, carbs: 0.0, fats: 3.6, fiber: 0, sugar: 0, sodium: 74),
+    _FoodSuggestion(name: 'Brown Rice', calories: 216, unit: 'cup', protein: 5.0, carbs: 45.0, fats: 1.8, fiber: 3.5, sugar: 0.7, sodium: 10),
+    _FoodSuggestion(name: 'Greek Yogurt', calories: 100, unit: 'container', protein: 17.0, carbs: 6.0, fats: 0.7, fiber: 0, sugar: 4.0, sodium: 56),
+    _FoodSuggestion(name: 'Banana', calories: 105, unit: 'medium', protein: 1.3, carbs: 27.0, fats: 0.4, fiber: 3.1, sugar: 14.0, sodium: 1),
+    _FoodSuggestion(name: 'Eggs', calories: 78, unit: 'large', protein: 6.0, carbs: 0.6, fats: 5.0, fiber: 0, sugar: 0.6, sodium: 62),
+    _FoodSuggestion(name: 'Salmon', calories: 208, unit: '100g', protein: 20.0, carbs: 0.0, fats: 13.0, fiber: 0, sugar: 0, sodium: 59),
+    _FoodSuggestion(name: 'Oatmeal', calories: 158, unit: 'cup', protein: 6.0, carbs: 27.0, fats: 3.0, fiber: 4.0, sugar: 1.0, sodium: 115),
+    _FoodSuggestion(name: 'Sweet Potato', calories: 103, unit: 'medium', protein: 2.3, carbs: 24.0, fats: 0.1, fiber: 3.8, sugar: 7.0, sodium: 41),
+    _FoodSuggestion(name: 'Almonds', calories: 164, unit: '28g', protein: 6.0, carbs: 6.0, fats: 14.0, fiber: 3.5, sugar: 1.2, sodium: 0),
+    _FoodSuggestion(name: 'Broccoli', calories: 55, unit: 'cup', protein: 3.7, carbs: 11.0, fats: 0.6, fiber: 5.1, sugar: 2.2, sodium: 64),
+    _FoodSuggestion(name: 'Quinoa', calories: 222, unit: 'cup', protein: 8.0, carbs: 39.0, fats: 3.5, fiber: 5.0, sugar: 1.6, sodium: 13),
+    _FoodSuggestion(name: 'Tofu', calories: 144, unit: '100g', protein: 17.0, carbs: 3.0, fats: 8.0, fiber: 2.3, sugar: 0, sodium: 14),
+    _FoodSuggestion(name: 'Spinach', calories: 23, unit: 'cup', protein: 2.9, carbs: 3.6, fats: 0.4, fiber: 2.2, sugar: 0.4, sodium: 79),
+    _FoodSuggestion(name: 'Cottage Cheese', calories: 163, unit: 'cup', protein: 28.0, carbs: 6.0, fats: 2.3, fiber: 0, sugar: 6.0, sodium: 918),
   ];
 
   @override
@@ -756,11 +764,23 @@ class _FoodSuggestion {
   final String name;
   final int calories;
   final String unit;
+  final double protein;
+  final double carbs;
+  final double fats;
+  final double? fiber;
+  final double? sugar;
+  final double? sodium; // in mg
 
   _FoodSuggestion({
     required this.name,
     required this.calories,
     required this.unit,
+    required this.protein,
+    required this.carbs,
+    required this.fats,
+    this.fiber,
+    this.sugar,
+    this.sodium,
   });
 }
 

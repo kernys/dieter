@@ -65,8 +65,8 @@ final goalWeightProvider = Provider<double>((ref) {
 });
 
 // Progress percentage provider
-// Shows how much is left to reach the goal weight
-// 0% = at goal, 100% = far from goal (e.g., 20kg+ away)
+// Shows progress towards goal weight
+// 0% = just started (far from goal), 100% = at goal
 final progressPercentageProvider = Provider<double>((ref) {
   final response = ref.watch(weightLogsResponseProvider);
 
@@ -76,20 +76,34 @@ final progressPercentageProvider = Provider<double>((ref) {
 
       final goal = ref.watch(goalWeightProvider);
       final currentWeight = data.stats.currentWeight;
+      final startWeight = data.stats.startWeight; // First logged weight
 
       if (goal == 0 || currentWeight == 0) return 0;
 
-      // Calculate how far from goal (in lbs, since weights are stored in lbs)
+      // If at goal, return 100%
       final distanceFromGoal = (currentWeight - goal).abs();
+      if (distanceFromGoal < 0.1) return 100;
 
-      // If at goal, return 0% (nothing left to goal)
-      if (distanceFromGoal < 0.1) return 0;
+      // Calculate total distance (from start to goal)
+      final totalDistance = (startWeight - goal).abs();
+      if (totalDistance < 0.1) return 100; // Already at goal from start
 
-      // Calculate percentage: 0% when at goal, increasing as distance increases
-      // Use a reference distance of 44 lbs (~20kg) as "100%" left
-      const maxDistance = 44.0;
-      final percentage = (distanceFromGoal / maxDistance * 100).clamp(0.0, 100.0);
+      // Calculate current progress (how much has been achieved)
+      final progressMade = (startWeight - currentWeight).abs();
 
+      // Calculate percentage: 0% at start, 100% at goal
+      // Handle both weight loss and weight gain goals
+      final isWeightLossGoal = goal < startWeight;
+      final isMovingTowardsGoal = isWeightLossGoal
+          ? currentWeight < startWeight
+          : currentWeight > startWeight;
+
+      if (!isMovingTowardsGoal) {
+        // Moving away from goal, clamp to 0%
+        return 0;
+      }
+
+      final percentage = (progressMade / totalDistance * 100).clamp(0.0, 100.0);
       return percentage;
     },
     loading: () => 0.0,
@@ -134,10 +148,14 @@ final weeklyEnergyDataProvider = FutureProvider<WeeklyEnergyData>((ref) async {
     final sunday = now.subtract(Duration(days: now.weekday % 7));
 
     final List<int> consumedData = [];
+    final List<int> burnedData = [];
     int totalConsumed = 0;
+    int totalBurned = 0;
 
     for (int i = 0; i < 7; i++) {
       final date = sunday.add(Duration(days: i));
+      
+      // Get consumed calories from food entries
       try {
         final response = await apiService.getFoodEntries(date);
         final dayCalories = response.summary.totalCalories;
@@ -145,6 +163,16 @@ final weeklyEnergyDataProvider = FutureProvider<WeeklyEnergyData>((ref) async {
         totalConsumed += dayCalories;
       } catch (e) {
         consumedData.add(0);
+      }
+      
+      // Get burned calories from exercise entries
+      try {
+        final exerciseResponse = await apiService.getExerciseEntries(date);
+        final dayBurned = exerciseResponse.totalCaloriesBurned;
+        burnedData.add(dayBurned);
+        totalBurned += dayBurned;
+      } catch (e) {
+        burnedData.add(0);
       }
     }
 
@@ -154,9 +182,9 @@ final weeklyEnergyDataProvider = FutureProvider<WeeklyEnergyData>((ref) async {
 
     return WeeklyEnergyData(
       consumedData: consumedData,
-      burnedData: List.filled(7, 0), // No burned data for now
+      burnedData: burnedData,
       totalConsumed: totalConsumed,
-      totalBurned: 0,
+      totalBurned: totalBurned,
       dailyAverage: dailyAverage,
     );
   } catch (e) {

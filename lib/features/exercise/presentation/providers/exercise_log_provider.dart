@@ -1,6 +1,8 @@
 import 'dart:convert';
+import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import '../../../../services/api_service.dart';
 
 class ExerciseLog {
   final String id;
@@ -43,7 +45,9 @@ class ExerciseLog {
 }
 
 class ExerciseLogNotifier extends StateNotifier<List<ExerciseLog>> {
-  ExerciseLogNotifier() : super([]) {
+  final ApiService _apiService;
+  
+  ExerciseLogNotifier(this._apiService) : super([]) {
     _loadLogs();
   }
 
@@ -65,8 +69,25 @@ class ExerciseLogNotifier extends StateNotifier<List<ExerciseLog>> {
   }
 
   Future<void> addLog(ExerciseLog log) async {
+    // Save to local state first
     state = [log, ...state];
     await _saveToDisk();
+    
+    // Also save to server for streak tracking
+    try {
+      await _apiService.createExerciseEntry(
+        type: log.type,
+        duration: log.duration,
+        caloriesBurned: log.caloriesBurned,
+        intensity: log.intensity,
+        description: log.description,
+        loggedAt: log.loggedAt,
+      );
+      debugPrint('ExerciseLogNotifier: Saved exercise to server');
+    } catch (e) {
+      debugPrint('ExerciseLogNotifier: Failed to save exercise to server: $e');
+      // Don't throw - local save succeeded
+    }
   }
 
   Future<void> removeLog(String id) async {
@@ -88,7 +109,8 @@ class ExerciseLogNotifier extends StateNotifier<List<ExerciseLog>> {
 }
 
 final exerciseLogProvider = StateNotifierProvider<ExerciseLogNotifier, List<ExerciseLog>>((ref) {
-  return ExerciseLogNotifier();
+  final apiService = ref.watch(apiServiceProvider);
+  return ExerciseLogNotifier(apiService);
 });
 
 // Provider to get today's exercise logs

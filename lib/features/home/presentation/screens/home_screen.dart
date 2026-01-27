@@ -602,6 +602,19 @@ class HomeScreen extends ConsumerWidget {
           ],
         ),
       ),
+      // Floating Coach Button
+      floatingActionButton: FloatingActionButton.extended(
+        onPressed: () => context.push('/coach'),
+        backgroundColor: AppColors.primary,
+        icon: const Icon(Icons.psychology, color: Colors.white),
+        label: Text(
+          l10n.dietCoach,
+          style: const TextStyle(
+            color: Colors.white,
+            fontWeight: FontWeight.w600,
+          ),
+        ),
+      ),
     );
   }
 

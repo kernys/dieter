@@ -2377,6 +2377,36 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Failed to connect to Health'**
   String get healthConnectionFailed;
+
+  /// No description provided for @dietCoach.
+  ///
+  /// In en, this message translates to:
+  /// **'Diet Coach'**
+  String get dietCoach;
+
+  /// No description provided for @typeMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Type a message...'**
+  String get typeMessage;
+
+  /// No description provided for @coachSuggestion1.
+  ///
+  /// In en, this message translates to:
+  /// **'What should I eat today?'**
+  String get coachSuggestion1;
+
+  /// No description provided for @coachSuggestion2.
+  ///
+  /// In en, this message translates to:
+  /// **'Tips for losing weight'**
+  String get coachSuggestion2;
+
+  /// No description provided for @coachSuggestion3.
+  ///
+  /// In en, this message translates to:
+  /// **'Recommend exercises'**
+  String get coachSuggestion3;
 }
 
 class _AppLocalizationsDelegate

@@ -1187,4 +1187,19 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String get healthConnectionFailed => '건강 앱 연결에 실패했습니다';
+
+  @override
+  String get dietCoach => '다이어트 코치';
+
+  @override
+  String get typeMessage => '메시지를 입력하세요...';
+
+  @override
+  String get coachSuggestion1 => '오늘 뭘 먹어야 할까요?';
+
+  @override
+  String get coachSuggestion2 => '살 빼는 팁 알려주세요';
+
+  @override
+  String get coachSuggestion3 => '운동 추천해주세요';
 }

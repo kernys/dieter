@@ -382,6 +382,71 @@ class ApiService {
     }
   }
 
+  // Create Exercise Entry
+  Future<void> createExerciseEntry({
+    required String type,
+    required int duration,
+    required int caloriesBurned,
+    String? intensity,
+    String? description,
+    DateTime? loggedAt,
+  }) async {
+    final response = await http.post(
+      Uri.parse('$baseUrl/exercise-entries'),
+      headers: _headers,
+      body: jsonEncode({
+        'type': type,
+        'duration': duration,
+        'caloriesBurned': caloriesBurned,
+        if (intensity != null) 'intensity': intensity,
+        if (description != null) 'description': description,
+        if (loggedAt != null) 'loggedAt': loggedAt.toUtc().toIso8601String(),
+      }),
+    );
+
+    if (response.statusCode != 201) {
+      throw ApiException(response.statusCode, 'Failed to create exercise entry');
+    }
+  }
+
+  // Get Exercise Entries
+  Future<ExerciseEntriesResponse> getExerciseEntries(DateTime date) async {
+    final dateStr = '${date.year}-${date.month.toString().padLeft(2, '0')}-${date.day.toString().padLeft(2, '0')}';
+    final response = await http.get(
+      Uri.parse('$baseUrl/exercise-entries?date=$dateStr'),
+      headers: _headers,
+    );
+
+    if (response.statusCode == 200) {
+      return ExerciseEntriesResponse.fromJson(jsonDecode(response.body));
+    } else {
+      throw ApiException(response.statusCode, 'Failed to get exercise entries');
+    }
+  }
+
+  // Coach Chat API
+  Future<CoachResponse> sendCoachMessage({
+    required String message,
+    String? locale,
+    CoachContext? context,
+  }) async {
+    final response = await http.post(
+      Uri.parse('$baseUrl/coach'),
+      headers: _headers,
+      body: jsonEncode({
+        'message': message,
+        if (locale != null) 'locale': locale,
+        if (context != null) 'context': context.toJson(),
+      }),
+    );
+
+    if (response.statusCode == 200) {
+      return CoachResponse.fromJson(jsonDecode(response.body));
+    } else {
+      throw ApiException(response.statusCode, 'Failed to get coach response');
+    }
+  }
+
   // Food Search API
   Future<FoodSearchResponse> searchFood(String query, {String lang = 'en'}) async {
     final response = await http.get(
@@ -1016,6 +1081,104 @@ class ExerciseAnalysisResult {
                       (json['caloriesBurned'] as num?)?.toInt() ?? 0,
       intensity: json['intensity'],
       description: json['description'],
+    );
+  }
+}
+
+class ExerciseEntriesResponse {
+  final List<ExerciseEntryModel> entries;
+  final int totalCaloriesBurned;
+  final int entryCount;
+
+  ExerciseEntriesResponse({
+    required this.entries,
+    required this.totalCaloriesBurned,
+    required this.entryCount,
+  });
+
+  factory ExerciseEntriesResponse.fromJson(Map<String, dynamic> json) {
+    return ExerciseEntriesResponse(
+      entries: (json['entries'] as List)
+          .map((e) => ExerciseEntryModel.fromJson(e))
+          .toList(),
+      totalCaloriesBurned: (json['summary']?['totalCaloriesBurned'] as num?)?.toInt() ?? 0,
+      entryCount: (json['summary']?['entryCount'] as num?)?.toInt() ?? 0,
+    );
+  }
+}
+
+class ExerciseEntryModel {
+  final String id;
+  final String userId;
+  final String type;
+  final int duration;
+  final int caloriesBurned;
+  final String? intensity;
+  final String? description;
+  final DateTime loggedAt;
+
+  ExerciseEntryModel({
+    required this.id,
+    required this.userId,
+    required this.type,
+    required this.duration,
+    required this.caloriesBurned,
+    this.intensity,
+    this.description,
+    required this.loggedAt,
+  });
+
+  factory ExerciseEntryModel.fromJson(Map<String, dynamic> json) {
+    return ExerciseEntryModel(
+      id: json['id'],
+      userId: json['userId'],
+      type: json['type'],
+      duration: (json['duration'] as num?)?.toInt() ?? 0,
+      caloriesBurned: (json['caloriesBurned'] as num?)?.toInt() ?? 0,
+      intensity: json['intensity'],
+      description: json['description'],
+      loggedAt: DateTime.parse(json['loggedAt']),
+    );
+  }
+}
+
+class CoachContext {
+  final double? currentWeight;
+  final double? goalWeight;
+  final int? dailyCalorieGoal;
+  final int? todayCalories;
+  final int? streakDays;
+
+  CoachContext({
+    this.currentWeight,
+    this.goalWeight,
+    this.dailyCalorieGoal,
+    this.todayCalories,
+    this.streakDays,
+  });
+
+  Map<String, dynamic> toJson() => {
+    if (currentWeight != null) 'currentWeight': currentWeight,
+    if (goalWeight != null) 'goalWeight': goalWeight,
+    if (dailyCalorieGoal != null) 'dailyCalorieGoal': dailyCalorieGoal,
+    if (todayCalories != null) 'todayCalories': todayCalories,
+    if (streakDays != null) 'streakDays': streakDays,
+  };
+}
+
+class CoachResponse {
+  final String reply;
+  final DateTime timestamp;
+
+  CoachResponse({
+    required this.reply,
+    required this.timestamp,
+  });
+
+  factory CoachResponse.fromJson(Map<String, dynamic> json) {
+    return CoachResponse(
+      reply: json['reply'],
+      timestamp: DateTime.parse(json['timestamp']),
     );
   }
 }

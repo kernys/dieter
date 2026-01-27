@@ -1197,4 +1197,19 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get healthConnectionFailed => 'Failed to connect to Health';
+
+  @override
+  String get dietCoach => 'Diet Coach';
+
+  @override
+  String get typeMessage => 'Type a message...';
+
+  @override
+  String get coachSuggestion1 => 'What should I eat today?';
+
+  @override
+  String get coachSuggestion2 => 'Tips for losing weight';
+
+  @override
+  String get coachSuggestion3 => 'Recommend exercises';
 }

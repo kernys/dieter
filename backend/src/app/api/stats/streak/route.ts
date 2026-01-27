@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getRepository } from '@/lib/database';
 import { getUserFromRequest } from '@/lib/auth';
-import { FoodEntryEntity, type FoodEntry } from '@/entities';
+import { FoodEntryEntity, type FoodEntry, ExerciseEntryEntity, type ExerciseEntry } from '@/entities';
 import { MoreThanOrEqual } from 'typeorm';
 
 // Helper to get date in specific timezone
@@ -35,8 +35,9 @@ export async function GET(request: NextRequest) {
     const startDate = new Date();
     startDate.setDate(startDate.getDate() - 365);
 
+    // Get food entries
     const foodEntryRepo = await getRepository<FoodEntry>(FoodEntryEntity);
-    const entries = await foodEntryRepo.find({
+    const foodEntries = await foodEntryRepo.find({
       where: {
         user_id: userId,
         logged_at: MoreThanOrEqual(startDate),
@@ -45,13 +46,29 @@ export async function GET(request: NextRequest) {
       order: { logged_at: 'DESC' },
     });
 
-    // Convert dates to user's timezone
-    const loggedDates = new Set(
-      entries.map(entry => {
-        const date = getDateInTimezone(new Date(entry.logged_at), tzOffset);
-        return formatDateKey(date);
-      })
-    );
+    // Get exercise entries
+    const exerciseEntryRepo = await getRepository<ExerciseEntry>(ExerciseEntryEntity);
+    const exerciseEntries = await exerciseEntryRepo.find({
+      where: {
+        user_id: userId,
+        logged_at: MoreThanOrEqual(startDate),
+      },
+      select: ['logged_at'],
+      order: { logged_at: 'DESC' },
+    });
+
+    // Combine dates from both food and exercise entries
+    const loggedDates = new Set<string>();
+    
+    for (const entry of foodEntries) {
+      const date = getDateInTimezone(new Date(entry.logged_at), tzOffset);
+      loggedDates.add(formatDateKey(date));
+    }
+    
+    for (const entry of exerciseEntries) {
+      const date = getDateInTimezone(new Date(entry.logged_at), tzOffset);
+      loggedDates.add(formatDateKey(date));
+    }
 
     let currentStreak = 0;
     let maxStreak = 0;

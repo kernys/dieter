@@ -433,5 +433,11 @@
   "healthConnect": "Health Connect",
   "healthConnected": "Successfully connected to Health",
   "healthDisconnected": "Disconnected from Health",
-  "healthConnectionFailed": "Failed to connect to Health"
+  "healthConnectionFailed": "Failed to connect to Health",
+
+  "dietCoach": "Diet Coach",
+  "typeMessage": "Type a message...",
+  "coachSuggestion1": "What should I eat today?",
+  "coachSuggestion2": "Tips for losing weight",
+  "coachSuggestion3": "Recommend exercises"
 }

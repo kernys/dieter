@@ -20,6 +20,7 @@ import '../../features/food/presentation/screens/log_food_screen.dart';
 import '../../features/exercise/presentation/screens/log_exercise_screen.dart';
 import '../../features/groups/presentation/screens/groups_screen.dart';
 import '../../features/groups/presentation/screens/group_detail_screen.dart';
+import '../../features/coach/presentation/screens/coach_chat_screen.dart';
 import '../../shared/widgets/main_scaffold.dart';
 
 final onboardingCompletedProvider = FutureProvider<bool>((ref) async {
@@ -104,6 +105,12 @@ final routerProvider = Provider<GoRouter>((ref) {
             path: '/groups',
             pageBuilder: (context, state) => const NoTransitionPage(
               child: GroupsScreen(),
+            ),
+          ),
+          GoRoute(
+            path: '/coach',
+            pageBuilder: (context, state) => const NoTransitionPage(
+              child: CoachChatScreen(),
             ),
           ),
           GoRoute(

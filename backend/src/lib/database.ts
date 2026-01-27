@@ -2,6 +2,7 @@ import { DataSource, EntitySchema, Repository } from 'typeorm';
 import { 
   UserEntity, 
   FoodEntryEntity, 
+  ExerciseEntryEntity,
   WeightLogEntity,
   GroupEntity,
   GroupMemberEntity,
@@ -30,6 +31,7 @@ export async function getDataSource(): Promise<DataSource> {
     entities: [
       UserEntity, 
       FoodEntryEntity, 
+      ExerciseEntryEntity,
       WeightLogEntity,
       GroupEntity,
       GroupMemberEntity,
