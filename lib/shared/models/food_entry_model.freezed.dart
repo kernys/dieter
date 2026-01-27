@@ -15,7 +15,7 @@ T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$FoodEntryModel {
 
- String get id; String get userId; String get name; int get calories; double get protein; double get carbs; double get fat; String? get imageUrl; List<IngredientModel> get ingredients; int get servings; DateTime get loggedAt;
+ String get id; String get userId; String get name; int get calories; double get protein; double get carbs; double get fat; double get fiber; double get sugar; double get sodium; String? get imageUrl; List<IngredientModel> get ingredients; int get servings; DateTime get loggedAt;
 /// Create a copy of FoodEntryModel
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -28,16 +28,16 @@ $FoodEntryModelCopyWith<FoodEntryModel> get copyWith => _$FoodEntryModelCopyWith
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is FoodEntryModel&&(identical(other.id, id) || other.id == id)&&(identical(other.userId, userId) || other.userId == userId)&&(identical(other.name, name) || other.name == name)&&(identical(other.calories, calories) || other.calories == calories)&&(identical(other.protein, protein) || other.protein == protein)&&(identical(other.carbs, carbs) || other.carbs == carbs)&&(identical(other.fat, fat) || other.fat == fat)&&(identical(other.imageUrl, imageUrl) || other.imageUrl == imageUrl)&&const DeepCollectionEquality().equals(other.ingredients, ingredients)&&(identical(other.servings, servings) || other.servings == servings)&&(identical(other.loggedAt, loggedAt) || other.loggedAt == loggedAt));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is FoodEntryModel&&(identical(other.id, id) || other.id == id)&&(identical(other.userId, userId) || other.userId == userId)&&(identical(other.name, name) || other.name == name)&&(identical(other.calories, calories) || other.calories == calories)&&(identical(other.protein, protein) || other.protein == protein)&&(identical(other.carbs, carbs) || other.carbs == carbs)&&(identical(other.fat, fat) || other.fat == fat)&&(identical(other.fiber, fiber) || other.fiber == fiber)&&(identical(other.sugar, sugar) || other.sugar == sugar)&&(identical(other.sodium, sodium) || other.sodium == sodium)&&(identical(other.imageUrl, imageUrl) || other.imageUrl == imageUrl)&&const DeepCollectionEquality().equals(other.ingredients, ingredients)&&(identical(other.servings, servings) || other.servings == servings)&&(identical(other.loggedAt, loggedAt) || other.loggedAt == loggedAt));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,id,userId,name,calories,protein,carbs,fat,imageUrl,const DeepCollectionEquality().hash(ingredients),servings,loggedAt);
+int get hashCode => Object.hash(runtimeType,id,userId,name,calories,protein,carbs,fat,fiber,sugar,sodium,imageUrl,const DeepCollectionEquality().hash(ingredients),servings,loggedAt);
 
 @override
 String toString() {
-  return 'FoodEntryModel(id: $id, userId: $userId, name: $name, calories: $calories, protein: $protein, carbs: $carbs, fat: $fat, imageUrl: $imageUrl, ingredients: $ingredients, servings: $servings, loggedAt: $loggedAt)';
+  return 'FoodEntryModel(id: $id, userId: $userId, name: $name, calories: $calories, protein: $protein, carbs: $carbs, fat: $fat, fiber: $fiber, sugar: $sugar, sodium: $sodium, imageUrl: $imageUrl, ingredients: $ingredients, servings: $servings, loggedAt: $loggedAt)';
 }
 
 
@@ -48,7 +48,7 @@ abstract mixin class $FoodEntryModelCopyWith<$Res>  {
   factory $FoodEntryModelCopyWith(FoodEntryModel value, $Res Function(FoodEntryModel) _then) = _$FoodEntryModelCopyWithImpl;
 @useResult
 $Res call({
- String id, String userId, String name, int calories, double protein, double carbs, double fat, String? imageUrl, List<IngredientModel> ingredients, int servings, DateTime loggedAt
+ String id, String userId, String name, int calories, double protein, double carbs, double fat, double fiber, double sugar, double sodium, String? imageUrl, List<IngredientModel> ingredients, int servings, DateTime loggedAt
 });
 
 
@@ -65,7 +65,7 @@ class _$FoodEntryModelCopyWithImpl<$Res>
 
 /// Create a copy of FoodEntryModel
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? userId = null,Object? name = null,Object? calories = null,Object? protein = null,Object? carbs = null,Object? fat = null,Object? imageUrl = freezed,Object? ingredients = null,Object? servings = null,Object? loggedAt = null,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? userId = null,Object? name = null,Object? calories = null,Object? protein = null,Object? carbs = null,Object? fat = null,Object? fiber = null,Object? sugar = null,Object? sodium = null,Object? imageUrl = freezed,Object? ingredients = null,Object? servings = null,Object? loggedAt = null,}) {
   return _then(_self.copyWith(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as String,userId: null == userId ? _self.userId : userId // ignore: cast_nullable_to_non_nullable
@@ -74,6 +74,9 @@ as String,calories: null == calories ? _self.calories : calories // ignore: cast
 as int,protein: null == protein ? _self.protein : protein // ignore: cast_nullable_to_non_nullable
 as double,carbs: null == carbs ? _self.carbs : carbs // ignore: cast_nullable_to_non_nullable
 as double,fat: null == fat ? _self.fat : fat // ignore: cast_nullable_to_non_nullable
+as double,fiber: null == fiber ? _self.fiber : fiber // ignore: cast_nullable_to_non_nullable
+as double,sugar: null == sugar ? _self.sugar : sugar // ignore: cast_nullable_to_non_nullable
+as double,sodium: null == sodium ? _self.sodium : sodium // ignore: cast_nullable_to_non_nullable
 as double,imageUrl: freezed == imageUrl ? _self.imageUrl : imageUrl // ignore: cast_nullable_to_non_nullable
 as String?,ingredients: null == ingredients ? _self.ingredients : ingredients // ignore: cast_nullable_to_non_nullable
 as List<IngredientModel>,servings: null == servings ? _self.servings : servings // ignore: cast_nullable_to_non_nullable
@@ -163,10 +166,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String id,  String userId,  String name,  int calories,  double protein,  double carbs,  double fat,  String? imageUrl,  List<IngredientModel> ingredients,  int servings,  DateTime loggedAt)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String id,  String userId,  String name,  int calories,  double protein,  double carbs,  double fat,  double fiber,  double sugar,  double sodium,  String? imageUrl,  List<IngredientModel> ingredients,  int servings,  DateTime loggedAt)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _FoodEntryModel() when $default != null:
-return $default(_that.id,_that.userId,_that.name,_that.calories,_that.protein,_that.carbs,_that.fat,_that.imageUrl,_that.ingredients,_that.servings,_that.loggedAt);case _:
+return $default(_that.id,_that.userId,_that.name,_that.calories,_that.protein,_that.carbs,_that.fat,_that.fiber,_that.sugar,_that.sodium,_that.imageUrl,_that.ingredients,_that.servings,_that.loggedAt);case _:
   return orElse();
 
 }
@@ -184,10 +187,10 @@ return $default(_that.id,_that.userId,_that.name,_that.calories,_that.protein,_t
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String id,  String userId,  String name,  int calories,  double protein,  double carbs,  double fat,  String? imageUrl,  List<IngredientModel> ingredients,  int servings,  DateTime loggedAt)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String id,  String userId,  String name,  int calories,  double protein,  double carbs,  double fat,  double fiber,  double sugar,  double sodium,  String? imageUrl,  List<IngredientModel> ingredients,  int servings,  DateTime loggedAt)  $default,) {final _that = this;
 switch (_that) {
 case _FoodEntryModel():
-return $default(_that.id,_that.userId,_that.name,_that.calories,_that.protein,_that.carbs,_that.fat,_that.imageUrl,_that.ingredients,_that.servings,_that.loggedAt);case _:
+return $default(_that.id,_that.userId,_that.name,_that.calories,_that.protein,_that.carbs,_that.fat,_that.fiber,_that.sugar,_that.sodium,_that.imageUrl,_that.ingredients,_that.servings,_that.loggedAt);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -204,10 +207,10 @@ return $default(_that.id,_that.userId,_that.name,_that.calories,_that.protein,_t
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String id,  String userId,  String name,  int calories,  double protein,  double carbs,  double fat,  String? imageUrl,  List<IngredientModel> ingredients,  int servings,  DateTime loggedAt)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String id,  String userId,  String name,  int calories,  double protein,  double carbs,  double fat,  double fiber,  double sugar,  double sodium,  String? imageUrl,  List<IngredientModel> ingredients,  int servings,  DateTime loggedAt)?  $default,) {final _that = this;
 switch (_that) {
 case _FoodEntryModel() when $default != null:
-return $default(_that.id,_that.userId,_that.name,_that.calories,_that.protein,_that.carbs,_that.fat,_that.imageUrl,_that.ingredients,_that.servings,_that.loggedAt);case _:
+return $default(_that.id,_that.userId,_that.name,_that.calories,_that.protein,_that.carbs,_that.fat,_that.fiber,_that.sugar,_that.sodium,_that.imageUrl,_that.ingredients,_that.servings,_that.loggedAt);case _:
   return null;
 
 }
@@ -219,7 +222,7 @@ return $default(_that.id,_that.userId,_that.name,_that.calories,_that.protein,_t
 @JsonSerializable()
 
 class _FoodEntryModel implements FoodEntryModel {
-  const _FoodEntryModel({required this.id, required this.userId, required this.name, required this.calories, required this.protein, required this.carbs, required this.fat, this.imageUrl, final  List<IngredientModel> ingredients = const [], this.servings = 1, required this.loggedAt}): _ingredients = ingredients;
+  const _FoodEntryModel({required this.id, required this.userId, required this.name, required this.calories, required this.protein, required this.carbs, required this.fat, this.fiber = 0, this.sugar = 0, this.sodium = 0, this.imageUrl, final  List<IngredientModel> ingredients = const [], this.servings = 1, required this.loggedAt}): _ingredients = ingredients;
   factory _FoodEntryModel.fromJson(Map<String, dynamic> json) => _$FoodEntryModelFromJson(json);
 
 @override final  String id;
@@ -229,6 +232,9 @@ class _FoodEntryModel implements FoodEntryModel {
 @override final  double protein;
 @override final  double carbs;
 @override final  double fat;
+@override@JsonKey() final  double fiber;
+@override@JsonKey() final  double sugar;
+@override@JsonKey() final  double sodium;
 @override final  String? imageUrl;
  final  List<IngredientModel> _ingredients;
 @override@JsonKey() List<IngredientModel> get ingredients {
@@ -253,16 +259,16 @@ Map<String, dynamic> toJson() {
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _FoodEntryModel&&(identical(other.id, id) || other.id == id)&&(identical(other.userId, userId) || other.userId == userId)&&(identical(other.name, name) || other.name == name)&&(identical(other.calories, calories) || other.calories == calories)&&(identical(other.protein, protein) || other.protein == protein)&&(identical(other.carbs, carbs) || other.carbs == carbs)&&(identical(other.fat, fat) || other.fat == fat)&&(identical(other.imageUrl, imageUrl) || other.imageUrl == imageUrl)&&const DeepCollectionEquality().equals(other._ingredients, _ingredients)&&(identical(other.servings, servings) || other.servings == servings)&&(identical(other.loggedAt, loggedAt) || other.loggedAt == loggedAt));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _FoodEntryModel&&(identical(other.id, id) || other.id == id)&&(identical(other.userId, userId) || other.userId == userId)&&(identical(other.name, name) || other.name == name)&&(identical(other.calories, calories) || other.calories == calories)&&(identical(other.protein, protein) || other.protein == protein)&&(identical(other.carbs, carbs) || other.carbs == carbs)&&(identical(other.fat, fat) || other.fat == fat)&&(identical(other.fiber, fiber) || other.fiber == fiber)&&(identical(other.sugar, sugar) || other.sugar == sugar)&&(identical(other.sodium, sodium) || other.sodium == sodium)&&(identical(other.imageUrl, imageUrl) || other.imageUrl == imageUrl)&&const DeepCollectionEquality().equals(other._ingredients, _ingredients)&&(identical(other.servings, servings) || other.servings == servings)&&(identical(other.loggedAt, loggedAt) || other.loggedAt == loggedAt));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,id,userId,name,calories,protein,carbs,fat,imageUrl,const DeepCollectionEquality().hash(_ingredients),servings,loggedAt);
+int get hashCode => Object.hash(runtimeType,id,userId,name,calories,protein,carbs,fat,fiber,sugar,sodium,imageUrl,const DeepCollectionEquality().hash(_ingredients),servings,loggedAt);
 
 @override
 String toString() {
-  return 'FoodEntryModel(id: $id, userId: $userId, name: $name, calories: $calories, protein: $protein, carbs: $carbs, fat: $fat, imageUrl: $imageUrl, ingredients: $ingredients, servings: $servings, loggedAt: $loggedAt)';
+  return 'FoodEntryModel(id: $id, userId: $userId, name: $name, calories: $calories, protein: $protein, carbs: $carbs, fat: $fat, fiber: $fiber, sugar: $sugar, sodium: $sodium, imageUrl: $imageUrl, ingredients: $ingredients, servings: $servings, loggedAt: $loggedAt)';
 }
 
 
@@ -273,7 +279,7 @@ abstract mixin class _$FoodEntryModelCopyWith<$Res> implements $FoodEntryModelCo
   factory _$FoodEntryModelCopyWith(_FoodEntryModel value, $Res Function(_FoodEntryModel) _then) = __$FoodEntryModelCopyWithImpl;
 @override @useResult
 $Res call({
- String id, String userId, String name, int calories, double protein, double carbs, double fat, String? imageUrl, List<IngredientModel> ingredients, int servings, DateTime loggedAt
+ String id, String userId, String name, int calories, double protein, double carbs, double fat, double fiber, double sugar, double sodium, String? imageUrl, List<IngredientModel> ingredients, int servings, DateTime loggedAt
 });
 
 
@@ -290,7 +296,7 @@ class __$FoodEntryModelCopyWithImpl<$Res>
 
 /// Create a copy of FoodEntryModel
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? userId = null,Object? name = null,Object? calories = null,Object? protein = null,Object? carbs = null,Object? fat = null,Object? imageUrl = freezed,Object? ingredients = null,Object? servings = null,Object? loggedAt = null,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? userId = null,Object? name = null,Object? calories = null,Object? protein = null,Object? carbs = null,Object? fat = null,Object? fiber = null,Object? sugar = null,Object? sodium = null,Object? imageUrl = freezed,Object? ingredients = null,Object? servings = null,Object? loggedAt = null,}) {
   return _then(_FoodEntryModel(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as String,userId: null == userId ? _self.userId : userId // ignore: cast_nullable_to_non_nullable
@@ -299,6 +305,9 @@ as String,calories: null == calories ? _self.calories : calories // ignore: cast
 as int,protein: null == protein ? _self.protein : protein // ignore: cast_nullable_to_non_nullable
 as double,carbs: null == carbs ? _self.carbs : carbs // ignore: cast_nullable_to_non_nullable
 as double,fat: null == fat ? _self.fat : fat // ignore: cast_nullable_to_non_nullable
+as double,fiber: null == fiber ? _self.fiber : fiber // ignore: cast_nullable_to_non_nullable
+as double,sugar: null == sugar ? _self.sugar : sugar // ignore: cast_nullable_to_non_nullable
+as double,sodium: null == sodium ? _self.sodium : sodium // ignore: cast_nullable_to_non_nullable
 as double,imageUrl: freezed == imageUrl ? _self.imageUrl : imageUrl // ignore: cast_nullable_to_non_nullable
 as String?,ingredients: null == ingredients ? _self._ingredients : ingredients // ignore: cast_nullable_to_non_nullable
 as List<IngredientModel>,servings: null == servings ? _self.servings : servings // ignore: cast_nullable_to_non_nullable
@@ -592,7 +601,7 @@ as double?,
 /// @nodoc
 mixin _$DailySummaryModel {
 
- String get id; String get userId; DateTime get date; int get totalCalories; double get totalProtein; double get totalCarbs; double get totalFat; List<FoodEntryModel> get entries;
+ String get id; String get userId; DateTime get date; int get totalCalories; double get totalProtein; double get totalCarbs; double get totalFat; double get totalFiber; double get totalSugar; double get totalSodium; List<FoodEntryModel> get entries;
 /// Create a copy of DailySummaryModel
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -605,16 +614,16 @@ $DailySummaryModelCopyWith<DailySummaryModel> get copyWith => _$DailySummaryMode
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is DailySummaryModel&&(identical(other.id, id) || other.id == id)&&(identical(other.userId, userId) || other.userId == userId)&&(identical(other.date, date) || other.date == date)&&(identical(other.totalCalories, totalCalories) || other.totalCalories == totalCalories)&&(identical(other.totalProtein, totalProtein) || other.totalProtein == totalProtein)&&(identical(other.totalCarbs, totalCarbs) || other.totalCarbs == totalCarbs)&&(identical(other.totalFat, totalFat) || other.totalFat == totalFat)&&const DeepCollectionEquality().equals(other.entries, entries));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is DailySummaryModel&&(identical(other.id, id) || other.id == id)&&(identical(other.userId, userId) || other.userId == userId)&&(identical(other.date, date) || other.date == date)&&(identical(other.totalCalories, totalCalories) || other.totalCalories == totalCalories)&&(identical(other.totalProtein, totalProtein) || other.totalProtein == totalProtein)&&(identical(other.totalCarbs, totalCarbs) || other.totalCarbs == totalCarbs)&&(identical(other.totalFat, totalFat) || other.totalFat == totalFat)&&(identical(other.totalFiber, totalFiber) || other.totalFiber == totalFiber)&&(identical(other.totalSugar, totalSugar) || other.totalSugar == totalSugar)&&(identical(other.totalSodium, totalSodium) || other.totalSodium == totalSodium)&&const DeepCollectionEquality().equals(other.entries, entries));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,id,userId,date,totalCalories,totalProtein,totalCarbs,totalFat,const DeepCollectionEquality().hash(entries));
+int get hashCode => Object.hash(runtimeType,id,userId,date,totalCalories,totalProtein,totalCarbs,totalFat,totalFiber,totalSugar,totalSodium,const DeepCollectionEquality().hash(entries));
 
 @override
 String toString() {
-  return 'DailySummaryModel(id: $id, userId: $userId, date: $date, totalCalories: $totalCalories, totalProtein: $totalProtein, totalCarbs: $totalCarbs, totalFat: $totalFat, entries: $entries)';
+  return 'DailySummaryModel(id: $id, userId: $userId, date: $date, totalCalories: $totalCalories, totalProtein: $totalProtein, totalCarbs: $totalCarbs, totalFat: $totalFat, totalFiber: $totalFiber, totalSugar: $totalSugar, totalSodium: $totalSodium, entries: $entries)';
 }
 
 
@@ -625,7 +634,7 @@ abstract mixin class $DailySummaryModelCopyWith<$Res>  {
   factory $DailySummaryModelCopyWith(DailySummaryModel value, $Res Function(DailySummaryModel) _then) = _$DailySummaryModelCopyWithImpl;
 @useResult
 $Res call({
- String id, String userId, DateTime date, int totalCalories, double totalProtein, double totalCarbs, double totalFat, List<FoodEntryModel> entries
+ String id, String userId, DateTime date, int totalCalories, double totalProtein, double totalCarbs, double totalFat, double totalFiber, double totalSugar, double totalSodium, List<FoodEntryModel> entries
 });
 
 
@@ -642,7 +651,7 @@ class _$DailySummaryModelCopyWithImpl<$Res>
 
 /// Create a copy of DailySummaryModel
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? userId = null,Object? date = null,Object? totalCalories = null,Object? totalProtein = null,Object? totalCarbs = null,Object? totalFat = null,Object? entries = null,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? userId = null,Object? date = null,Object? totalCalories = null,Object? totalProtein = null,Object? totalCarbs = null,Object? totalFat = null,Object? totalFiber = null,Object? totalSugar = null,Object? totalSodium = null,Object? entries = null,}) {
   return _then(_self.copyWith(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as String,userId: null == userId ? _self.userId : userId // ignore: cast_nullable_to_non_nullable
@@ -651,6 +660,9 @@ as DateTime,totalCalories: null == totalCalories ? _self.totalCalories : totalCa
 as int,totalProtein: null == totalProtein ? _self.totalProtein : totalProtein // ignore: cast_nullable_to_non_nullable
 as double,totalCarbs: null == totalCarbs ? _self.totalCarbs : totalCarbs // ignore: cast_nullable_to_non_nullable
 as double,totalFat: null == totalFat ? _self.totalFat : totalFat // ignore: cast_nullable_to_non_nullable
+as double,totalFiber: null == totalFiber ? _self.totalFiber : totalFiber // ignore: cast_nullable_to_non_nullable
+as double,totalSugar: null == totalSugar ? _self.totalSugar : totalSugar // ignore: cast_nullable_to_non_nullable
+as double,totalSodium: null == totalSodium ? _self.totalSodium : totalSodium // ignore: cast_nullable_to_non_nullable
 as double,entries: null == entries ? _self.entries : entries // ignore: cast_nullable_to_non_nullable
 as List<FoodEntryModel>,
   ));
@@ -737,10 +749,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String id,  String userId,  DateTime date,  int totalCalories,  double totalProtein,  double totalCarbs,  double totalFat,  List<FoodEntryModel> entries)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String id,  String userId,  DateTime date,  int totalCalories,  double totalProtein,  double totalCarbs,  double totalFat,  double totalFiber,  double totalSugar,  double totalSodium,  List<FoodEntryModel> entries)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _DailySummaryModel() when $default != null:
-return $default(_that.id,_that.userId,_that.date,_that.totalCalories,_that.totalProtein,_that.totalCarbs,_that.totalFat,_that.entries);case _:
+return $default(_that.id,_that.userId,_that.date,_that.totalCalories,_that.totalProtein,_that.totalCarbs,_that.totalFat,_that.totalFiber,_that.totalSugar,_that.totalSodium,_that.entries);case _:
   return orElse();
 
 }
@@ -758,10 +770,10 @@ return $default(_that.id,_that.userId,_that.date,_that.totalCalories,_that.total
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String id,  String userId,  DateTime date,  int totalCalories,  double totalProtein,  double totalCarbs,  double totalFat,  List<FoodEntryModel> entries)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String id,  String userId,  DateTime date,  int totalCalories,  double totalProtein,  double totalCarbs,  double totalFat,  double totalFiber,  double totalSugar,  double totalSodium,  List<FoodEntryModel> entries)  $default,) {final _that = this;
 switch (_that) {
 case _DailySummaryModel():
-return $default(_that.id,_that.userId,_that.date,_that.totalCalories,_that.totalProtein,_that.totalCarbs,_that.totalFat,_that.entries);case _:
+return $default(_that.id,_that.userId,_that.date,_that.totalCalories,_that.totalProtein,_that.totalCarbs,_that.totalFat,_that.totalFiber,_that.totalSugar,_that.totalSodium,_that.entries);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -778,10 +790,10 @@ return $default(_that.id,_that.userId,_that.date,_that.totalCalories,_that.total
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String id,  String userId,  DateTime date,  int totalCalories,  double totalProtein,  double totalCarbs,  double totalFat,  List<FoodEntryModel> entries)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String id,  String userId,  DateTime date,  int totalCalories,  double totalProtein,  double totalCarbs,  double totalFat,  double totalFiber,  double totalSugar,  double totalSodium,  List<FoodEntryModel> entries)?  $default,) {final _that = this;
 switch (_that) {
 case _DailySummaryModel() when $default != null:
-return $default(_that.id,_that.userId,_that.date,_that.totalCalories,_that.totalProtein,_that.totalCarbs,_that.totalFat,_that.entries);case _:
+return $default(_that.id,_that.userId,_that.date,_that.totalCalories,_that.totalProtein,_that.totalCarbs,_that.totalFat,_that.totalFiber,_that.totalSugar,_that.totalSodium,_that.entries);case _:
   return null;
 
 }
@@ -793,7 +805,7 @@ return $default(_that.id,_that.userId,_that.date,_that.totalCalories,_that.total
 @JsonSerializable()
 
 class _DailySummaryModel implements DailySummaryModel {
-  const _DailySummaryModel({required this.id, required this.userId, required this.date, this.totalCalories = 0, this.totalProtein = 0.0, this.totalCarbs = 0.0, this.totalFat = 0.0, final  List<FoodEntryModel> entries = const []}): _entries = entries;
+  const _DailySummaryModel({required this.id, required this.userId, required this.date, this.totalCalories = 0, this.totalProtein = 0.0, this.totalCarbs = 0.0, this.totalFat = 0.0, this.totalFiber = 0.0, this.totalSugar = 0.0, this.totalSodium = 0.0, final  List<FoodEntryModel> entries = const []}): _entries = entries;
   factory _DailySummaryModel.fromJson(Map<String, dynamic> json) => _$DailySummaryModelFromJson(json);
 
 @override final  String id;
@@ -803,6 +815,9 @@ class _DailySummaryModel implements DailySummaryModel {
 @override@JsonKey() final  double totalProtein;
 @override@JsonKey() final  double totalCarbs;
 @override@JsonKey() final  double totalFat;
+@override@JsonKey() final  double totalFiber;
+@override@JsonKey() final  double totalSugar;
+@override@JsonKey() final  double totalSodium;
  final  List<FoodEntryModel> _entries;
 @override@JsonKey() List<FoodEntryModel> get entries {
   if (_entries is EqualUnmodifiableListView) return _entries;
@@ -824,16 +839,16 @@ Map<String, dynamic> toJson() {
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _DailySummaryModel&&(identical(other.id, id) || other.id == id)&&(identical(other.userId, userId) || other.userId == userId)&&(identical(other.date, date) || other.date == date)&&(identical(other.totalCalories, totalCalories) || other.totalCalories == totalCalories)&&(identical(other.totalProtein, totalProtein) || other.totalProtein == totalProtein)&&(identical(other.totalCarbs, totalCarbs) || other.totalCarbs == totalCarbs)&&(identical(other.totalFat, totalFat) || other.totalFat == totalFat)&&const DeepCollectionEquality().equals(other._entries, _entries));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _DailySummaryModel&&(identical(other.id, id) || other.id == id)&&(identical(other.userId, userId) || other.userId == userId)&&(identical(other.date, date) || other.date == date)&&(identical(other.totalCalories, totalCalories) || other.totalCalories == totalCalories)&&(identical(other.totalProtein, totalProtein) || other.totalProtein == totalProtein)&&(identical(other.totalCarbs, totalCarbs) || other.totalCarbs == totalCarbs)&&(identical(other.totalFat, totalFat) || other.totalFat == totalFat)&&(identical(other.totalFiber, totalFiber) || other.totalFiber == totalFiber)&&(identical(other.totalSugar, totalSugar) || other.totalSugar == totalSugar)&&(identical(other.totalSodium, totalSodium) || other.totalSodium == totalSodium)&&const DeepCollectionEquality().equals(other._entries, _entries));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,id,userId,date,totalCalories,totalProtein,totalCarbs,totalFat,const DeepCollectionEquality().hash(_entries));
+int get hashCode => Object.hash(runtimeType,id,userId,date,totalCalories,totalProtein,totalCarbs,totalFat,totalFiber,totalSugar,totalSodium,const DeepCollectionEquality().hash(_entries));
 
 @override
 String toString() {
-  return 'DailySummaryModel(id: $id, userId: $userId, date: $date, totalCalories: $totalCalories, totalProtein: $totalProtein, totalCarbs: $totalCarbs, totalFat: $totalFat, entries: $entries)';
+  return 'DailySummaryModel(id: $id, userId: $userId, date: $date, totalCalories: $totalCalories, totalProtein: $totalProtein, totalCarbs: $totalCarbs, totalFat: $totalFat, totalFiber: $totalFiber, totalSugar: $totalSugar, totalSodium: $totalSodium, entries: $entries)';
 }
 
 
@@ -844,7 +859,7 @@ abstract mixin class _$DailySummaryModelCopyWith<$Res> implements $DailySummaryM
   factory _$DailySummaryModelCopyWith(_DailySummaryModel value, $Res Function(_DailySummaryModel) _then) = __$DailySummaryModelCopyWithImpl;
 @override @useResult
 $Res call({
- String id, String userId, DateTime date, int totalCalories, double totalProtein, double totalCarbs, double totalFat, List<FoodEntryModel> entries
+ String id, String userId, DateTime date, int totalCalories, double totalProtein, double totalCarbs, double totalFat, double totalFiber, double totalSugar, double totalSodium, List<FoodEntryModel> entries
 });
 
 
@@ -861,7 +876,7 @@ class __$DailySummaryModelCopyWithImpl<$Res>
 
 /// Create a copy of DailySummaryModel
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? userId = null,Object? date = null,Object? totalCalories = null,Object? totalProtein = null,Object? totalCarbs = null,Object? totalFat = null,Object? entries = null,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? userId = null,Object? date = null,Object? totalCalories = null,Object? totalProtein = null,Object? totalCarbs = null,Object? totalFat = null,Object? totalFiber = null,Object? totalSugar = null,Object? totalSodium = null,Object? entries = null,}) {
   return _then(_DailySummaryModel(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as String,userId: null == userId ? _self.userId : userId // ignore: cast_nullable_to_non_nullable
@@ -870,6 +885,9 @@ as DateTime,totalCalories: null == totalCalories ? _self.totalCalories : totalCa
 as int,totalProtein: null == totalProtein ? _self.totalProtein : totalProtein // ignore: cast_nullable_to_non_nullable
 as double,totalCarbs: null == totalCarbs ? _self.totalCarbs : totalCarbs // ignore: cast_nullable_to_non_nullable
 as double,totalFat: null == totalFat ? _self.totalFat : totalFat // ignore: cast_nullable_to_non_nullable
+as double,totalFiber: null == totalFiber ? _self.totalFiber : totalFiber // ignore: cast_nullable_to_non_nullable
+as double,totalSugar: null == totalSugar ? _self.totalSugar : totalSugar // ignore: cast_nullable_to_non_nullable
+as double,totalSodium: null == totalSodium ? _self.totalSodium : totalSodium // ignore: cast_nullable_to_non_nullable
 as double,entries: null == entries ? _self._entries : entries // ignore: cast_nullable_to_non_nullable
 as List<FoodEntryModel>,
   ));

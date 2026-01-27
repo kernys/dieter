@@ -642,7 +642,8 @@ class _ManualFoodEntryScreenState extends ConsumerState<ManualFoodEntryScreen> {
       );
 
       // Refresh food entries and progress data
-      ref.invalidate(dailySummaryProvider(DateTime.now()));
+      final selectedDate = ref.read(selectedDateProvider);
+      ref.invalidate(dailySummaryProvider(selectedDate));
       ref.invalidate(weeklyEnergyDataProvider);
       ref.invalidate(streakDataProvider);
       ref.invalidate(dailyAverageCaloriesProvider);

@@ -297,6 +297,9 @@ final addFoodEntryProvider = FutureProvider.family<FoodEntryModel?, AddFoodEntry
       protein: params.protein,
       carbs: params.carbs,
       fat: params.fat,
+      fiber: params.fiber,
+      sugar: params.sugar,
+      sodium: params.sodium,
       imageUrl: params.imageUrl,
       ingredients: params.ingredients,
       servings: params.servings,
@@ -346,6 +349,9 @@ class AddFoodEntryParams {
   final double protein;
   final double carbs;
   final double fat;
+  final double fiber;
+  final double sugar;
+  final double sodium;
   final String? imageUrl;
   final List<Map<String, dynamic>>? ingredients;
   final int servings;
@@ -357,6 +363,9 @@ class AddFoodEntryParams {
     required this.protein,
     required this.carbs,
     required this.fat,
+    this.fiber = 0,
+    this.sugar = 0,
+    this.sodium = 0,
     this.imageUrl,
     this.ingredients,
     this.servings = 1,

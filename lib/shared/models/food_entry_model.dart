@@ -13,6 +13,9 @@ abstract class FoodEntryModel with _$FoodEntryModel {
     required double protein,
     required double carbs,
     required double fat,
+    @Default(0) double fiber,
+    @Default(0) double sugar,
+    @Default(0) double sodium,
     String? imageUrl,
     @Default([]) List<IngredientModel> ingredients,
     @Default(1) int servings,
@@ -48,6 +51,9 @@ abstract class DailySummaryModel with _$DailySummaryModel {
     @Default(0.0) double totalProtein,
     @Default(0.0) double totalCarbs,
     @Default(0.0) double totalFat,
+    @Default(0.0) double totalFiber,
+    @Default(0.0) double totalSugar,
+    @Default(0.0) double totalSodium,
     @Default([]) List<FoodEntryModel> entries,
   }) = _DailySummaryModel;
 

@@ -8,6 +8,9 @@ export interface FoodEntry {
   protein: number;
   carbs: number;
   fat: number;
+  fiber: number;
+  sugar: number;
+  sodium: number;
   image_url: string | null;
   ingredients: object | null;
   servings: number;
@@ -23,6 +26,9 @@ export interface FoodEntryResponse {
   protein: number;
   carbs: number;
   fat: number;
+  fiber: number;
+  sugar: number;
+  sodium: number;
   imageUrl: string | null;
   ingredients: object | null;
   servings: number;
@@ -39,6 +45,9 @@ export function dumpFoodEntry(entry: FoodEntry): FoodEntryResponse {
     protein: Number(entry.protein),
     carbs: Number(entry.carbs),
     fat: Number(entry.fat),
+    fiber: Number(entry.fiber),
+    sugar: Number(entry.sugar),
+    sodium: Number(entry.sodium),
     imageUrl: entry.image_url,
     ingredients: entry.ingredients,
     servings: Number(entry.servings),
@@ -81,6 +90,24 @@ export const FoodEntryEntity = new EntitySchema<FoodEntry>({
       type: 'decimal',
       precision: 10,
       scale: 2,
+    },
+    fiber: {
+      type: 'decimal',
+      precision: 10,
+      scale: 2,
+      default: 0,
+    },
+    sugar: {
+      type: 'decimal',
+      precision: 10,
+      scale: 2,
+      default: 0,
+    },
+    sodium: {
+      type: 'decimal',
+      precision: 10,
+      scale: 2,
+      default: 0,
     },
     image_url: {
       type: 'text',

@@ -442,17 +442,23 @@ class _LogFoodScreenState extends ConsumerState<LogFoodScreen>
     }
 
     try {
+      final selectedDate = ref.read(selectedDateProvider);
       await ref.read(addFoodEntryProvider(AddFoodEntryParams(
         name: food.name,
         calories: food.calories,
         protein: food.protein,
         carbs: food.carbs,
         fat: food.fat,
+        fiber: food.fiber,
+        sugar: food.sugar,
+        sodium: food.sodium,
         imageUrl: food.imageUrl,
+        loggedAt: selectedDate,
       )).future);
 
       if (mounted) {
         // Refresh progress data
+        ref.invalidate(dailySummaryProvider(selectedDate));
         ref.invalidate(weeklyEnergyDataProvider);
         ref.invalidate(streakDataProvider);
         ref.invalidate(dailyAverageCaloriesProvider);
@@ -718,17 +724,23 @@ class _LogFoodScreenState extends ConsumerState<LogFoodScreen>
     }
 
     try {
+      final selectedDate = ref.read(selectedDateProvider);
       await ref.read(addFoodEntryProvider(AddFoodEntryParams(
         name: food.name,
         calories: food.calories,
         protein: food.protein,
         carbs: food.carbs,
         fat: food.fat,
+        fiber: food.fiber,
+        sugar: food.sugar,
+        sodium: food.sodium,
         imageUrl: food.imageUrl,
+        loggedAt: selectedDate,
       )).future);
 
       if (mounted) {
         // Refresh progress data
+        ref.invalidate(dailySummaryProvider(selectedDate));
         ref.invalidate(weeklyEnergyDataProvider);
         ref.invalidate(streakDataProvider);
         ref.invalidate(dailyAverageCaloriesProvider);
@@ -757,16 +769,22 @@ class _LogFoodScreenState extends ConsumerState<LogFoodScreen>
     }
 
     try {
+      final selectedDate = ref.read(selectedDateProvider);
       await ref.read(addFoodEntryProvider(AddFoodEntryParams(
         name: suggestion.name,
         calories: suggestion.calories,
-        protein: 0,
-        carbs: 0,
-        fat: 0,
+        protein: suggestion.protein,
+        carbs: suggestion.carbs,
+        fat: suggestion.fats,
+        fiber: suggestion.fiber ?? 0,
+        sugar: suggestion.sugar ?? 0,
+        sodium: suggestion.sodium ?? 0,
+        loggedAt: selectedDate,
       )).future);
 
       if (mounted) {
         // Refresh progress data
+        ref.invalidate(dailySummaryProvider(selectedDate));
         ref.invalidate(weeklyEnergyDataProvider);
         ref.invalidate(streakDataProvider);
         ref.invalidate(dailyAverageCaloriesProvider);

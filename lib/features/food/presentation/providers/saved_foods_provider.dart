@@ -9,6 +9,9 @@ class SavedFood {
   final double protein;
   final double carbs;
   final double fat;
+  final double fiber;
+  final double sugar;
+  final double sodium;
   final String? imageUrl;
   final DateTime savedAt;
 
@@ -19,6 +22,9 @@ class SavedFood {
     required this.protein,
     required this.carbs,
     required this.fat,
+    this.fiber = 0,
+    this.sugar = 0,
+    this.sodium = 0,
     this.imageUrl,
     required this.savedAt,
   });
@@ -30,6 +36,9 @@ class SavedFood {
     'protein': protein,
     'carbs': carbs,
     'fat': fat,
+    'fiber': fiber,
+    'sugar': sugar,
+    'sodium': sodium,
     'imageUrl': imageUrl,
     'savedAt': savedAt.toIso8601String(),
   };
@@ -41,6 +50,9 @@ class SavedFood {
     protein: (json['protein'] as num).toDouble(),
     carbs: (json['carbs'] as num).toDouble(),
     fat: (json['fat'] as num).toDouble(),
+    fiber: (json['fiber'] as num?)?.toDouble() ?? 0,
+    sugar: (json['sugar'] as num?)?.toDouble() ?? 0,
+    sodium: (json['sodium'] as num?)?.toDouble() ?? 0,
     imageUrl: json['imageUrl'] as String?,
     savedAt: DateTime.parse(json['savedAt'] as String),
   );

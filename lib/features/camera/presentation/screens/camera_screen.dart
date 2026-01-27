@@ -788,15 +788,19 @@ class _CameraScreenState extends ConsumerState<CameraScreen> {
 
     try {
       final apiService = ref.read(apiServiceProvider);
+      final selectedDate = ref.read(selectedDateProvider);
+      
       await apiService.createFoodEntry(
         name: result.name ?? l10n.unknownProduct,
         calories: result.calories ?? 0,
         protein: result.protein ?? 0,
         carbs: result.carbs ?? 0,
         fat: result.fat ?? 0,
+        loggedAt: selectedDate,
       );
 
-      // Refresh progress data
+      // Refresh daily summary and progress data
+      ref.invalidate(dailySummaryProvider(selectedDate));
       ref.invalidate(weeklyEnergyDataProvider);
       ref.invalidate(streakDataProvider);
       ref.invalidate(dailyAverageCaloriesProvider);

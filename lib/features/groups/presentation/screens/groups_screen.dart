@@ -11,6 +11,7 @@ class GroupsScreen extends ConsumerWidget {
   const GroupsScreen({super.key});
 
   void _showCreateGroupDialog(BuildContext context, WidgetRef ref) {
+    final l10n = AppLocalizations.of(context)!;
     final nameController = TextEditingController();
     final descriptionController = TextEditingController();
     bool isPrivate = false;
@@ -46,9 +47,9 @@ class GroupsScreen extends ConsumerWidget {
                   ),
                 ),
                 const SizedBox(height: 24),
-                const Text(
-                  'Create Group',
-                  style: TextStyle(
+                Text(
+                  l10n.createGroup,
+                  style: const TextStyle(
                     fontSize: 20,
                     fontWeight: FontWeight.bold,
                     color: AppColors.textPrimary,
@@ -58,8 +59,8 @@ class GroupsScreen extends ConsumerWidget {
                 TextField(
                   controller: nameController,
                   decoration: InputDecoration(
-                    labelText: 'Group Name',
-                    hintText: 'Enter group name',
+                    labelText: l10n.groupName,
+                    hintText: l10n.enterGroupName,
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(12),
                     ),
@@ -71,8 +72,8 @@ class GroupsScreen extends ConsumerWidget {
                   controller: descriptionController,
                   maxLines: 3,
                   decoration: InputDecoration(
-                    labelText: 'Description',
-                    hintText: 'What is this group about?',
+                    labelText: l10n.groupDescription,
+                    hintText: l10n.groupDescriptionHint,
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(12),
                     ),
@@ -86,9 +87,9 @@ class GroupsScreen extends ConsumerWidget {
                       onChanged: (value) => setState(() => isPrivate = value ?? false),
                       activeColor: AppColors.primary,
                     ),
-                    const Text(
-                      'Private Group',
-                      style: TextStyle(
+                    Text(
+                      l10n.privateGroup,
+                      style: const TextStyle(
                         fontSize: 14,
                         color: AppColors.textPrimary,
                       ),
@@ -110,7 +111,7 @@ class GroupsScreen extends ConsumerWidget {
                         : () async {
                             if (nameController.text.trim().isEmpty) {
                               ScaffoldMessenger.of(context).showSnackBar(
-                                const SnackBar(content: Text('Please enter a group name')),
+                                SnackBar(content: Text(l10n.pleaseEnterGroupName)),
                               );
                               return;
                             }
@@ -138,7 +139,7 @@ class GroupsScreen extends ConsumerWidget {
                               setState(() => isLoading = false);
                               if (context.mounted) {
                                 ScaffoldMessenger.of(context).showSnackBar(
-                                  SnackBar(content: Text('Failed to create group: $e')),
+                                  SnackBar(content: Text(l10n.failedToCreateGroup(e.toString()))),
                                 );
                               }
                             }
@@ -160,9 +161,9 @@ class GroupsScreen extends ConsumerWidget {
                               valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
                             ),
                           )
-                        : const Text(
-                            'Create Group',
-                            style: TextStyle(
+                        : Text(
+                            l10n.createGroup,
+                            style: const TextStyle(
                               fontSize: 16,
                               fontWeight: FontWeight.w600,
                             ),
@@ -190,8 +191,8 @@ class GroupsScreen extends ConsumerWidget {
         backgroundColor: AppColors.background,
         elevation: 0,
         title: Text(
-          'Groups',
-          style: TextStyle(
+          l10n.groups,
+          style: const TextStyle(
             fontSize: 28,
             fontWeight: FontWeight.bold,
             color: AppColors.textPrimary,
@@ -199,54 +200,138 @@ class GroupsScreen extends ConsumerWidget {
         ),
         actions: [
           IconButton(
-            icon: const Icon(Icons.notifications_outlined, color: AppColors.textPrimary),
-            onPressed: () {
-              // TODO: Show notifications
-            },
+            icon: const Icon(Icons.add_circle_outline, color: AppColors.textPrimary),
+            onPressed: () => _showCreateGroupDialog(context, ref),
           ),
         ],
       ),
-      body: discoverGroupsAsync.when(
-        data: (discoverGroups) => ListView(
-          padding: const EdgeInsets.all(16),
-          children: [
-            // Discover Groups Section
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                const Text(
-                  'Discover Groups',
-                  style: TextStyle(
-                    fontSize: 20,
-                    fontWeight: FontWeight.bold,
-                    color: AppColors.textPrimary,
+      body: ListView(
+        padding: const EdgeInsets.all(16),
+        children: [
+          // My Groups Section (pinned at top)
+          myGroupsAsync.when(
+            data: (myGroups) {
+              if (myGroups.isEmpty) {
+                return Column(
+                  children: [
+                    Text(
+                      l10n.myGroups,
+                      style: const TextStyle(
+                        fontSize: 20,
+                        fontWeight: FontWeight.bold,
+                        color: AppColors.textPrimary,
+                      ),
+                    ),
+                    const SizedBox(height: 16),
+                    Container(
+                      padding: const EdgeInsets.all(24),
+                      decoration: BoxDecoration(
+                        color: AppColors.surface,
+                        borderRadius: BorderRadius.circular(16),
+                        border: Border.all(color: AppColors.border),
+                      ),
+                      child: Column(
+                        children: [
+                          const Icon(
+                            Icons.group_outlined,
+                            size: 48,
+                            color: AppColors.textTertiary,
+                          ),
+                          const SizedBox(height: 12),
+                          Text(
+                            l10n.noGroupsYet,
+                            style: const TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.w500,
+                              color: AppColors.textPrimary,
+                            ),
+                          ),
+                          const SizedBox(height: 4),
+                          Text(
+                            l10n.joinGroupToStart,
+                            style: const TextStyle(
+                              fontSize: 14,
+                              color: AppColors.textSecondary,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    const SizedBox(height: 24),
+                  ],
+                );
+              }
+              return Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    l10n.myGroups,
+                    style: const TextStyle(
+                      fontSize: 20,
+                      fontWeight: FontWeight.bold,
+                      color: AppColors.textPrimary,
+                    ),
                   ),
-                ),
-                TextButton.icon(
-                  onPressed: () => _showCreateGroupDialog(context, ref),
-                  icon: const Icon(Icons.add, size: 20),
-                  label: const Text('New Group'),
-                  style: TextButton.styleFrom(
-                    foregroundColor: AppColors.textSecondary,
-                  ),
-                ),
-              ],
-            ),
-            const SizedBox(height: 16),
+                  const SizedBox(height: 16),
+                  ...myGroups.map((group) => _GroupCard(
+                    group: group,
+                    isMember: true,
+                    l10n: l10n,
+                    onTap: () => context.push('/groups/${group.id}'),
+                  )),
+                  const SizedBox(height: 24),
+                ],
+              );
+            },
+            loading: () => const SizedBox.shrink(),
+            error: (_, __) => const SizedBox.shrink(),
+          ),
 
-            // Groups List
-            ...discoverGroups.map((group) => _GroupCard(
-              group: group,
-              onTap: () {
-                context.push('/groups/${group.id}');
-              },
-            )),
-          ],
-        ),
-        loading: () => const Center(child: CircularProgressIndicator()),
-        error: (error, stack) => Center(
-          child: Text('Error loading groups: $error'),
-        ),
+          // Discover Groups Section
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(
+                l10n.discoverGroups,
+                style: const TextStyle(
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold,
+                  color: AppColors.textPrimary,
+                ),
+              ),
+              TextButton.icon(
+                onPressed: () => _showCreateGroupDialog(context, ref),
+                icon: const Icon(Icons.add, size: 20),
+                label: Text(l10n.newGroup),
+                style: TextButton.styleFrom(
+                  foregroundColor: AppColors.textSecondary,
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 16),
+
+          // Discover Groups List
+          discoverGroupsAsync.when(
+            data: (discoverGroups) => Column(
+              children: discoverGroups.map((group) => _GroupCard(
+                group: group,
+                isMember: false,
+                l10n: l10n,
+                onTap: () => context.push('/groups/${group.id}'),
+              )).toList(),
+            ),
+            loading: () => const Center(
+              child: Padding(
+                padding: EdgeInsets.all(32),
+                child: CircularProgressIndicator(),
+              ),
+            ),
+            error: (error, stack) => Center(
+              child: Text('Error loading groups: $error'),
+            ),
+          ),
+        ],
       ),
     );
   }
@@ -254,10 +339,14 @@ class GroupsScreen extends ConsumerWidget {
 
 class _GroupCard extends StatelessWidget {
   final GroupModel group;
+  final bool isMember;
+  final AppLocalizations l10n;
   final VoidCallback onTap;
 
   const _GroupCard({
     required this.group,
+    required this.isMember,
+    required this.l10n,
     required this.onTap,
   });
 
@@ -271,7 +360,7 @@ class _GroupCard extends StatelessWidget {
         decoration: BoxDecoration(
           color: AppColors.card,
           borderRadius: BorderRadius.circular(16),
-          border: Border.all(color: AppColors.border),
+          border: Border.all(color: isMember ? AppColors.primary.withOpacity(0.3) : AppColors.border),
         ),
         child: Row(
           children: [
@@ -294,7 +383,7 @@ class _GroupCard extends StatelessWidget {
                   : Center(
                       child: Icon(
                         Icons.group,
-                        color: AppColors.textTertiary,
+                        color: isMember ? AppColors.primary : AppColors.textTertiary,
                         size: 32,
                       ),
                     ),
@@ -316,49 +405,57 @@ class _GroupCard extends StatelessWidget {
                   ),
                   const SizedBox(height: 4),
                   Text(
-                    '${group.memberCount} members',
+                    l10n.members(group.memberCount),
                     style: const TextStyle(
                       fontSize: 13,
                       color: AppColors.textSecondary,
                     ),
                   ),
-                  const SizedBox(height: 4),
-                  Text(
-                    group.description,
-                    style: const TextStyle(
-                      fontSize: 13,
-                      color: AppColors.textSecondary,
+                  if (group.description.isNotEmpty) ...[
+                    const SizedBox(height: 4),
+                    Text(
+                      group.description,
+                      style: const TextStyle(
+                        fontSize: 13,
+                        color: AppColors.textSecondary,
+                      ),
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
                     ),
-                    maxLines: 2,
-                    overflow: TextOverflow.ellipsis,
-                  ),
+                  ],
                 ],
               ),
             ),
 
-            // Join Button
-            Container(
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-              decoration: BoxDecoration(
-                color: AppColors.textPrimary,
-                borderRadius: BorderRadius.circular(20),
-              ),
-              child: Row(
-                mainAxisSize: MainAxisSize.min,
-                children: const [
-                  Icon(Icons.add, size: 16, color: Colors.white),
-                  SizedBox(width: 4),
-                  Text(
-                    'Join',
-                    style: TextStyle(
-                      fontSize: 14,
-                      fontWeight: FontWeight.w600,
-                      color: Colors.white,
+            // Join/View Button
+            if (!isMember)
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                decoration: BoxDecoration(
+                  color: AppColors.textPrimary,
+                  borderRadius: BorderRadius.circular(20),
+                ),
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    const Icon(Icons.add, size: 16, color: Colors.white),
+                    const SizedBox(width: 4),
+                    Text(
+                      l10n.join,
+                      style: const TextStyle(
+                        fontSize: 14,
+                        fontWeight: FontWeight.w600,
+                        color: Colors.white,
+                      ),
                     ),
-                  ),
-                ],
+                  ],
+                ),
+              )
+            else
+              const Icon(
+                Icons.chevron_right,
+                color: AppColors.textSecondary,
               ),
-            ),
           ],
         ),
       ),

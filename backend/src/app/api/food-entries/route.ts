@@ -11,6 +11,9 @@ const createFoodEntrySchema = z.object({
   protein: z.number(),
   carbs: z.number(),
   fat: z.number(),
+  fiber: z.number().default(0),
+  sugar: z.number().default(0),
+  sodium: z.number().default(0),
   imageUrl: z.string().nullish(),
   ingredients: z.array(z.object({
     name: z.string(),
@@ -62,6 +65,9 @@ export async function GET(request: NextRequest) {
     const totalProtein = entries.reduce((sum, entry) => sum + Number(entry.protein) * Number(entry.servings), 0);
     const totalCarbs = entries.reduce((sum, entry) => sum + Number(entry.carbs) * Number(entry.servings), 0);
     const totalFat = entries.reduce((sum, entry) => sum + Number(entry.fat) * Number(entry.servings), 0);
+    const totalFiber = entries.reduce((sum, entry) => sum + Number(entry.fiber || 0) * Number(entry.servings), 0);
+    const totalSugar = entries.reduce((sum, entry) => sum + Number(entry.sugar || 0) * Number(entry.servings), 0);
+    const totalSodium = entries.reduce((sum, entry) => sum + Number(entry.sodium || 0) * Number(entry.servings), 0);
 
     return NextResponse.json({
       entries: entries.map(dumpFoodEntry),
@@ -70,6 +76,9 @@ export async function GET(request: NextRequest) {
         totalProtein,
         totalCarbs,
         totalFat,
+        totalFiber,
+        totalSugar,
+        totalSodium,
       },
     });
   } catch (error) {
@@ -103,6 +112,9 @@ export async function POST(request: NextRequest) {
       protein: validatedData.protein,
       carbs: validatedData.carbs,
       fat: validatedData.fat,
+      fiber: validatedData.fiber,
+      sugar: validatedData.sugar,
+      sodium: validatedData.sodium,
       image_url: validatedData.imageUrl,
       ingredients: validatedData.ingredients || null,
       servings: validatedData.servings,

@@ -177,10 +177,14 @@ class _VoiceFoodEntryScreenState extends ConsumerState<VoiceFoodEntryScreen> {
         protein: _analysisResult!.protein,
         carbs: _analysisResult!.carbs,
         fat: _analysisResult!.fat,
+        fiber: _analysisResult!.fiber,
+        sugar: _analysisResult!.sugar,
+        sodium: _analysisResult!.sodium,
       );
 
       // Refresh daily summary and progress data
-      ref.invalidate(dailySummaryProvider(DateTime.now()));
+      final selectedDate = ref.read(selectedDateProvider);
+      ref.invalidate(dailySummaryProvider(selectedDate));
       ref.invalidate(weeklyEnergyDataProvider);
       ref.invalidate(streakDataProvider);
       ref.invalidate(dailyAverageCaloriesProvider);

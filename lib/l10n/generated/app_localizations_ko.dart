@@ -285,6 +285,55 @@ class AppLocalizationsKo extends AppLocalizations {
   String get groupsComingSoon => '그룹 기능이 곧 출시됩니다!';
 
   @override
+  String get myGroups => '내 그룹';
+
+  @override
+  String get discoverGroups => '그룹 찾기';
+
+  @override
+  String get newGroup => '새 그룹';
+
+  @override
+  String get createGroup => '그룹 만들기';
+
+  @override
+  String get groupName => '그룹 이름';
+
+  @override
+  String get enterGroupName => '그룹 이름을 입력하세요';
+
+  @override
+  String get groupDescription => '그룹 설명';
+
+  @override
+  String get groupDescriptionHint => '이 그룹은 무엇에 대한 것인가요?';
+
+  @override
+  String get privateGroup => '비공개 그룹';
+
+  @override
+  String get pleaseEnterGroupName => '그룹 이름을 입력해주세요';
+
+  @override
+  String failedToCreateGroup(String error) {
+    return '그룹 생성 실패: $error';
+  }
+
+  @override
+  String members(int count) {
+    return '$count명 참여 중';
+  }
+
+  @override
+  String get join => '참여';
+
+  @override
+  String get noGroupsYet => '아직 가입한 그룹이 없습니다';
+
+  @override
+  String get joinGroupToStart => '그룹에 참여하여 함께 다이어트하세요!';
+
+  @override
   String get profile => '프로필';
 
   @override
@@ -504,7 +553,7 @@ class AppLocalizationsKo extends AppLocalizations {
   String get scanFood => '음식 스캔';
 
   @override
-  String get foodDatabase => '음식 데이터베이스';
+  String get foodDatabase => '음식 검색';
 
   @override
   String get barcode => '바코드';

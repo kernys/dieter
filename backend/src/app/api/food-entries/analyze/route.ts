@@ -38,6 +38,9 @@ export async function POST(request: NextRequest) {
         protein: result.protein,
         carbs: result.carbs,
         fat: result.fat,
+        fiber: result.fiber,
+        sugar: result.sugar,
+        sodium: result.sodium,
         image_url: imageUrl,
         ingredients: result.ingredients.map(i => ({
           name: i.name,

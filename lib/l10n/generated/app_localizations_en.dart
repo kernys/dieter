@@ -288,6 +288,55 @@ class AppLocalizationsEn extends AppLocalizations {
   String get groupsComingSoon => 'Groups coming soon!';
 
   @override
+  String get myGroups => 'My Groups';
+
+  @override
+  String get discoverGroups => 'Discover Groups';
+
+  @override
+  String get newGroup => 'New Group';
+
+  @override
+  String get createGroup => 'Create Group';
+
+  @override
+  String get groupName => 'Group Name';
+
+  @override
+  String get enterGroupName => 'Enter group name';
+
+  @override
+  String get groupDescription => 'Description';
+
+  @override
+  String get groupDescriptionHint => 'What is this group about?';
+
+  @override
+  String get privateGroup => 'Private Group';
+
+  @override
+  String get pleaseEnterGroupName => 'Please enter a group name';
+
+  @override
+  String failedToCreateGroup(String error) {
+    return 'Failed to create group: $error';
+  }
+
+  @override
+  String members(int count) {
+    return '$count members';
+  }
+
+  @override
+  String get join => 'Join';
+
+  @override
+  String get noGroupsYet => 'You haven\'t joined any groups yet';
+
+  @override
+  String get joinGroupToStart => 'Join a group to diet together!';
+
+  @override
   String get profile => 'Profile';
 
   @override
@@ -509,7 +558,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get scanFood => 'Scan Food';
 
   @override
-  String get foodDatabase => 'Food Database';
+  String get foodDatabase => 'Food Search';
 
   @override
   String get barcode => 'Barcode';

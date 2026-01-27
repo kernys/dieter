@@ -15,6 +15,9 @@ _FoodEntryModel _$FoodEntryModelFromJson(Map<String, dynamic> json) =>
       protein: (json['protein'] as num).toDouble(),
       carbs: (json['carbs'] as num).toDouble(),
       fat: (json['fat'] as num).toDouble(),
+      fiber: (json['fiber'] as num?)?.toDouble() ?? 0,
+      sugar: (json['sugar'] as num?)?.toDouble() ?? 0,
+      sodium: (json['sodium'] as num?)?.toDouble() ?? 0,
       imageUrl: json['imageUrl'] as String?,
       ingredients:
           (json['ingredients'] as List<dynamic>?)
@@ -34,6 +37,9 @@ Map<String, dynamic> _$FoodEntryModelToJson(_FoodEntryModel instance) =>
       'protein': instance.protein,
       'carbs': instance.carbs,
       'fat': instance.fat,
+      'fiber': instance.fiber,
+      'sugar': instance.sugar,
+      'sodium': instance.sodium,
       'imageUrl': instance.imageUrl,
       'ingredients': instance.ingredients,
       'servings': instance.servings,
@@ -69,6 +75,9 @@ _DailySummaryModel _$DailySummaryModelFromJson(Map<String, dynamic> json) =>
       totalProtein: (json['totalProtein'] as num?)?.toDouble() ?? 0.0,
       totalCarbs: (json['totalCarbs'] as num?)?.toDouble() ?? 0.0,
       totalFat: (json['totalFat'] as num?)?.toDouble() ?? 0.0,
+      totalFiber: (json['totalFiber'] as num?)?.toDouble() ?? 0.0,
+      totalSugar: (json['totalSugar'] as num?)?.toDouble() ?? 0.0,
+      totalSodium: (json['totalSodium'] as num?)?.toDouble() ?? 0.0,
       entries:
           (json['entries'] as List<dynamic>?)
               ?.map((e) => FoodEntryModel.fromJson(e as Map<String, dynamic>))
@@ -85,5 +94,8 @@ Map<String, dynamic> _$DailySummaryModelToJson(_DailySummaryModel instance) =>
       'totalProtein': instance.totalProtein,
       'totalCarbs': instance.totalCarbs,
       'totalFat': instance.totalFat,
+      'totalFiber': instance.totalFiber,
+      'totalSugar': instance.totalSugar,
+      'totalSodium': instance.totalSodium,
       'entries': instance.entries,
     };

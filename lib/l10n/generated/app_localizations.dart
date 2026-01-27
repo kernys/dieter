@@ -632,6 +632,96 @@ abstract class AppLocalizations {
   /// **'Groups coming soon!'**
   String get groupsComingSoon;
 
+  /// No description provided for @myGroups.
+  ///
+  /// In en, this message translates to:
+  /// **'My Groups'**
+  String get myGroups;
+
+  /// No description provided for @discoverGroups.
+  ///
+  /// In en, this message translates to:
+  /// **'Discover Groups'**
+  String get discoverGroups;
+
+  /// No description provided for @newGroup.
+  ///
+  /// In en, this message translates to:
+  /// **'New Group'**
+  String get newGroup;
+
+  /// No description provided for @createGroup.
+  ///
+  /// In en, this message translates to:
+  /// **'Create Group'**
+  String get createGroup;
+
+  /// No description provided for @groupName.
+  ///
+  /// In en, this message translates to:
+  /// **'Group Name'**
+  String get groupName;
+
+  /// No description provided for @enterGroupName.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter group name'**
+  String get enterGroupName;
+
+  /// No description provided for @groupDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Description'**
+  String get groupDescription;
+
+  /// No description provided for @groupDescriptionHint.
+  ///
+  /// In en, this message translates to:
+  /// **'What is this group about?'**
+  String get groupDescriptionHint;
+
+  /// No description provided for @privateGroup.
+  ///
+  /// In en, this message translates to:
+  /// **'Private Group'**
+  String get privateGroup;
+
+  /// No description provided for @pleaseEnterGroupName.
+  ///
+  /// In en, this message translates to:
+  /// **'Please enter a group name'**
+  String get pleaseEnterGroupName;
+
+  /// No description provided for @failedToCreateGroup.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to create group: {error}'**
+  String failedToCreateGroup(String error);
+
+  /// No description provided for @members.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} members'**
+  String members(int count);
+
+  /// No description provided for @join.
+  ///
+  /// In en, this message translates to:
+  /// **'Join'**
+  String get join;
+
+  /// No description provided for @noGroupsYet.
+  ///
+  /// In en, this message translates to:
+  /// **'You haven\'t joined any groups yet'**
+  String get noGroupsYet;
+
+  /// No description provided for @joinGroupToStart.
+  ///
+  /// In en, this message translates to:
+  /// **'Join a group to diet together!'**
+  String get joinGroupToStart;
+
   /// No description provided for @profile.
   ///
   /// In en, this message translates to:
@@ -1061,7 +1151,7 @@ abstract class AppLocalizations {
   /// No description provided for @foodDatabase.
   ///
   /// In en, this message translates to:
-  /// **'Food Database'**
+  /// **'Food Search'**
   String get foodDatabase;
 
   /// No description provided for @barcode.

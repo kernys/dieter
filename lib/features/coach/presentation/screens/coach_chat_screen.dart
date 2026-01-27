@@ -358,6 +358,7 @@ class _CoachChatScreenState extends ConsumerState<CoachChatScreen> {
                 Expanded(
                   child: TextField(
                     controller: _messageController,
+                    onTap: _scrollToBottom,
                     decoration: InputDecoration(
                       hintText: l10n.typeMessage,
                       hintStyle: TextStyle(color: context.textSecondaryColor),
