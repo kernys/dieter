@@ -96,8 +96,17 @@ class _CoachChatScreenState extends ConsumerState<CoachChatScreen> {
         streakDays: streakData.whenOrNull(data: (d) => d.currentStreak),
       );
 
+      // Convert chat messages to API format (skip initial greeting)
+      final apiMessages = _messages
+          .skip(1) // Skip the initial greeting message
+          .map((m) => CoachMessage(
+                role: m.isUser ? 'user' : 'assistant',
+                content: m.text,
+              ))
+          .toList();
+
       final response = await apiService.sendCoachMessage(
-        message: message,
+        messages: apiMessages,
         locale: locale,
         context: coachContext,
       );

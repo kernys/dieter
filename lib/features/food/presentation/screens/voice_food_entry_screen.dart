@@ -7,6 +7,7 @@ import '../../../../l10n/generated/app_localizations.dart';
 import '../../../../services/api_service.dart';
 import '../../../auth/presentation/providers/auth_provider.dart';
 import '../../../home/presentation/providers/home_provider.dart';
+import '../../../progress/presentation/providers/progress_provider.dart';
 
 class VoiceFoodEntryScreen extends ConsumerStatefulWidget {
   const VoiceFoodEntryScreen({super.key});
@@ -178,7 +179,11 @@ class _VoiceFoodEntryScreenState extends ConsumerState<VoiceFoodEntryScreen> {
         fat: _analysisResult!.fat,
       );
 
+      // Refresh daily summary and progress data
       ref.invalidate(dailySummaryProvider(DateTime.now()));
+      ref.invalidate(weeklyEnergyDataProvider);
+      ref.invalidate(streakDataProvider);
+      ref.invalidate(dailyAverageCaloriesProvider);
 
       if (mounted) {
         Navigator.pop(context);

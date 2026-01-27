@@ -5,6 +5,7 @@ import '../../../../core/constants/app_colors.dart';
 import '../../../../l10n/generated/app_localizations.dart';
 import '../../../../services/api_service.dart';
 import '../../../home/presentation/providers/home_provider.dart';
+import '../../../progress/presentation/providers/progress_provider.dart';
 import '../providers/exercise_log_provider.dart';
 
 class LogExerciseScreen extends ConsumerWidget {
@@ -228,6 +229,10 @@ class LogExerciseScreen extends ConsumerWidget {
                           ),
                         );
 
+                        // Refresh progress data
+                        ref.invalidate(weeklyEnergyDataProvider);
+                        ref.invalidate(streakDataProvider);
+
                         Navigator.pop(context);
                         Navigator.pop(context);
                         ScaffoldMessenger.of(context).showSnackBar(
@@ -399,6 +404,10 @@ class LogExerciseScreen extends ConsumerWidget {
                           ),
                         );
 
+                        // Refresh progress data
+                        ref.invalidate(weeklyEnergyDataProvider);
+                        ref.invalidate(streakDataProvider);
+
                         Navigator.pop(context);
                         Navigator.pop(context);
                         ScaffoldMessenger.of(context).showSnackBar(
@@ -565,6 +574,10 @@ class LogExerciseScreen extends ConsumerWidget {
                                 ),
                               );
 
+                              // Refresh progress data
+                              ref.invalidate(weeklyEnergyDataProvider);
+                              ref.invalidate(streakDataProvider);
+
                               Navigator.pop(context);
                               Navigator.pop(context);
                               ScaffoldMessenger.of(context).showSnackBar(
@@ -716,6 +729,10 @@ class LogExerciseScreen extends ConsumerWidget {
                           loggedAt: selectedDate,
                         ),
                       );
+
+                      // Refresh progress data
+                      ref.invalidate(weeklyEnergyDataProvider);
+                      ref.invalidate(streakDataProvider);
 
                       Navigator.pop(context);
                       Navigator.pop(context);

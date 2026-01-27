@@ -9,6 +9,7 @@ import '../../../../services/api_service.dart';
 import '../../../../l10n/generated/app_localizations.dart';
 import '../../../auth/presentation/providers/auth_provider.dart';
 import '../../../home/presentation/providers/home_provider.dart';
+import '../../../progress/presentation/providers/progress_provider.dart';
 import '../providers/camera_provider.dart';
 
 class CameraScreen extends ConsumerStatefulWidget {
@@ -353,8 +354,11 @@ class _CameraScreenState extends ConsumerState<CameraScreen> {
       ref.read(analysisResultProvider.notifier).state = result;
       ref.read(analysisStateProvider.notifier).state = AnalysisState.success;
 
-      // Refresh the daily summary for the selected date
+      // Refresh the daily summary and progress data
       ref.invalidate(dailySummaryProvider(selectedDate));
+      ref.invalidate(weeklyEnergyDataProvider);
+      ref.invalidate(streakDataProvider);
+      ref.invalidate(dailyAverageCaloriesProvider);
 
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -791,6 +795,11 @@ class _CameraScreenState extends ConsumerState<CameraScreen> {
         carbs: result.carbs ?? 0,
         fat: result.fat ?? 0,
       );
+
+      // Refresh progress data
+      ref.invalidate(weeklyEnergyDataProvider);
+      ref.invalidate(streakDataProvider);
+      ref.invalidate(dailyAverageCaloriesProvider);
 
       if (mounted) {
         context.pop();

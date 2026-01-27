@@ -6,6 +6,7 @@ import '../../../../l10n/generated/app_localizations.dart';
 import '../../../../services/api_service.dart';
 import '../../../home/presentation/providers/home_provider.dart';
 import '../../../auth/presentation/providers/auth_provider.dart';
+import '../../../progress/presentation/providers/progress_provider.dart';
 import '../providers/saved_foods_provider.dart';
 import 'manual_food_entry_screen.dart';
 import 'voice_food_entry_screen.dart';
@@ -420,6 +421,11 @@ class _LogFoodScreenState extends ConsumerState<LogFoodScreen>
       )).future);
 
       if (mounted) {
+        // Refresh progress data
+        ref.invalidate(weeklyEnergyDataProvider);
+        ref.invalidate(streakDataProvider);
+        ref.invalidate(dailyAverageCaloriesProvider);
+
         Navigator.pop(context);
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
@@ -691,6 +697,11 @@ class _LogFoodScreenState extends ConsumerState<LogFoodScreen>
       )).future);
 
       if (mounted) {
+        // Refresh progress data
+        ref.invalidate(weeklyEnergyDataProvider);
+        ref.invalidate(streakDataProvider);
+        ref.invalidate(dailyAverageCaloriesProvider);
+
         Navigator.pop(context);
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text(l10n.foodEntrySaved)),
@@ -724,6 +735,11 @@ class _LogFoodScreenState extends ConsumerState<LogFoodScreen>
       )).future);
 
       if (mounted) {
+        // Refresh progress data
+        ref.invalidate(weeklyEnergyDataProvider);
+        ref.invalidate(streakDataProvider);
+        ref.invalidate(dailyAverageCaloriesProvider);
+
         Navigator.pop(context);
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(

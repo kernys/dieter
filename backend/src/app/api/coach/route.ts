@@ -5,8 +5,13 @@ import { z } from 'zod';
 const OPENROUTER_API_URL = 'https://openrouter.ai/api/v1/chat/completions';
 const OPENROUTER_API_KEY = process.env.OPENROUTER_API_KEY!;
 
+const messageSchema = z.object({
+  role: z.enum(['user', 'assistant']),
+  content: z.string(),
+});
+
 const chatSchema = z.object({
-  message: z.string().min(1),
+  messages: z.array(messageSchema).min(1),
   locale: z.string().optional().default('en'),
   context: z.object({
     currentWeight: z.number().optional(),
@@ -41,7 +46,7 @@ export async function POST(request: NextRequest) {
     }
 
     const body = await request.json();
-    const { message, locale, context } = chatSchema.parse(body);
+    const { messages, locale, context } = chatSchema.parse(body);
 
     const languageInstruction = getLanguageInstruction(locale);
 
@@ -66,6 +71,12 @@ ${context ? `User Context:
 - Today's Calories: ${context.todayCalories || 'Not tracked'}
 - Current Streak: ${context.streakDays || 0} days` : ''}`;
 
+    // Build conversation history with system prompt
+    const conversationMessages = [
+      { role: 'system', content: systemPrompt },
+      ...messages.map(m => ({ role: m.role, content: m.content })),
+    ];
+
     const response = await fetch(OPENROUTER_API_URL, {
       method: 'POST',
       headers: {
@@ -76,10 +87,7 @@ ${context ? `User Context:
       },
       body: JSON.stringify({
         model: 'google/gemini-2.5-flash',
-        messages: [
-          { role: 'system', content: systemPrompt },
-          { role: 'user', content: message },
-        ],
+        messages: conversationMessages,
         max_tokens: 500,
         temperature: 0.7,
       }),

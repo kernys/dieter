@@ -426,7 +426,7 @@ class ApiService {
 
   // Coach Chat API
   Future<CoachResponse> sendCoachMessage({
-    required String message,
+    required List<CoachMessage> messages,
     String? locale,
     CoachContext? context,
   }) async {
@@ -434,7 +434,7 @@ class ApiService {
       Uri.parse('$baseUrl/coach'),
       headers: _headers,
       body: jsonEncode({
-        'message': message,
+        'messages': messages.map((m) => m.toJson()).toList(),
         if (locale != null) 'locale': locale,
         if (context != null) 'context': context.toJson(),
       }),
@@ -1140,6 +1140,21 @@ class ExerciseEntryModel {
       loggedAt: DateTime.parse(json['loggedAt']),
     );
   }
+}
+
+class CoachMessage {
+  final String role; // 'user' or 'assistant'
+  final String content;
+
+  CoachMessage({
+    required this.role,
+    required this.content,
+  });
+
+  Map<String, dynamic> toJson() => {
+    'role': role,
+    'content': content,
+  };
 }
 
 class CoachContext {
