@@ -174,11 +174,11 @@ struct MediumCaloriesView: View {
             }
             .frame(maxWidth: .infinity, alignment: .leading)
 
-            // Right side - Macros
+            // Right side - Macros remaining
             VStack(alignment: .leading, spacing: 8) {
-                MacroRow(name: "Protein", value: entry.data.protein, color: .blue)
-                MacroRow(name: "Carbs", value: entry.data.carbs, color: .orange)
-                MacroRow(name: "Fat", value: entry.data.fat, color: .purple)
+                MacroRow(name: "Protein left", value: entry.data.protein, color: .blue)
+                MacroRow(name: "Carbs left", value: entry.data.carbs, color: .orange)
+                MacroRow(name: "Fat left", value: entry.data.fat, color: .purple)
             }
             .frame(maxWidth: .infinity, alignment: .leading)
         }

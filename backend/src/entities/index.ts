@@ -4,4 +4,7 @@ export { ExerciseEntryEntity, type ExerciseEntry, type ExerciseEntryResponse, du
 export { WeightLogEntity, type WeightLog, type WeightLogResponse, dumpWeightLog } from './WeightLog';
 export { GroupEntity, type Group, type GroupResponse, dumpGroup } from './Group';
 export { GroupMemberEntity, type GroupMember, type GroupMemberResponse, dumpGroupMember } from './GroupMember';
-export { GroupMessageEntity, type GroupMessage, type GroupMessageResponse, dumpGroupMessage } from './GroupMessage';
+export { GroupMessageEntity, type GroupMessage, type GroupMessageResponse, dumpGroupMessage, type MessageReactionSummary } from './GroupMessage';
+export { MessageReactionEntity, type MessageReaction, type MessageReactionResponse, dumpMessageReaction } from './MessageReaction';
+export { BadgeEntity, type Badge, type BadgeResponse, dumpBadge } from './Badge';
+export { UserBadgeEntity, type UserBadge, type UserBadgeResponse, dumpUserBadge } from './UserBadge';

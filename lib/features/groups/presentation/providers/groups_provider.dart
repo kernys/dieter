@@ -59,9 +59,37 @@ final leaveGroupProvider = Provider((ref) {
 // Send message action
 final sendMessageProvider = Provider((ref) {
   final apiService = ref.watch(apiServiceProvider);
-  return (String groupId, String message) async {
-    await apiService.sendGroupMessage(groupId, message);
+  return (String groupId, String message, {String? imageUrl, String? replyToId}) async {
+    await apiService.sendGroupMessage(groupId, message, imageUrl: imageUrl, replyToId: replyToId);
     // Invalidate messages to refresh
     ref.invalidate(groupMessagesProvider);
+  };
+});
+
+// Toggle reaction action
+final toggleReactionProvider = Provider((ref) {
+  final apiService = ref.watch(apiServiceProvider);
+  return (String groupId, String messageId, String emoji) async {
+    await apiService.toggleMessageReaction(groupId, messageId, emoji);
+    // Invalidate messages to refresh
+    ref.invalidate(groupMessagesProvider);
+  };
+});
+
+// Get message replies
+final messageRepliesProvider = FutureProvider.family<List<GroupMessage>, ({String groupId, String messageId})>((ref, params) async {
+  final apiService = ref.watch(apiServiceProvider);
+  return await apiService.getMessageReplies(params.groupId, params.messageId);
+});
+
+// Create group action
+final createGroupProvider = Provider((ref) {
+  final apiService = ref.watch(apiServiceProvider);
+  return ({required String name, String description = '', bool isPrivate = false, String? imageUrl}) async {
+    final group = await apiService.createGroup(name: name, description: description, isPrivate: isPrivate, imageUrl: imageUrl);
+    // Invalidate providers to refresh data
+    ref.invalidate(discoverGroupsProvider);
+    ref.invalidate(myGroupsProvider);
+    return group;
   };
 });

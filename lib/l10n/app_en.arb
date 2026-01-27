@@ -464,5 +464,21 @@
   "deleteExercise": "Delete Exercise",
   "deleteExerciseConfirmation": "Are you sure you want to delete this exercise?",
   "exerciseUpdated": "Exercise updated",
-  "exerciseDeleted": "Exercise deleted"
+  "exerciseDeleted": "Exercise deleted",
+
+  "badges": "Badges",
+  "badgesEarned": "Badges Earned",
+  "badgeEarned": "Earned!",
+  "earnedOn": "Earned on {date}",
+  "@earnedOn": { "placeholders": { "date": { "type": "String" } } },
+  "streak": "Streak",
+  "food": "Food",
+  "weight": "Weight",
+  "social": "Social",
+
+  "language": "Language",
+  "languageSettings": "Language Settings",
+  "systemDefault": "System Default",
+  "english": "English",
+  "korean": "한국어"
 }

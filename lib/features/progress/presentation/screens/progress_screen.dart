@@ -40,26 +40,16 @@ class ProgressScreen extends ConsumerWidget {
     final displayGoalWeight = _convertWeight(goalWeight, settings.unitSystem);
     final weightUnit = _getWeightUnit(settings.unitSystem, l10n);
 
-    // Get streak data with defaults
-    final streakData = streakDataAsync.when(
-      data: (data) => data,
-      loading: () => StreakData(currentStreak: 0, weekData: List.filled(7, false)),
-      error: (_, __) => StreakData(currentStreak: 0, weekData: List.filled(7, false)),
-    );
+    // Get streak data with defaults (preserve previous value during loading)
+    final streakData = streakDataAsync.valueOrNull ?? 
+        StreakData(currentStreak: 0, weekData: List.filled(7, false));
 
-    // Get daily average with defaults
-    final dailyAverage = dailyAverageAsync.when(
-      data: (data) => data,
-      loading: () => DailyAverageData(calories: 0, changePercentage: 0, isIncrease: false),
-      error: (_, __) => DailyAverageData(calories: 0, changePercentage: 0, isIncrease: false),
-    );
+    // Get daily average with defaults (preserve previous value during loading)
+    final dailyAverage = dailyAverageAsync.valueOrNull ?? 
+        DailyAverageData(calories: 0, changePercentage: 0, isIncrease: false);
 
-    // Get weight change data with defaults
-    final weightChange = weightChangeAsync.when(
-      data: (data) => data,
-      loading: () => WeightChangeData.empty(),
-      error: (_, __) => WeightChangeData.empty(),
-    );
+    // Get weight change data with defaults (preserve previous value during loading)
+    final weightChange = weightChangeAsync.valueOrNull ?? WeightChangeData.empty();
 
     return Scaffold(
       backgroundColor: context.backgroundColor,

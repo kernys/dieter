@@ -266,6 +266,11 @@ class ProfileScreen extends ConsumerWidget {
                     ),
                     const SizedBox(height: 12),
                     _SettingsTile(
+                      icon: Icons.emoji_events_outlined,
+                      label: l10n.badges,
+                      onTap: () => context.push('/badges'),
+                    ),
+                    _SettingsTile(
                       icon: Icons.notifications_outlined,
                       label: l10n.notifications,
                       onTap: () => context.push('/notification-settings'),

@@ -44,9 +44,26 @@ abstract class GroupMessage with _$GroupMessage {
     required String username,
     String? userProfileImage,
     required String message,
+    String? imageUrl,
+    String? replyToId,
+    GroupMessage? replyTo,
+    @Default([]) List<MessageReaction> reactions,
+    @Default(0) int replyCount,
     required DateTime createdAt,
   }) = _GroupMessage;
 
   factory GroupMessage.fromJson(Map<String, dynamic> json) =>
       _$GroupMessageFromJson(json);
+}
+
+@freezed
+abstract class MessageReaction with _$MessageReaction {
+  const factory MessageReaction({
+    required String emoji,
+    required int count,
+    @Default(false) bool userReacted,
+  }) = _MessageReaction;
+
+  factory MessageReaction.fromJson(Map<String, dynamic> json) =>
+      _$MessageReactionFromJson(json);
 }

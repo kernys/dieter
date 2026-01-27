@@ -2,10 +2,27 @@ import { NextRequest, NextResponse } from 'next/server';
 import { z } from 'zod';
 import { getRepository } from '@/lib/database';
 import { getUserFromRequest } from '@/lib/auth';
-import { GroupEntity, GroupMemberEntity, GroupMessageEntity, UserEntity, type Group, type GroupMember, type GroupMessage, type User } from '@/entities';
+import { 
+  GroupEntity, 
+  GroupMemberEntity, 
+  GroupMessageEntity, 
+  MessageReactionEntity,
+  UserEntity, 
+  type Group, 
+  type GroupMember, 
+  type GroupMessage, 
+  type MessageReaction,
+  type User,
+  type MessageReactionSummary,
+  type GroupMessageResponse,
+} from '@/entities';
 
 const createMessageSchema = z.object({
-  message: z.string().min(1),
+  message: z.string().min(1).optional(),
+  imageUrl: z.string().url().optional(),
+  replyToId: z.string().uuid().optional(),
+}).refine(data => data.message || data.imageUrl, {
+  message: 'Either message or imageUrl is required',
 });
 
 export async function GET(
@@ -51,17 +68,50 @@ export async function GET(
       );
     }
 
-    // Get messages
+    const reactionRepo = await getRepository<MessageReaction>(MessageReactionEntity);
+
+    // Get messages (only top-level, not replies)
     const messages = await groupMessageRepo.find({
-      where: { groupId: id },
+      where: { groupId: id, replyToId: null as unknown as string },
       order: { createdAt: 'ASC' },
     });
 
-    // Fetch user details for each message
+    // Fetch user details, reactions, and reply count for each message
     const messagesWithDetails = await Promise.all(
       messages.map(async (msg) => {
         const user = await userRepo.findOne({
           where: { id: msg.userId },
+        });
+
+        // Get reactions for this message
+        const reactions = await reactionRepo.find({
+          where: { messageId: msg.id },
+        });
+
+        // Aggregate reactions by emoji
+        const reactionSummary: MessageReactionSummary[] = [];
+        const emojiCounts = new Map<string, { count: number; userReacted: boolean }>();
+        
+        for (const reaction of reactions) {
+          const existing = emojiCounts.get(reaction.emoji);
+          if (existing) {
+            existing.count++;
+            if (reaction.userId === userId) existing.userReacted = true;
+          } else {
+            emojiCounts.set(reaction.emoji, { 
+              count: 1, 
+              userReacted: reaction.userId === userId 
+            });
+          }
+        }
+        
+        emojiCounts.forEach((value, emoji) => {
+          reactionSummary.push({ emoji, count: value.count, userReacted: value.userReacted });
+        });
+
+        // Count replies
+        const replyCount = await groupMessageRepo.count({
+          where: { replyToId: msg.id },
         });
 
         return {
@@ -71,8 +121,12 @@ export async function GET(
           userName: user?.name || 'Unknown',
           avatarUrl: user?.avatar_url,
           message: msg.message,
+          imageUrl: msg.imageUrl,
+          replyToId: msg.replyToId,
+          reactions: reactionSummary,
+          replyCount,
           createdAt: msg.createdAt,
-        };
+        } as GroupMessageResponse;
       })
     );
 
@@ -136,7 +190,9 @@ export async function POST(
     const message = groupMessageRepo.create({
       groupId: id,
       userId: userId,
-      message: validatedData.message,
+      message: validatedData.message || '',
+      imageUrl: validatedData.imageUrl || null,
+      replyToId: validatedData.replyToId || null,
     });
 
     await groupMessageRepo.save(message);
@@ -146,6 +202,32 @@ export async function POST(
       where: { id: userId },
     });
 
+    // Get reply-to message if exists
+    let replyTo: GroupMessageResponse | null = null;
+    if (validatedData.replyToId) {
+      const replyToMsg = await groupMessageRepo.findOne({
+        where: { id: validatedData.replyToId },
+      });
+      if (replyToMsg) {
+        const replyToUser = await userRepo.findOne({
+          where: { id: replyToMsg.userId },
+        });
+        replyTo = {
+          id: replyToMsg.id,
+          groupId: replyToMsg.groupId,
+          userId: replyToMsg.userId,
+          userName: replyToUser?.name || 'Unknown',
+          avatarUrl: replyToUser?.avatar_url,
+          message: replyToMsg.message,
+          imageUrl: replyToMsg.imageUrl,
+          replyToId: replyToMsg.replyToId,
+          reactions: [],
+          replyCount: 0,
+          createdAt: replyToMsg.createdAt,
+        };
+      }
+    }
+
     return NextResponse.json({
       id: message.id,
       groupId: message.groupId,
@@ -153,8 +235,13 @@ export async function POST(
       userName: user?.name || 'Unknown',
       avatarUrl: user?.avatar_url,
       message: message.message,
+      imageUrl: message.imageUrl,
+      replyToId: message.replyToId,
+      replyTo,
+      reactions: [],
+      replyCount: 0,
       createdAt: message.createdAt,
-    }, { status: 201 });
+    } as GroupMessageResponse, { status: 201 });
   } catch (error) {
     if (error instanceof z.ZodError) {
       return NextResponse.json(

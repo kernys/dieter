@@ -446,5 +446,21 @@
   "deleteExercise": "운동 삭제",
   "deleteExerciseConfirmation": "이 운동 기록을 삭제하시겠습니까?",
   "exerciseUpdated": "운동이 수정되었습니다",
-  "exerciseDeleted": "운동이 삭제되었습니다"
+  "exerciseDeleted": "운동이 삭제되었습니다",
+
+  "badges": "뱃지",
+  "badgesEarned": "획득한 뱃지",
+  "badgeEarned": "획득!",
+  "earnedOn": "{date}에 획득",
+  "@earnedOn": { "placeholders": { "date": { "type": "String" } } },
+  "streak": "연속 기록",
+  "food": "음식",
+  "weight": "체중",
+  "social": "소셜",
+
+  "language": "언어",
+  "languageSettings": "언어 설정",
+  "systemDefault": "시스템 기본값",
+  "english": "English",
+  "korean": "한국어"
 }

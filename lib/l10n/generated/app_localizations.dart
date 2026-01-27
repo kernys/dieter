@@ -965,7 +965,7 @@ abstract class AppLocalizations {
   /// No description provided for @korean.
   ///
   /// In en, this message translates to:
-  /// **'Korean'**
+  /// **'한국어'**
   String get korean;
 
   /// No description provided for @units.
@@ -2539,6 +2539,66 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Exercise deleted'**
   String get exerciseDeleted;
+
+  /// No description provided for @badges.
+  ///
+  /// In en, this message translates to:
+  /// **'Badges'**
+  String get badges;
+
+  /// No description provided for @badgesEarned.
+  ///
+  /// In en, this message translates to:
+  /// **'Badges Earned'**
+  String get badgesEarned;
+
+  /// No description provided for @badgeEarned.
+  ///
+  /// In en, this message translates to:
+  /// **'Earned!'**
+  String get badgeEarned;
+
+  /// No description provided for @earnedOn.
+  ///
+  /// In en, this message translates to:
+  /// **'Earned on {date}'**
+  String earnedOn(String date);
+
+  /// No description provided for @streak.
+  ///
+  /// In en, this message translates to:
+  /// **'Streak'**
+  String get streak;
+
+  /// No description provided for @food.
+  ///
+  /// In en, this message translates to:
+  /// **'Food'**
+  String get food;
+
+  /// No description provided for @weight.
+  ///
+  /// In en, this message translates to:
+  /// **'Weight'**
+  String get weight;
+
+  /// No description provided for @social.
+  ///
+  /// In en, this message translates to:
+  /// **'Social'**
+  String get social;
+
+  /// No description provided for @languageSettings.
+  ///
+  /// In en, this message translates to:
+  /// **'Language Settings'**
+  String get languageSettings;
+
+  /// No description provided for @systemDefault.
+  ///
+  /// In en, this message translates to:
+  /// **'System Default'**
+  String get systemDefault;
 }
 
 class _AppLocalizationsDelegate

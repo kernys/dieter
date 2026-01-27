@@ -462,7 +462,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get english => 'English';
 
   @override
-  String get korean => 'Korean';
+  String get korean => '한국어';
 
   @override
   String get units => 'Units';
@@ -1284,4 +1284,36 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get exerciseDeleted => 'Exercise deleted';
+
+  @override
+  String get badges => 'Badges';
+
+  @override
+  String get badgesEarned => 'Badges Earned';
+
+  @override
+  String get badgeEarned => 'Earned!';
+
+  @override
+  String earnedOn(String date) {
+    return 'Earned on $date';
+  }
+
+  @override
+  String get streak => 'Streak';
+
+  @override
+  String get food => 'Food';
+
+  @override
+  String get weight => 'Weight';
+
+  @override
+  String get social => 'Social';
+
+  @override
+  String get languageSettings => 'Language Settings';
+
+  @override
+  String get systemDefault => 'System Default';
 }

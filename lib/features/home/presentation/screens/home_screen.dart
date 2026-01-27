@@ -315,16 +315,29 @@ class HomeScreen extends ConsumerWidget {
                                 ],
                               ),
                             ),
-                            CircularProgressIndicatorWidget(
-                              progress: (summary.totalCalories - burnedCalories).clamp(0, double.infinity) / userGoals.calorieGoal,
-                              size: 80,
-                              strokeWidth: 8,
-                              progressColor: AppColors.primary,
-                              child: Icon(
-                                Icons.local_fire_department,
-                                color: AppColors.primary,
-                                size: 28,
-                              ),
+                            Builder(
+                              builder: (context) {
+                                final netCalories = (summary.totalCalories - burnedCalories).clamp(0.0, double.infinity).toDouble();
+                                final hasData = summary.totalCalories > 0 || summary.entries.isNotEmpty;
+                                final ringStyle = CircularProgressIndicatorWidget.determineRingStyle(
+                                  consumed: netCalories,
+                                  goal: userGoals.calorieGoal.toDouble(),
+                                  hasData: hasData,
+                                );
+                                final ringColor = _getRingColor(ringStyle);
+                                
+                                return CircularProgressIndicatorWidget(
+                                  progress: netCalories / userGoals.calorieGoal,
+                                  size: 80,
+                                  strokeWidth: 8,
+                                  ringStyle: ringStyle,
+                                  child: Icon(
+                                    Icons.local_fire_department,
+                                    color: ringColor,
+                                    size: 28,
+                                  ),
+                                );
+                              },
                             ),
                           ],
                         ),
@@ -764,16 +777,18 @@ class HomeScreen extends ConsumerWidget {
                   const SizedBox(height: 4),
                   Row(
                     children: [
-                      Text(
-                        '${exerciseLog.duration} min',
-                        style: TextStyle(
-                          fontSize: 12,
-                          color: context.textSecondaryColor,
+                      if (exerciseLog.duration > 0) ...[
+                        Text(
+                          '${exerciseLog.duration} min',
+                          style: TextStyle(
+                            fontSize: 12,
+                            color: context.textSecondaryColor,
+                          ),
                         ),
-                      ),
+                      ],
                       if (exerciseLog.intensity != null) ...[
                         Text(
-                          ' • ${exerciseLog.intensity}',
+                          exerciseLog.duration > 0 ? ' • ${exerciseLog.intensity}' : exerciseLog.intensity!,
                           style: TextStyle(
                             fontSize: 12,
                             color: context.textSecondaryColor,
@@ -866,7 +881,9 @@ class HomeScreen extends ConsumerWidget {
                             ),
                           ),
                           Text(
-                            '${exerciseLog.duration} min • ${exerciseLog.caloriesBurned} kcal',
+                            exerciseLog.duration > 0 
+                                ? '${exerciseLog.duration} min • ${exerciseLog.caloriesBurned} kcal'
+                                : '${exerciseLog.caloriesBurned} kcal',
                             style: TextStyle(
                               fontSize: 14,
                               color: context.textSecondaryColor,
@@ -1049,5 +1066,18 @@ class HomeScreen extends ConsumerWidget {
         ],
       ),
     );
+  }
+
+  Color _getRingColor(CalorieRingStyle style) {
+    switch (style) {
+      case CalorieRingStyle.onTrack:
+        return const Color(0xFF4CAF50); // Green
+      case CalorieRingStyle.approaching:
+        return const Color(0xFFFFC107); // Yellow/Amber
+      case CalorieRingStyle.over:
+        return const Color(0xFFF44336); // Red
+      case CalorieRingStyle.inactive:
+        return AppColors.textTertiary;
+    }
   }
 }

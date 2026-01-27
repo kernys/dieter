@@ -7,9 +7,12 @@ import {
   GroupEntity,
   GroupMemberEntity,
   GroupMessageEntity,
+  MessageReactionEntity,
+  UserBadgeEntity,
 } from '@/entities';
 import pg from 'pg';
 import dotenv from 'dotenv';
+import { BadgeEntity } from '@/entities/Badge';
 dotenv.config();
 
 // Parse PostgreSQL numeric/decimal as JavaScript number instead of string
@@ -36,6 +39,9 @@ export async function getDataSource(): Promise<DataSource> {
       GroupEntity,
       GroupMemberEntity,
       GroupMessageEntity,
+      MessageReactionEntity,
+      BadgeEntity,
+      UserBadgeEntity,
     ],
     synchronize: false,
     logging: process.env.NODE_ENV === 'development',

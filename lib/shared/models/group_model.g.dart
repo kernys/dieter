@@ -56,6 +56,17 @@ _GroupMessage _$GroupMessageFromJson(Map<String, dynamic> json) =>
       username: json['username'] as String,
       userProfileImage: json['userProfileImage'] as String?,
       message: json['message'] as String,
+      imageUrl: json['imageUrl'] as String?,
+      replyToId: json['replyToId'] as String?,
+      replyTo: json['replyTo'] == null
+          ? null
+          : GroupMessage.fromJson(json['replyTo'] as Map<String, dynamic>),
+      reactions:
+          (json['reactions'] as List<dynamic>?)
+              ?.map((e) => MessageReaction.fromJson(e as Map<String, dynamic>))
+              .toList() ??
+          const [],
+      replyCount: (json['replyCount'] as num?)?.toInt() ?? 0,
       createdAt: DateTime.parse(json['createdAt'] as String),
     );
 
@@ -67,5 +78,24 @@ Map<String, dynamic> _$GroupMessageToJson(_GroupMessage instance) =>
       'username': instance.username,
       'userProfileImage': instance.userProfileImage,
       'message': instance.message,
+      'imageUrl': instance.imageUrl,
+      'replyToId': instance.replyToId,
+      'replyTo': instance.replyTo,
+      'reactions': instance.reactions,
+      'replyCount': instance.replyCount,
       'createdAt': instance.createdAt.toIso8601String(),
+    };
+
+_MessageReaction _$MessageReactionFromJson(Map<String, dynamic> json) =>
+    _MessageReaction(
+      emoji: json['emoji'] as String,
+      count: (json['count'] as num).toInt(),
+      userReacted: json['userReacted'] as bool? ?? false,
+    );
+
+Map<String, dynamic> _$MessageReactionToJson(_MessageReaction instance) =>
+    <String, dynamic>{
+      'emoji': instance.emoji,
+      'count': instance.count,
+      'userReacted': instance.userReacted,
     };

@@ -1,8 +1,10 @@
 import 'dart:convert';
+import 'dart:io';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:http/http.dart' as http;
 import '../core/constants/app_constants.dart';
+import '../shared/models/badge_model.dart';
 import '../shared/models/food_entry_model.dart';
 import '../shared/models/group_model.dart';
 import '../shared/models/user_model.dart';
@@ -302,8 +304,11 @@ class ApiService {
   }
 
   // Image Upload API (uses client-side Blob upload)
-  Future<String> uploadImage(Uint8List imageBytes) async {
-    return _uploadImageToBlob(imageBytes);
+  Future<String> uploadImage(dynamic imageData) async {
+    if (imageData is File) {
+      return _uploadImageToBlob(await imageData.readAsBytes());
+    }
+    return _uploadImageToBlob(imageData as Uint8List);
   }
 
   // Weight Log APIs
@@ -660,15 +665,7 @@ class ApiService {
       if (response.statusCode == 200) {
         final data = jsonDecode(response.body);
         final messages = (data['messages'] as List)
-            .map((json) => GroupMessage.fromJson({
-              'id': json['id'],
-              'groupId': json['groupId'],
-              'userId': json['userId'],
-              'username': json['userName'],
-              'userProfileImage': json['avatarUrl'],
-              'message': json['message'],
-              'createdAt': json['createdAt'],
-            }))
+            .map((json) => _parseGroupMessage(json))
             .toList();
         return messages;
       } else {
@@ -682,27 +679,145 @@ class ApiService {
     }
   }
 
-  Future<GroupMessage> sendGroupMessage(String groupId, String message) async {
+  Future<GroupMessage> sendGroupMessage(String groupId, String message, {String? imageUrl, String? replyToId}) async {
     try {
       final response = await http.post(
         Uri.parse('$baseUrl/groups/$groupId/messages'),
         headers: _headers,
-        body: jsonEncode({'message': message}),
+        body: jsonEncode({
+          if (message.isNotEmpty) 'message': message,
+          if (imageUrl != null) 'imageUrl': imageUrl,
+          if (replyToId != null) 'replyToId': replyToId,
+        }),
       );
 
       if (response.statusCode == 201) {
         final json = jsonDecode(response.body);
-        return GroupMessage.fromJson({
-          'id': json['id'],
-          'groupId': json['groupId'],
-          'userId': json['userId'],
-          'username': json['userName'],
-          'userProfileImage': json['avatarUrl'],
-          'message': json['message'],
-          'createdAt': json['createdAt'],
-        });
+        return _parseGroupMessage(json);
       } else {
         throw ApiException(response.statusCode, 'Failed to send message');
+      }
+    } catch (e) {
+      if (e is! ApiException) {
+        throw ApiException(0, 'Network error: ${e.toString()}', isNetworkError: true);
+      }
+      rethrow;
+    }
+  }
+
+  Future<void> toggleMessageReaction(String groupId, String messageId, String emoji) async {
+    try {
+      final response = await http.post(
+        Uri.parse('$baseUrl/groups/$groupId/messages/$messageId/reactions'),
+        headers: _headers,
+        body: jsonEncode({'emoji': emoji}),
+      );
+
+      if (response.statusCode != 200 && response.statusCode != 201) {
+        throw ApiException(response.statusCode, 'Failed to toggle reaction');
+      }
+    } catch (e) {
+      if (e is! ApiException) {
+        throw ApiException(0, 'Network error: ${e.toString()}', isNetworkError: true);
+      }
+      rethrow;
+    }
+  }
+
+  Future<List<GroupMessage>> getMessageReplies(String groupId, String messageId) async {
+    try {
+      final response = await http.get(
+        Uri.parse('$baseUrl/groups/$groupId/messages/$messageId/replies'),
+        headers: _headers,
+      );
+
+      if (response.statusCode == 200) {
+        final json = jsonDecode(response.body);
+        final List<dynamic> repliesJson = json['replies'] ?? [];
+        return repliesJson.map((r) => _parseGroupMessage(r)).toList();
+      } else {
+        throw ApiException(response.statusCode, 'Failed to get replies');
+      }
+    } catch (e) {
+      if (e is! ApiException) {
+        throw ApiException(0, 'Network error: ${e.toString()}', isNetworkError: true);
+      }
+      rethrow;
+    }
+  }
+
+  GroupMessage _parseGroupMessage(Map<String, dynamic> json) {
+    return GroupMessage(
+      id: json['id'],
+      groupId: json['groupId'],
+      userId: json['userId'],
+      username: json['userName'] ?? 'Unknown',
+      userProfileImage: json['avatarUrl'],
+      message: json['message'] ?? '',
+      imageUrl: json['imageUrl'],
+      replyToId: json['replyToId'],
+      replyTo: json['replyTo'] != null ? _parseGroupMessage(json['replyTo']) : null,
+      reactions: (json['reactions'] as List<dynamic>?)
+          ?.map((r) => MessageReaction.fromJson(r))
+          .toList() ?? [],
+      replyCount: json['replyCount'] ?? 0,
+      createdAt: DateTime.parse(json['createdAt']),
+    );
+  }
+
+  // Badge APIs
+  Future<BadgesResponse> getBadges() async {
+    try {
+      final response = await http.get(
+        Uri.parse('$baseUrl/badges'),
+        headers: _headers,
+      );
+
+      if (response.statusCode == 200) {
+        return BadgesResponse.fromJson(jsonDecode(response.body));
+      } else {
+        throw ApiException(response.statusCode, 'Failed to get badges');
+      }
+    } catch (e) {
+      if (e is! ApiException) {
+        throw ApiException(0, 'Network error: ${e.toString()}', isNetworkError: true);
+      }
+      rethrow;
+    }
+  }
+
+  Future<List<BadgeModel>> checkBadges() async {
+    try {
+      final response = await http.post(
+        Uri.parse('$baseUrl/badges/check'),
+        headers: _headers,
+      );
+
+      if (response.statusCode == 200) {
+        final json = jsonDecode(response.body);
+        return (json['newBadges'] as List<dynamic>?)
+            ?.map((e) => BadgeModel.fromJson(e))
+            .toList() ?? [];
+      } else {
+        throw ApiException(response.statusCode, 'Failed to check badges');
+      }
+    } catch (e) {
+      if (e is! ApiException) {
+        throw ApiException(0, 'Network error: ${e.toString()}', isNetworkError: true);
+      }
+      rethrow;
+    }
+  }
+
+  Future<void> markBadgeSeen(String badgeId) async {
+    try {
+      final response = await http.post(
+        Uri.parse('$baseUrl/badges/$badgeId/mark-seen'),
+        headers: _headers,
+      );
+
+      if (response.statusCode != 200) {
+        throw ApiException(response.statusCode, 'Failed to mark badge as seen');
       }
     } catch (e) {
       if (e is! ApiException) {

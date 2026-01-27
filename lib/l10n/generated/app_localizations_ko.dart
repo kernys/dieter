@@ -455,7 +455,7 @@ class AppLocalizationsKo extends AppLocalizations {
   String get language => '언어';
 
   @override
-  String get english => '영어';
+  String get english => 'English';
 
   @override
   String get korean => '한국어';
@@ -1272,4 +1272,36 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String get exerciseDeleted => '운동이 삭제되었습니다';
+
+  @override
+  String get badges => '뱃지';
+
+  @override
+  String get badgesEarned => '획득한 뱃지';
+
+  @override
+  String get badgeEarned => '획득!';
+
+  @override
+  String earnedOn(String date) {
+    return '$date에 획득';
+  }
+
+  @override
+  String get streak => '연속 기록';
+
+  @override
+  String get food => '음식';
+
+  @override
+  String get weight => '체중';
+
+  @override
+  String get social => '소셜';
+
+  @override
+  String get languageSettings => '언어 설정';
+
+  @override
+  String get systemDefault => '시스템 기본값';
 }

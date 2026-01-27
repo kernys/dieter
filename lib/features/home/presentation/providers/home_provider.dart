@@ -238,14 +238,19 @@ final widgetUpdaterProvider = Provider<void>((ref) {
         final caloriesConsumed = summary.totalCalories;
         final caloriesLeft = (goals.calorieGoal - caloriesConsumed).clamp(0, goals.calorieGoal);
         
+        // Calculate remaining macros (goal - consumed), clamp to 0
+        final proteinLeft = (goals.proteinGoal - summary.totalProtein).clamp(0.0, goals.proteinGoal.toDouble());
+        final carbsLeft = (goals.carbsGoal - summary.totalCarbs).clamp(0.0, goals.carbsGoal.toDouble());
+        final fatLeft = (goals.fatGoal - summary.totalFat).clamp(0.0, goals.fatGoal.toDouble());
+        
         widgetService.updateWidgetData(
           caloriesLeft: caloriesLeft,
           caloriesGoal: goals.calorieGoal,
           caloriesConsumed: caloriesConsumed,
           streak: streak,
-          protein: summary.totalProtein,
-          carbs: summary.totalCarbs,
-          fat: summary.totalFat,
+          protein: proteinLeft,
+          carbs: carbsLeft,
+          fat: fatLeft,
         );
       });
     });

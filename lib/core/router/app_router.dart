@@ -21,6 +21,7 @@ import '../../features/exercise/presentation/screens/log_exercise_screen.dart';
 import '../../features/groups/presentation/screens/groups_screen.dart';
 import '../../features/groups/presentation/screens/group_detail_screen.dart';
 import '../../features/coach/presentation/screens/coach_chat_screen.dart';
+import '../../features/badges/presentation/screens/badges_screen.dart';
 import '../../shared/widgets/main_scaffold.dart';
 
 final onboardingCompletedProvider = FutureProvider<bool>((ref) async {
@@ -188,6 +189,12 @@ final routerProvider = Provider<GoRouter>((ref) {
       GoRoute(
         path: '/coach',
         builder: (context, state) => const CoachChatScreen(),
+      ),
+
+      // Badges Route
+      GoRoute(
+        path: '/badges',
+        builder: (context, state) => const BadgesScreen(),
       ),
     ],
     errorBuilder: (context, state) => Scaffold(
