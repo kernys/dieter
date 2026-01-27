@@ -103,8 +103,9 @@ final progressPercentageProvider = Provider<double>((ref) {
         return 0;
       }
 
-      final percentage = (progressMade / totalDistance * 100).clamp(0.0, 100.0);
-      return percentage;
+      final progressMadePercent = (progressMade / totalDistance * 100).clamp(0.0, 100.0);
+      // Return remaining percentage to goal (0% = at goal, 100% = just started)
+      return (100 - progressMadePercent).clamp(0.0, 100.0);
     },
     loading: () => 0.0,
     error: (_, __) => 0.0,

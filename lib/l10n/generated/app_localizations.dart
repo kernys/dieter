@@ -761,7 +761,7 @@ abstract class AppLocalizations {
   /// No description provided for @percentOfGoal.
   ///
   /// In en, this message translates to:
-  /// **'{percent}% to goal'**
+  /// **'{percent}% of goal reached'**
   String percentOfGoal(int percent);
 
   /// No description provided for @errorLoadingDataSimple.
