@@ -43,10 +43,22 @@ class _NotificationSettingsScreenState
   }
 
   Future<void> _checkNotificationPermission() async {
+    // Check via flutter_local_notifications (more accurate)
+    final notificationService = ref.read(notificationServiceProvider);
+    final hasPermission = await notificationService.checkPermissions();
+    
+    // Also check via permission_handler as fallback
     final status = await Permission.notification.status;
+    
+    if (kDebugMode) {
+      debugPrint('Notification permission_handler status: $status (isGranted: ${status.isGranted})');
+      debugPrint('Notification service checkPermissions: $hasPermission');
+    }
+    
     if (mounted) {
       setState(() {
-        _notificationsEnabled = status.isGranted;
+        // Use either source - if one says enabled, it's enabled
+        _notificationsEnabled = hasPermission || status.isGranted;
         _isCheckingPermission = false;
       });
     }

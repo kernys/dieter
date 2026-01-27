@@ -88,6 +88,25 @@ class NotificationService {
     return false;
   }
 
+  /// Check if notification permissions are granted (without requesting)
+  Future<bool> checkPermissions() async {
+    if (Platform.isIOS) {
+      final iosPlugin = _notifications
+          .resolvePlatformSpecificImplementation<
+              IOSFlutterLocalNotificationsPlugin>();
+      final settings = await iosPlugin?.checkPermissions();
+      // Consider enabled if alert permission is granted
+      return settings?.isAlertEnabled ?? false;
+    } else if (Platform.isAndroid) {
+      final androidPlugin = _notifications
+          .resolvePlatformSpecificImplementation<
+              AndroidFlutterLocalNotificationsPlugin>();
+      final result = await androidPlugin?.areNotificationsEnabled();
+      return result ?? false;
+    }
+    return false;
+  }
+
   /// Schedule all meal reminders based on user settings
   Future<void> scheduleAllReminders(UserModel user) async {
     if (!_isInitialized) {
