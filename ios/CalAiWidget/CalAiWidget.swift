@@ -2,20 +2,8 @@ import WidgetKit
 import SwiftUI
 import ActivityKit
 
-// MARK: - Live Activity Attributes
-struct CalAiActivityAttributes: ActivityAttributes {
-    public struct ContentState: Codable, Hashable {
-        var caloriesLeft: Int
-        var caloriesGoal: Int
-        var caloriesConsumed: Int
-        var proteinLeft: Int
-        var carbsLeft: Int
-        var fatLeft: Int
-    }
-    
-    // Fixed attributes (don't change during activity)
-    var activityName: String
-}
+// CalAiActivityAttributes is defined in Shared/LiveActivityAttributes.swift
+// That file must be added to BOTH Runner and CalAiWidgetExtension targets
 
 // MARK: - Data Models
 struct WidgetData: Codable {

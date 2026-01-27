@@ -3,19 +3,8 @@ import UIKit
 import ActivityKit
 import flutter_local_notifications
 
-// Live Activity Attributes - must EXACTLY match CalAiWidget
-struct CalAiActivityAttributes: ActivityAttributes {
-    public struct ContentState: Codable, Hashable {
-        var caloriesLeft: Int
-        var caloriesGoal: Int
-        var caloriesConsumed: Int
-        var proteinLeft: Int
-        var carbsLeft: Int
-        var fatLeft: Int
-    }
-    
-    var activityName: String
-}
+// CalAiActivityAttributes is defined in Shared/LiveActivityAttributes.swift
+// That file must be added to BOTH Runner and CalAiWidgetExtension targets
 
 @main
 @objc class AppDelegate: FlutterAppDelegate {
