@@ -206,6 +206,7 @@ class _ChatTabState extends ConsumerState<_ChatTab> {
   final _scrollController = ScrollController();
   GroupMessage? _replyingTo;
   bool _isUploading = false;
+  String? _selectedImagePath;
 
   @override
   void dispose() {
@@ -224,30 +225,47 @@ class _ChatTabState extends ConsumerState<_ChatTab> {
     }
   }
 
-  Future<void> _pickAndSendImage() async {
+  Future<void> _pickImage() async {
     final picker = ImagePicker();
     final pickedFile = await picker.pickImage(source: ImageSource.gallery, imageQuality: 70);
     
     if (pickedFile == null) return;
+    
+    setState(() => _selectedImagePath = pickedFile.path);
+  }
+
+  void _removeSelectedImage() {
+    setState(() => _selectedImagePath = null);
+  }
+
+  Future<void> _sendMessage() async {
+    final message = _messageController.text.trim();
+    if (message.isEmpty && _selectedImagePath == null) return;
 
     setState(() => _isUploading = true);
 
     try {
-      final apiService = ref.read(apiServiceProvider);
-      // Upload image first
-      final imageUrl = await apiService.uploadImage(File(pickedFile.path));
+      String? imageUrl;
       
-      // Send message with image
+      // Upload image if selected
+      if (_selectedImagePath != null) {
+        final apiService = ref.read(apiServiceProvider);
+        imageUrl = await apiService.uploadImage(File(_selectedImagePath!));
+      }
+      
+      // Send message with optional image
       final sendMessage = ref.read(sendMessageProvider);
       await sendMessage(
         widget.groupId, 
-        '', 
+        message,
         imageUrl: imageUrl,
         replyToId: _replyingTo?.id,
       );
       
+      _messageController.clear();
       setState(() {
         _replyingTo = null;
+        _selectedImagePath = null;
         _isUploading = false;
       });
       
@@ -256,7 +274,7 @@ class _ChatTabState extends ConsumerState<_ChatTab> {
       setState(() => _isUploading = false);
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Failed to send image: $e')),
+          SnackBar(content: Text('Failed to send message: $e')),
         );
       }
     }
@@ -305,6 +323,7 @@ class _ChatTabState extends ConsumerState<_ChatTab> {
               return _MessageBubble(
                 message: message,
                 onLongPress: () => _showReactionPicker(message),
+                onAddReaction: () => _showReactionPicker(message),
                 onReactionTap: (emoji) async {
                   final toggleReaction = ref.read(toggleReactionProvider);
                   await toggleReaction(widget.groupId, message.id, emoji);
@@ -341,6 +360,38 @@ class _ChatTabState extends ConsumerState<_ChatTab> {
               ],
             ),
           ),
+        // Selected image preview
+        if (_selectedImagePath != null)
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+            color: AppColors.surface,
+            child: Row(
+              children: [
+                ClipRRect(
+                  borderRadius: BorderRadius.circular(8),
+                  child: Image.file(
+                    File(_selectedImagePath!),
+                    width: 60,
+                    height: 60,
+                    fit: BoxFit.cover,
+                  ),
+                ),
+                const SizedBox(width: 12),
+                const Expanded(
+                  child: Text(
+                    'Image selected',
+                    style: TextStyle(fontSize: 12, color: AppColors.textSecondary),
+                  ),
+                ),
+                IconButton(
+                  icon: const Icon(Icons.close, size: 20, color: AppColors.textSecondary),
+                  onPressed: _removeSelectedImage,
+                  padding: EdgeInsets.zero,
+                  constraints: const BoxConstraints(),
+                ),
+              ],
+            ),
+          ),
         // Input area
         Container(
           padding: const EdgeInsets.all(16),
@@ -353,20 +404,29 @@ class _ChatTabState extends ConsumerState<_ChatTab> {
               children: [
                 // Camera button
                 IconButton(
-                  onPressed: _isUploading ? null : _pickAndSendImage,
+                  onPressed: _isUploading ? null : _pickImage,
                   icon: _isUploading
                       ? const SizedBox(
                           width: 20,
                           height: 20,
                           child: CircularProgressIndicator(strokeWidth: 2),
                         )
-                      : const Icon(Icons.camera_alt_outlined, color: AppColors.textSecondary),
+                      : Icon(
+                          _selectedImagePath != null 
+                              ? Icons.add_photo_alternate 
+                              : Icons.camera_alt_outlined, 
+                          color: _selectedImagePath != null 
+                              ? AppColors.primary 
+                              : AppColors.textSecondary,
+                        ),
                 ),
                 Expanded(
                   child: TextField(
                     controller: _messageController,
                     decoration: InputDecoration(
-                      hintText: 'Type a message...',
+                      hintText: _selectedImagePath != null 
+                          ? 'Add a caption...' 
+                          : 'Type a message...',
                       hintStyle: const TextStyle(color: AppColors.textTertiary),
                       filled: true,
                       fillColor: AppColors.surface,
@@ -380,29 +440,11 @@ class _ChatTabState extends ConsumerState<_ChatTab> {
                 ),
                 const SizedBox(width: 8),
                 IconButton(
-                  onPressed: () async {
-                    final message = _messageController.text.trim();
-                    if (message.isEmpty) return;
-
-                    final sendMessage = ref.read(sendMessageProvider);
-                    try {
-                      await sendMessage(
-                        widget.groupId, 
-                        message,
-                        replyToId: _replyingTo?.id,
-                      );
-                      _messageController.clear();
-                      setState(() => _replyingTo = null);
-                      Future.delayed(const Duration(milliseconds: 100), _scrollToBottom);
-                    } catch (e) {
-                      if (context.mounted) {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(content: Text('Failed to send message: $e')),
-                        );
-                      }
-                    }
-                  },
-                  icon: const Icon(Icons.send, color: AppColors.primary),
+                  onPressed: _isUploading ? null : _sendMessage,
+                  icon: Icon(
+                    Icons.send, 
+                    color: _isUploading ? AppColors.textSecondary : AppColors.primary,
+                  ),
                 ),
               ],
             ),
@@ -438,12 +480,14 @@ class _ChatTabState extends ConsumerState<_ChatTab> {
 class _MessageBubble extends StatelessWidget {
   final GroupMessage message;
   final VoidCallback? onLongPress;
+  final VoidCallback? onAddReaction;
   final Function(String emoji)? onReactionTap;
   final VoidCallback? onViewReplies;
 
   const _MessageBubble({
     required this.message,
     this.onLongPress,
+    this.onAddReaction,
     this.onReactionTap,
     this.onViewReplies,
   });
@@ -553,13 +597,32 @@ class _MessageBubble extends StatelessWidget {
                       ),
                     ),
                   ],
-                  // Reactions
-                  if (message.reactions.isNotEmpty) ...[
-                    const SizedBox(height: 8),
-                    Wrap(
-                      spacing: 4,
-                      runSpacing: 4,
-                      children: message.reactions.map((reaction) {
+                  // Reactions with add button
+                  const SizedBox(height: 8),
+                  Wrap(
+                    spacing: 4,
+                    runSpacing: 4,
+                    children: [
+                      // Add reaction button
+                      GestureDetector(
+                        onTap: onAddReaction,
+                        child: Container(
+                          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                          decoration: BoxDecoration(
+                            color: AppColors.surface,
+                            borderRadius: BorderRadius.circular(12),
+                            border: Border.all(color: AppColors.border),
+                          ),
+                          child: const Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Icon(Icons.add_reaction_outlined, size: 16, color: AppColors.textSecondary),
+                            ],
+                          ),
+                        ),
+                      ),
+                      // Existing reactions
+                      ...message.reactions.map((reaction) {
                         return GestureDetector(
                           onTap: () => onReactionTap?.call(reaction.emoji),
                           child: Container(
@@ -593,9 +656,9 @@ class _MessageBubble extends StatelessWidget {
                             ),
                           ),
                         );
-                      }).toList(),
-                    ),
-                  ],
+                      }),
+                    ],
+                  ),
                   // Reply count
                   if (message.replyCount > 0) ...[
                     const SizedBox(height: 8),

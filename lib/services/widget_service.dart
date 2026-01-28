@@ -10,8 +10,8 @@ final widgetServiceProvider = Provider<WidgetService>((ref) {
 
 class WidgetService {
   static const String _appGroupId = 'group.dietai';
-  static const String _iOSWidgetName = 'CalAiWidget';
-  static const String _androidWidgetName = 'CalAiWidgetProvider';
+  static const String _iOSWidgetName = 'DietAIWidget';
+  static const String _androidWidgetName = 'DietAIWidgetProvider';
 
   WidgetService() {
     _initialize();

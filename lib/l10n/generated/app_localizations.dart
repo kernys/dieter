@@ -2617,6 +2617,108 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Live Activity is not supported on this device'**
   String get liveActivityNotSupported;
+
+  /// No description provided for @typeAMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Type a message...'**
+  String get typeAMessage;
+
+  /// No description provided for @replyingTo.
+  ///
+  /// In en, this message translates to:
+  /// **'Replying to {username}'**
+  String replyingTo(String username);
+
+  /// No description provided for @imageSelected.
+  ///
+  /// In en, this message translates to:
+  /// **'Image selected'**
+  String get imageSelected;
+
+  /// No description provided for @addCaption.
+  ///
+  /// In en, this message translates to:
+  /// **'Add a caption...'**
+  String get addCaption;
+
+  /// No description provided for @reply.
+  ///
+  /// In en, this message translates to:
+  /// **'Reply'**
+  String get reply;
+
+  /// No description provided for @replies.
+  ///
+  /// In en, this message translates to:
+  /// **'Replies'**
+  String get replies;
+
+  /// No description provided for @replyCount.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} {count, plural, =1{Reply} other{Replies}}'**
+  String replyCount(int count);
+
+  /// No description provided for @failedToSendMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to send message'**
+  String get failedToSendMessage;
+
+  /// No description provided for @failedToSendImage.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to send image'**
+  String get failedToSendImage;
+
+  /// No description provided for @failedToAddReaction.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to add reaction'**
+  String get failedToAddReaction;
+
+  /// No description provided for @feed.
+  ///
+  /// In en, this message translates to:
+  /// **'Feed'**
+  String get feed;
+
+  /// No description provided for @info.
+  ///
+  /// In en, this message translates to:
+  /// **'Info'**
+  String get info;
+
+  /// No description provided for @leaveGroup.
+  ///
+  /// In en, this message translates to:
+  /// **'Leave Group'**
+  String get leaveGroup;
+
+  /// No description provided for @leaveGroupConfirm.
+  ///
+  /// In en, this message translates to:
+  /// **'Are you sure you want to leave this group?'**
+  String get leaveGroupConfirm;
+
+  /// No description provided for @leave.
+  ///
+  /// In en, this message translates to:
+  /// **'Leave'**
+  String get leave;
+
+  /// No description provided for @groupLeft.
+  ///
+  /// In en, this message translates to:
+  /// **'You have left the group'**
+  String get groupLeft;
+
+  /// No description provided for @failedToLeaveGroup.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to leave group'**
+  String get failedToLeaveGroup;
 }
 
 class _AppLocalizationsDelegate

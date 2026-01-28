@@ -1313,4 +1313,59 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String get liveActivityNotSupported => '이 기기에서는 라이브 액티비티를 지원하지 않습니다';
+
+  @override
+  String get typeAMessage => '메시지를 입력하세요...';
+
+  @override
+  String replyingTo(String username) {
+    return '$username에게 답장';
+  }
+
+  @override
+  String get imageSelected => '이미지 선택됨';
+
+  @override
+  String get addCaption => '설명 추가...';
+
+  @override
+  String get reply => '답장';
+
+  @override
+  String get replies => '답글';
+
+  @override
+  String replyCount(int count) {
+    return '답글 $count개';
+  }
+
+  @override
+  String get failedToSendMessage => '메시지 전송 실패';
+
+  @override
+  String get failedToSendImage => '이미지 전송 실패';
+
+  @override
+  String get failedToAddReaction => '반응 추가 실패';
+
+  @override
+  String get feed => '피드';
+
+  @override
+  String get info => '정보';
+
+  @override
+  String get leaveGroup => '그룹 나가기';
+
+  @override
+  String get leaveGroupConfirm => '정말 이 그룹을 나가시겠습니까?';
+
+  @override
+  String get leave => '나가기';
+
+  @override
+  String get groupLeft => '그룹에서 나갔습니다';
+
+  @override
+  String get failedToLeaveGroup => '그룹 나가기 실패';
 }

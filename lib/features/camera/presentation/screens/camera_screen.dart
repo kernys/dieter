@@ -706,6 +706,12 @@ class _CameraScreenState extends ConsumerState<CameraScreen> {
                         _buildNutrientRowBarcode(l10n.carbs, '${result.carbs?.toStringAsFixed(1) ?? 0}', 'g'),
                         const SizedBox(height: 8),
                         _buildNutrientRowBarcode(l10n.fat, '${result.fat?.toStringAsFixed(1) ?? 0}', 'g'),
+                        const SizedBox(height: 8),
+                        _buildNutrientRowBarcode(l10n.fiber, '${result.fiber?.toStringAsFixed(1) ?? 0}', 'g'),
+                        const SizedBox(height: 8),
+                        _buildNutrientRowBarcode(l10n.sugar, '${result.sugar?.toStringAsFixed(1) ?? 0}', 'g'),
+                        const SizedBox(height: 8),
+                        _buildNutrientRowBarcode(l10n.sodium, '${result.sodium?.toStringAsFixed(0) ?? 0}', 'mg'),
                       ],
                     ),
                   ),
@@ -796,6 +802,9 @@ class _CameraScreenState extends ConsumerState<CameraScreen> {
         protein: result.protein ?? 0,
         carbs: result.carbs ?? 0,
         fat: result.fat ?? 0,
+        fiber: result.fiber ?? 0,
+        sugar: result.sugar ?? 0,
+        sodium: result.sodium ?? 0,
         loggedAt: selectedDate,
       );
 

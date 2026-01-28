@@ -484,5 +484,25 @@
 
   "liveActivity": "Live Activity",
   "liveActivityDescription": "Show calories on Lock Screen & Dynamic Island",
-  "liveActivityNotSupported": "Live Activity is not supported on this device"
+  "liveActivityNotSupported": "Live Activity is not supported on this device",
+
+  "typeAMessage": "Type a message...",
+  "replyingTo": "Replying to {username}",
+  "@replyingTo": { "placeholders": { "username": { "type": "String" } } },
+  "imageSelected": "Image selected",
+  "addCaption": "Add a caption...",
+  "reply": "Reply",
+  "replies": "Replies",
+  "replyCount": "{count} {count, plural, =1{Reply} other{Replies}}",
+  "@replyCount": { "placeholders": { "count": { "type": "int" } } },
+  "failedToSendMessage": "Failed to send message",
+  "failedToSendImage": "Failed to send image",
+  "failedToAddReaction": "Failed to add reaction",
+  "feed": "Feed",
+  "info": "Info",
+  "leaveGroup": "Leave Group",
+  "leaveGroupConfirm": "Are you sure you want to leave this group?",
+  "leave": "Leave",
+  "groupLeft": "You have left the group",
+  "failedToLeaveGroup": "Failed to leave group"
 }

@@ -141,9 +141,9 @@ Please respond in the following JSON format only, without any markdown formattin
   "protein": protein in grams (number),
   "carbs": carbohydrates in grams (number),
   "fat": fat in grams (number),
-  "fiber": fiber in grams (number),
-  "sugar": sugar in grams (number),
-  "sodium": sodium in milligrams (number),
+  "fiber": fiber in grams (number, REQUIRED - estimate based on ingredients like vegetables, whole grains, fruits),
+  "sugar": sugar in grams (number, REQUIRED - estimate based on ingredients like fruits, sauces, sweeteners),
+  "sodium": sodium in milligrams (number, REQUIRED - estimate based on salt, soy sauce, processed ingredients),
   "health_score": health score from 1-10 (integer, 10 being healthiest),
   "ingredients": [
     {
@@ -157,7 +157,11 @@ Please respond in the following JSON format only, without any markdown formattin
   ]
 }
 
-Important:
+CRITICAL REQUIREMENTS:
+- ALL fields must be provided with realistic non-zero values when applicable
+- fiber: Estimate based on vegetables, whole grains, legumes, fruits. Most foods have at least 1-3g fiber.
+- sugar: Estimate based on natural sugars (fruits) and added sugars (sauces, drinks). Rice/noodle dishes typically have 2-5g, sweet items have more.
+- sodium: Estimate based on salt, soy sauce, MSG, processed ingredients. Most cooked meals have 300-800mg. Korean/Asian food typically has 500-1500mg.
 - Estimate portion sizes based on the description
 - Provide realistic nutritional values
 - List main ingredients
@@ -244,9 +248,9 @@ Please respond in the following JSON format only, without any markdown formattin
   "protein": protein in grams (number),
   "carbs": carbohydrates in grams (number),
   "fat": fat in grams (number),
-  "fiber": fiber in grams (number),
-  "sugar": sugar in grams (number),
-  "sodium": sodium in milligrams (number),
+  "fiber": fiber in grams (number, REQUIRED - estimate based on ingredients like vegetables, whole grains, fruits),
+  "sugar": sugar in grams (number, REQUIRED - estimate based on ingredients like fruits, sauces, sweeteners),
+  "sodium": sodium in milligrams (number, REQUIRED - estimate based on salt, soy sauce, processed ingredients),
   "health_score": health score from 1-10 (integer, 10 being healthiest),
   "ingredients": [
     {
@@ -260,7 +264,11 @@ Please respond in the following JSON format only, without any markdown formattin
   ]
 }
 
-Important:
+CRITICAL REQUIREMENTS:
+- ALL fields must be provided with realistic non-zero values when applicable
+- fiber: Estimate based on vegetables, whole grains, legumes, fruits. Most foods have at least 1-3g fiber.
+- sugar: Estimate based on natural sugars (fruits) and added sugars (sauces, drinks). Rice/noodle dishes typically have 2-5g, sweet items have more.
+- sodium: Estimate based on salt, soy sauce, MSG, processed ingredients. Most cooked meals have 300-800mg. Korean/Asian food typically has 500-1500mg.
 - Estimate portion sizes based on the image
 - Provide realistic nutritional values
 - List all visible ingredients

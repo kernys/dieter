@@ -1327,4 +1327,65 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get liveActivityNotSupported =>
       'Live Activity is not supported on this device';
+
+  @override
+  String get typeAMessage => 'Type a message...';
+
+  @override
+  String replyingTo(String username) {
+    return 'Replying to $username';
+  }
+
+  @override
+  String get imageSelected => 'Image selected';
+
+  @override
+  String get addCaption => 'Add a caption...';
+
+  @override
+  String get reply => 'Reply';
+
+  @override
+  String get replies => 'Replies';
+
+  @override
+  String replyCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'Replies',
+      one: 'Reply',
+    );
+    return '$count $_temp0';
+  }
+
+  @override
+  String get failedToSendMessage => 'Failed to send message';
+
+  @override
+  String get failedToSendImage => 'Failed to send image';
+
+  @override
+  String get failedToAddReaction => 'Failed to add reaction';
+
+  @override
+  String get feed => 'Feed';
+
+  @override
+  String get info => 'Info';
+
+  @override
+  String get leaveGroup => 'Leave Group';
+
+  @override
+  String get leaveGroupConfirm => 'Are you sure you want to leave this group?';
+
+  @override
+  String get leave => 'Leave';
+
+  @override
+  String get groupLeft => 'You have left the group';
+
+  @override
+  String get failedToLeaveGroup => 'Failed to leave group';
 }

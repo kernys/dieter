@@ -40,7 +40,7 @@ void main() async {
 
     runApp(
       const ProviderScope(
-        child: CalAIApp(),
+        child: DietAIApp(),
       ),
     );
   }, (error, stackTrace) {

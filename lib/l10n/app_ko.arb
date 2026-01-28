@@ -466,5 +466,23 @@
 
   "liveActivity": "라이브 액티비티",
   "liveActivityDescription": "잠금화면과 Dynamic Island에 칼로리 표시",
-  "liveActivityNotSupported": "이 기기에서는 라이브 액티비티를 지원하지 않습니다"
+  "liveActivityNotSupported": "이 기기에서는 라이브 액티비티를 지원하지 않습니다",
+
+  "typeAMessage": "메시지를 입력하세요...",
+  "replyingTo": "{username}에게 답장",
+  "imageSelected": "이미지 선택됨",
+  "addCaption": "설명 추가...",
+  "reply": "답장",
+  "replies": "답글",
+  "replyCount": "답글 {count}개",
+  "failedToSendMessage": "메시지 전송 실패",
+  "failedToSendImage": "이미지 전송 실패",
+  "failedToAddReaction": "반응 추가 실패",
+  "feed": "피드",
+  "info": "정보",
+  "leaveGroup": "그룹 나가기",
+  "leaveGroupConfirm": "정말 이 그룹을 나가시겠습니까?",
+  "leave": "나가기",
+  "groupLeft": "그룹에서 나갔습니다",
+  "failedToLeaveGroup": "그룹 나가기 실패"
 }

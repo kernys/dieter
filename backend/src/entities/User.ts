@@ -6,6 +6,7 @@ export interface User {
   password: string;
   name: string | null;
   avatar_url: string | null;
+  role_model_image_url: string | null;
   daily_calorie_goal: number;
   daily_protein_goal: number;
   daily_carbs_goal: number;
@@ -39,6 +40,7 @@ export interface UserResponse {
   email: string;
   name: string | null;
   avatarUrl: string | null;
+  roleModelImageUrl: string | null;
   dailyCalorieGoal: number;
   dailyProteinGoal: number;
   dailyCarbsGoal: number;
@@ -88,6 +90,7 @@ export function dumpUser(user: User): UserResponse {
     email: user.email,
     name: user.name,
     avatarUrl: user.avatar_url,
+    roleModelImageUrl: user.role_model_image_url,
     dailyCalorieGoal: Number(user.daily_calorie_goal),
     dailyProteinGoal: Number(user.daily_protein_goal),
     dailyCarbsGoal: Number(user.daily_carbs_goal),
@@ -139,6 +142,10 @@ export const UserEntity = new EntitySchema<User>({
       nullable: true,
     },
     avatar_url: {
+      type: 'text',
+      nullable: true,
+    },
+    role_model_image_url: {
       type: 'text',
       nullable: true,
     },

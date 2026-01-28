@@ -29,15 +29,15 @@ struct WidgetData: Codable {
 }
 
 // MARK: - Timeline Entry
-struct CalAiEntry: TimelineEntry {
+struct DietAIEntry: TimelineEntry {
     let date: Date
     let data: WidgetData
 }
 
 // MARK: - Provider
-struct CalAiProvider: TimelineProvider {
-    func placeholder(in context: Context) -> CalAiEntry {
-        CalAiEntry(date: Date(), data: WidgetData(
+struct DietAIProvider: TimelineProvider {
+    func placeholder(in context: Context) -> DietAIEntry {
+        DietAIEntry(date: Date(), data: WidgetData(
             caloriesLeft: 1054,
             caloriesGoal: 2000,
             caloriesConsumed: 946,
@@ -48,14 +48,14 @@ struct CalAiProvider: TimelineProvider {
         ))
     }
 
-    func getSnapshot(in context: Context, completion: @escaping (CalAiEntry) -> ()) {
-        let entry = CalAiEntry(date: Date(), data: loadWidgetData())
+    func getSnapshot(in context: Context, completion: @escaping (DietAIEntry) -> ()) {
+        let entry = DietAIEntry(date: Date(), data: loadWidgetData())
         completion(entry)
     }
 
-    func getTimeline(in context: Context, completion: @escaping (Timeline<CalAiEntry>) -> ()) {
+    func getTimeline(in context: Context, completion: @escaping (Timeline<DietAIEntry>) -> ()) {
         let currentDate = Date()
-        let entry = CalAiEntry(date: currentDate, data: loadWidgetData())
+        let entry = DietAIEntry(date: currentDate, data: loadWidgetData())
 
         // Update every 30 minutes
         let nextUpdate = Calendar.current.date(byAdding: .minute, value: 30, to: currentDate)!
@@ -87,7 +87,7 @@ struct CalAiProvider: TimelineProvider {
 
 // MARK: - Calories Widget View
 struct CaloriesWidgetView: View {
-    var entry: CalAiEntry
+    var entry: DietAIEntry
     @Environment(\.widgetFamily) var family
 
     var body: some View {
@@ -104,7 +104,7 @@ struct CaloriesWidgetView: View {
 
 // MARK: - Small Widget View
 struct SmallCaloriesView: View {
-    var entry: CalAiEntry
+    var entry: DietAIEntry
 
     var progress: Double {
         guard entry.data.caloriesGoal > 0 else { return 0 }
@@ -155,7 +155,7 @@ struct SmallCaloriesView: View {
 
 // MARK: - Medium Widget View
 struct MediumCaloriesView: View {
-    var entry: CalAiEntry
+    var entry: DietAIEntry
 
     var progress: Double {
         guard entry.data.caloriesGoal > 0 else { return 0 }
@@ -237,7 +237,7 @@ struct MacroRow: View {
 
 // MARK: - Streak Widget
 struct StreakWidgetView: View {
-    var entry: CalAiEntry
+    var entry: DietAIEntry
     
     var body: some View {
         VStack(spacing: 8) {
@@ -271,11 +271,11 @@ struct StreakWidgetView: View {
 }
 
 // MARK: - Calories Widget
-struct CalAiWidget: Widget {
-    let kind: String = "CalAiWidget"
+struct DietAIWidget: Widget {
+    let kind: String = "DietAIWidget"
 
     var body: some WidgetConfiguration {
-        StaticConfiguration(kind: kind, provider: CalAiProvider()) { entry in
+        StaticConfiguration(kind: kind, provider: DietAIProvider()) { entry in
             CaloriesWidgetView(entry: entry)
         }
         .configurationDisplayName("Calories")
@@ -289,7 +289,7 @@ struct StreakWidget: Widget {
     let kind: String = "StreakWidget"
     
     var body: some WidgetConfiguration {
-        StaticConfiguration(kind: kind, provider: CalAiProvider()) { entry in
+        StaticConfiguration(kind: kind, provider: DietAIProvider()) { entry in
             StreakWidgetView(entry: entry)
         }
         .configurationDisplayName("Streak")
@@ -299,7 +299,7 @@ struct StreakWidget: Widget {
 }
 
 // MARK: - Live Activity Widget
-struct CalAiLiveActivity: Widget {
+struct DietAILiveActivity: Widget {
     // Create shared default with custom group
     let sharedDefault = UserDefaults(suiteName: "group.dietai")!
     
@@ -311,21 +311,22 @@ struct CalAiLiveActivity: Widget {
             DynamicIsland {
                 // Expanded UI
                 DynamicIslandExpandedRegion(.leading) {
-                    let caloriesLeft = sharedDefault.integer(forKey: context.attributes.prefixedKey("caloriesLeft"))
-                    HStack(spacing: 4) {
-                        Image(systemName: "flame.fill")
-                            .foregroundColor(.orange)
-                            .font(.system(size: 16))
-                        Text("\(caloriesLeft)")
-                            .font(.system(size: 18, weight: .bold))
-                            .foregroundColor(.white)
-                    }
+                    // Food icon on left
+                    Image(systemName: "fork.knife")
+                        .foregroundColor(.green)
+                        .font(.system(size: 20))
                 }
                 
                 DynamicIslandExpandedRegion(.trailing) {
-                    Text("left")
-                        .font(.system(size: 12))
-                        .foregroundColor(.secondary)
+                    // Calories with flame icon on right
+                    let caloriesLeft = sharedDefault.integer(forKey: context.attributes.prefixedKey("caloriesLeft"))
+                    HStack(spacing: 4) {
+                        Text("🔥")
+                            .font(.system(size: 14))
+                        Text("\(caloriesLeft)")
+                            .font(.system(size: 16, weight: .bold))
+                            .foregroundColor(.white)
+                    }
                 }
                 
                 DynamicIslandExpandedRegion(.center) {
@@ -347,25 +348,24 @@ struct CalAiLiveActivity: Widget {
                     .padding(.top, 8)
                 }
             } compactLeading: {
-                // Compact leading (left side of pill)
+                // Compact leading (left side of pill) - Food icon
+                Image(systemName: "fork.knife")
+                    .foregroundColor(.green)
+                    .font(.system(size: 14))
+            } compactTrailing: {
+                // Compact trailing (right side of pill) - Flame + calories
                 let caloriesLeft = sharedDefault.integer(forKey: context.attributes.prefixedKey("caloriesLeft"))
-                HStack(spacing: 4) {
-                    Image(systemName: "flame.fill")
-                        .foregroundColor(.orange)
-                        .font(.system(size: 12))
+                HStack(spacing: 2) {
+                    Text("🔥")
+                        .font(.system(size: 10))
                     Text("\(caloriesLeft)")
-                        .font(.system(size: 14, weight: .bold))
+                        .font(.system(size: 12, weight: .bold))
                         .foregroundColor(.white)
                 }
-            } compactTrailing: {
-                // Compact trailing (right side of pill)
-                Text("kcal")
-                    .font(.system(size: 10))
-                    .foregroundColor(.secondary)
             } minimal: {
                 // Minimal (just icon when another activity is showing)
-                Image(systemName: "flame.fill")
-                    .foregroundColor(.orange)
+                Image(systemName: "fork.knife")
+                    .foregroundColor(.green)
                     .font(.system(size: 14))
             }
         }
@@ -432,9 +432,9 @@ struct LockScreenLiveActivityView: View {
             
             // Right - Macros
             VStack(alignment: .trailing, spacing: 6) {
-                LiveActivityMacroRow(label: "P", value: proteinLeft, color: .blue)
-                LiveActivityMacroRow(label: "C", value: carbsLeft, color: .orange)
-                LiveActivityMacroRow(label: "F", value: fatLeft, color: .purple)
+                LiveActivityMacroRow(label: "Protein", value: proteinLeft, color: .blue)
+                LiveActivityMacroRow(label: "Carbs", value: carbsLeft, color: .orange)
+                LiveActivityMacroRow(label: "Fat", value: fatLeft, color: .purple)
             }
             
             // Progress Ring
@@ -502,19 +502,19 @@ struct LiveActivityMacroItem: View {
 
 // MARK: - Widget Bundle
 @main
-struct CalAiWidgetBundle: WidgetBundle {
+struct DietAIWidgetBundle: WidgetBundle {
     var body: some Widget {
-        CalAiWidget()
+        DietAIWidget()
         StreakWidget()
-        CalAiLiveActivity()
+        DietAILiveActivity()
     }
 }
 
 // MARK: - Preview
 #Preview(as: .systemSmall) {
-    CalAiWidget()
+    DietAIWidget()
 } timeline: {
-    CalAiEntry(date: .now, data: WidgetData(
+    DietAIEntry(date: .now, data: WidgetData(
         caloriesLeft: 1054,
         caloriesGoal: 2000,
         caloriesConsumed: 946,
@@ -526,9 +526,9 @@ struct CalAiWidgetBundle: WidgetBundle {
 }
 
 #Preview(as: .systemMedium) {
-    CalAiWidget()
+    DietAIWidget()
 } timeline: {
-    CalAiEntry(date: .now, data: WidgetData(
+    DietAIEntry(date: .now, data: WidgetData(
         caloriesLeft: 1054,
         caloriesGoal: 2000,
         caloriesConsumed: 946,

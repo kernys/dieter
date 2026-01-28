@@ -65,8 +65,9 @@ final goalWeightProvider = Provider<double>((ref) {
 });
 
 // Progress percentage provider
-// Shows progress towards goal weight
-// 0% = just started (far from goal), 100% = at goal
+// Shows progress towards goal weight based on distance from goal
+// 100% = at goal, lower % = further from goal
+// Works for both weight loss AND weight gain goals
 final progressPercentageProvider = Provider<double>((ref) {
   final response = ref.watch(weightLogsResponseProvider);
 
@@ -76,7 +77,6 @@ final progressPercentageProvider = Provider<double>((ref) {
 
       final goal = ref.watch(goalWeightProvider);
       final currentWeight = data.stats.currentWeight;
-      final startWeight = data.stats.startWeight; // First logged weight
 
       if (goal == 0 || currentWeight == 0) return 0;
 
@@ -84,28 +84,22 @@ final progressPercentageProvider = Provider<double>((ref) {
       final distanceFromGoal = (currentWeight - goal).abs();
       if (distanceFromGoal < 0.1) return 100;
 
-      // Calculate total distance (from start to goal)
-      final totalDistance = (startWeight - goal).abs();
-      if (totalDistance < 0.1) return 100; // Already at goal from start
-
-      // Calculate current progress (how much has been achieved)
-      final progressMade = (startWeight - currentWeight).abs();
-
-      // Calculate percentage: 0% at start, 100% at goal
-      // Handle both weight loss and weight gain goals
-      final isWeightLossGoal = goal < startWeight;
-      final isMovingTowardsGoal = isWeightLossGoal
-          ? currentWeight < startWeight
-          : currentWeight > startWeight;
-
-      if (!isMovingTowardsGoal) {
-        // Moving away from goal, clamp to 0%
-        return 0;
-      }
-
-      final progressMadePercent = (progressMade / totalDistance * 100).clamp(0.0, 100.0);
-      // Return remaining percentage to goal (0% = at goal, 100% = just started)
-      return (100 - progressMadePercent).clamp(0.0, 100.0);
+      // Calculate progress based on how close current weight is to goal
+      // Using a reasonable range (e.g., 50 units from goal = 0%)
+      // Example: goal=70kg, current=70kg -> 100%
+      //          goal=70kg, current=60kg -> distance=10, progress depends on how we scale
+      //          goal=70kg, current=80kg -> distance=10, same logic
+      
+      // Use a scale where being within reasonable range shows meaningful progress
+      // Max distance for 0% is dynamically calculated based on goal
+      final maxReasonableDistance = goal * 0.3; // 30% of goal weight as max distance
+      
+      if (maxReasonableDistance == 0) return 100;
+      
+      // Progress = 100% when at goal, decreases as distance increases
+      final progress = ((1 - (distanceFromGoal / maxReasonableDistance)) * 100).clamp(0.0, 100.0);
+      
+      return progress;
     },
     loading: () => 0.0,
     error: (_, __) => 0.0,

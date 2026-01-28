@@ -6,8 +6,8 @@ import 'core/theme/app_theme.dart';
 import 'core/router/app_router.dart';
 import 'features/profile/presentation/providers/settings_provider.dart';
 
-class CalAIApp extends ConsumerWidget {
-  const CalAIApp({super.key});
+class DietAIApp extends ConsumerWidget {
+  const DietAIApp({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {

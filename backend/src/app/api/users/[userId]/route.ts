@@ -6,6 +6,7 @@ import { UserEntity, type User, dumpUser } from '@/entities';
 
 const updateUserSchema = z.object({
   name: z.string().optional(),
+  roleModelImageUrl: z.string().nullable().optional(),
   dailyCalorieGoal: z.number().optional(),
   dailyProteinGoal: z.number().optional(),
   dailyCarbsGoal: z.number().optional(),
@@ -36,6 +37,7 @@ const updateUserSchema = z.object({
 function toSnakeCase(updates: z.infer<typeof updateUserSchema>): Partial<User> {
   const result: Partial<User> = {};
   if (updates.name !== undefined) result.name = updates.name;
+  if (updates.roleModelImageUrl !== undefined) result.role_model_image_url = updates.roleModelImageUrl;
   if (updates.dailyCalorieGoal !== undefined) result.daily_calorie_goal = updates.dailyCalorieGoal;
   if (updates.dailyProteinGoal !== undefined) result.daily_protein_goal = updates.dailyProteinGoal;
   if (updates.dailyCarbsGoal !== undefined) result.daily_carbs_goal = updates.dailyCarbsGoal;
