@@ -29,8 +29,10 @@ final onboardingCompletedProvider = FutureProvider<bool>((ref) async {
   return prefs.getBool('onboarding_completed') ?? false;
 });
 
+/// Global navigator key for accessing navigator context from anywhere
+final rootNavigatorKey = GlobalKey<NavigatorState>(debugLabel: 'root');
+
 final routerProvider = Provider<GoRouter>((ref) {
-  final rootNavigatorKey = GlobalKey<NavigatorState>(debugLabel: 'root');
   final shellNavigatorKey = GlobalKey<NavigatorState>(debugLabel: 'shell');
 
   return GoRouter(

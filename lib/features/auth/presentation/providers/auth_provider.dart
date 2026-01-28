@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../../../../services/api_service.dart';
 import '../../../../services/cache_service.dart';
+import '../../../../services/error_handler_service.dart';
 import '../../../../services/notification_service.dart';
 import '../../../../shared/models/user_model.dart';
 
@@ -90,20 +91,60 @@ class AuthNotifier extends StateNotifier<AuthState> {
             user: user,
           );
         } catch (e) {
-          // Check if it's a network error
-          if (e is ApiException && e.isNetworkError) {
-            // Network error - try to load from cache
-            debugPrint('AuthNotifier._checkAuthStatus - network error, loading from cache');
+          // Check if it's a network error or server error
+          if (e is ApiException) {
+            if (e.isNetworkError) {
+              // Network error - try to load from cache
+              debugPrint('AuthNotifier._checkAuthStatus - network error, loading from cache');
+              final cachedUser = await _cacheService.getCachedUser(userId);
+              state = AuthState.authenticated(
+                userId: userId,
+                accessToken: accessToken,
+                user: cachedUser, // Use cached data, null if not available
+              );
+              // Show alert for network error
+              ErrorHandlerService.showErrorDialog(
+                title: 'Connection Error',
+                message: 'Unable to connect to the server. Using cached data.',
+              );
+            } else if (e.statusCode >= 500) {
+              // Server error - try to load from cache and show alert
+              debugPrint('AuthNotifier._checkAuthStatus - server error (${e.statusCode}), loading from cache');
+              final cachedUser = await _cacheService.getCachedUser(userId);
+              state = AuthState.authenticated(
+                userId: userId,
+                accessToken: accessToken,
+                user: cachedUser,
+              );
+              // Show alert for server error
+              ErrorHandlerService.showErrorDialog(
+                title: 'Server Error',
+                message: 'The server is temporarily unavailable. Please try again later.',
+              );
+            } else if (e.statusCode == 401) {
+              // Token is invalid (Unauthorized), clear stored credentials
+              debugPrint('AuthNotifier._checkAuthStatus - token invalid (401), logging out');
+              await _clearStoredCredentials();
+              state = AuthState.initial();
+            } else {
+              // Other client errors (4xx) - still keep user logged in with cached data
+              debugPrint('AuthNotifier._checkAuthStatus - client error (${e.statusCode}), loading from cache');
+              final cachedUser = await _cacheService.getCachedUser(userId);
+              state = AuthState.authenticated(
+                userId: userId,
+                accessToken: accessToken,
+                user: cachedUser,
+              );
+            }
+          } else {
+            // Unknown error - keep user logged in with cached data
+            debugPrint('AuthNotifier._checkAuthStatus - unknown error: $e, loading from cache');
             final cachedUser = await _cacheService.getCachedUser(userId);
             state = AuthState.authenticated(
               userId: userId,
               accessToken: accessToken,
-              user: cachedUser, // Use cached data, null if not available
+              user: cachedUser,
             );
-          } else {
-            // Token might be invalid, clear stored credentials
-            await _clearStoredCredentials();
-            state = AuthState.initial();
           }
         }
       } else {
