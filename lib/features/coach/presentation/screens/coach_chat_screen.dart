@@ -8,6 +8,7 @@ import '../../../../services/api_service.dart';
 import '../../../auth/presentation/providers/auth_provider.dart';
 import '../../../home/presentation/providers/home_provider.dart';
 import '../../../progress/presentation/providers/progress_provider.dart';
+import '../../../profile/presentation/providers/settings_provider.dart';
 
 class ChatMessage {
   final String text;
@@ -174,10 +175,29 @@ class _CoachChatScreenState extends ConsumerState<CoachChatScreen> {
       final todayNormalized = DateTime(DateTime.now().year, DateTime.now().month, DateTime.now().day);
       final dailySummary = ref.read(dailySummaryProvider(todayNormalized));
       final streakData = ref.read(streakDataProvider);
+      final settings = ref.read(settingsProvider);
+      
+      // Convert weight to the user's preferred unit (stored in lbs, convert if metric)
+      final isMetric = settings.unitSystem == UnitSystem.metric;
+      final weightUnit = isMetric ? 'kg' : 'lbs';
+      
+      double? currentWeight = user?.currentWeight;
+      double? goalWeight = user?.goalWeight;
+      
+      // Convert from stored lbs to kg if user prefers metric
+      if (isMetric) {
+        if (currentWeight != null) {
+          currentWeight = currentWeight * 0.453592;
+        }
+        if (goalWeight != null) {
+          goalWeight = goalWeight * 0.453592;
+        }
+      }
       
       final coachContext = CoachContext(
-        currentWeight: user?.currentWeight,
-        goalWeight: user?.goalWeight,
+        currentWeight: currentWeight != null ? double.parse(currentWeight.toStringAsFixed(1)) : null,
+        goalWeight: goalWeight != null ? double.parse(goalWeight.toStringAsFixed(1)) : null,
+        weightUnit: weightUnit,
         dailyCalorieGoal: user?.dailyCalorieGoal,
         todayCalories: dailySummary.whenOrNull(data: (d) => d.totalCalories),
         streakDays: streakData.whenOrNull(data: (d) => d.currentStreak),

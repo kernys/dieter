@@ -16,6 +16,7 @@ const chatSchema = z.object({
   context: z.object({
     currentWeight: z.number().optional(),
     goalWeight: z.number().optional(),
+    weightUnit: z.string().optional(), // 'kg' or 'lbs'
     dailyCalorieGoal: z.number().optional(),
     todayCalories: z.number().optional(),
     streakDays: z.number().optional(),
@@ -65,8 +66,8 @@ Use emojis occasionally to make the conversation friendly.
 ${languageInstruction}
 
 ${context ? `User Context:
-- Current Weight: ${context.currentWeight || 'Not set'}
-- Goal Weight: ${context.goalWeight || 'Not set'}
+- Current Weight: ${context.currentWeight ? `${context.currentWeight} ${context.weightUnit || 'kg'}` : 'Not set'}
+- Goal Weight: ${context.goalWeight ? `${context.goalWeight} ${context.weightUnit || 'kg'}` : 'Not set'}
 - Daily Calorie Goal: ${context.dailyCalorieGoal || 'Not set'}
 - Today's Calories: ${context.todayCalories || 'Not tracked'}
 - Current Streak: ${context.streakDays || 0} days` : ''}`;
