@@ -311,9 +311,9 @@ struct DietAILiveActivity: Widget {
             DynamicIsland {
                 // Expanded UI
                 DynamicIslandExpandedRegion(.leading) {
-                    // Food icon on left
+                    // Food icon on left (gray)
                     Image(systemName: "fork.knife")
-                        .foregroundColor(.green)
+                        .foregroundColor(.gray)
                         .font(.system(size: 20))
                 }
                 
@@ -348,9 +348,9 @@ struct DietAILiveActivity: Widget {
                     .padding(.top, 8)
                 }
             } compactLeading: {
-                // Compact leading (left side of pill) - Food icon
+                // Compact leading (left side of pill) - Food icon (gray)
                 Image(systemName: "fork.knife")
-                    .foregroundColor(.green)
+                    .foregroundColor(.gray)
                     .font(.system(size: 14))
             } compactTrailing: {
                 // Compact trailing (right side of pill) - Flame + calories
@@ -365,7 +365,7 @@ struct DietAILiveActivity: Widget {
             } minimal: {
                 // Minimal (just icon when another activity is showing)
                 Image(systemName: "fork.knife")
-                    .foregroundColor(.green)
+                    .foregroundColor(.gray)
                     .font(.system(size: 14))
             }
         }
