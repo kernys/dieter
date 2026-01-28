@@ -149,18 +149,26 @@ class HomeScreen extends ConsumerWidget {
                 child: GestureDetector(
                   onTap: () => context.push('/coach'),
                   child: Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+                    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
                     decoration: BoxDecoration(
-                      color: context.cardColor,
-                      borderRadius: BorderRadius.circular(16),
+                      color: context.surfaceColor,
+                      borderRadius: BorderRadius.circular(24),
                       border: Border.all(color: context.borderColor),
                     ),
                     child: Row(
                       children: [
-                        Icon(
-                          Icons.psychology,
-                          size: 24,
-                          color: AppColors.primary,
+                        Container(
+                          width: 32,
+                          height: 32,
+                          decoration: BoxDecoration(
+                            color: AppColors.primary.withValues(alpha: 0.1),
+                            shape: BoxShape.circle,
+                          ),
+                          child: Icon(
+                            Icons.auto_awesome,
+                            size: 18,
+                            color: AppColors.primary,
+                          ),
                         ),
                         const SizedBox(width: 12),
                         Expanded(
@@ -172,10 +180,17 @@ class HomeScreen extends ConsumerWidget {
                             ),
                           ),
                         ),
-                        Icon(
-                          Icons.arrow_forward_ios,
-                          size: 16,
-                          color: context.textTertiaryColor,
+                        Container(
+                          padding: const EdgeInsets.all(8),
+                          decoration: BoxDecoration(
+                            color: AppColors.primary,
+                            shape: BoxShape.circle,
+                          ),
+                          child: const Icon(
+                            Icons.arrow_upward,
+                            size: 16,
+                            color: Colors.white,
+                          ),
                         ),
                       ],
                     ),
