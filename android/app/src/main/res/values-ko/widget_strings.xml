@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="widget_calories_description">오늘 남은 칼로리를 확인하세요</string>
+    <string name="widget_streak_description">연속 기록 일수를 확인하세요</string>
+    <string name="calories_left">남은 칼로리</string>
+    <string name="calories_icon">칼로리 아이콘</string>
+    <string name="day_streak">연속 기록</string>
+    <string name="streak_icon">연속 기록 아이콘</string>
+</resources>

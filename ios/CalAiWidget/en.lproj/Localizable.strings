@@ -1,0 +1,28 @@
+/* Widget & Live Activity Strings - English */
+
+/* Common */
+"app_name" = "Diet AI";
+
+/* Calories */
+"calories_left" = "Calories left";
+"calories" = "Calories";
+"kcal" = "kcal";
+"left" = "left";
+"goal" = "Goal";
+
+/* Macros */
+"protein" = "Protein";
+"carbs" = "Carbs";
+"fat" = "Fat";
+
+/* Widget */
+"daily_tracker" = "Daily Tracker";
+"today" = "Today";
+"consumed" = "Consumed";
+"remaining" = "Remaining";
+"widget_calories_description" = "Track your daily calorie intake";
+"widget_streak_description" = "Track your logging streak";
+
+/* Streak */
+"day_streak" = "Day Streak";
+"days" = "days";

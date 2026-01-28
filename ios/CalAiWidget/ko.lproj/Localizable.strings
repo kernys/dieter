@@ -1,0 +1,28 @@
+/* Widget & Live Activity Strings - Korean */
+
+/* Common */
+"app_name" = "다이어트 AI";
+
+/* Calories */
+"calories_left" = "남은 칼로리";
+"calories" = "칼로리";
+"kcal" = "kcal";
+"left" = "남음";
+"goal" = "목표";
+
+/* Macros */
+"protein" = "단백질";
+"carbs" = "탄수화물";
+"fat" = "지방";
+
+/* Widget */
+"daily_tracker" = "오늘의 기록";
+"today" = "오늘";
+"consumed" = "섭취";
+"remaining" = "남음";
+"widget_calories_description" = "오늘 남은 칼로리를 확인하세요";
+"widget_streak_description" = "연속 기록 일수를 확인하세요";
+
+/* Streak */
+"day_streak" = "연속 기록";
+"days" = "일";

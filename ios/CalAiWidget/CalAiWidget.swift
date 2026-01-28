@@ -2,6 +2,13 @@ import WidgetKit
 import SwiftUI
 import ActivityKit
 
+// MARK: - Localization Helper
+extension String {
+    var localized: String {
+        return NSLocalizedString(self, tableName: nil, bundle: Bundle.main, value: self, comment: "")
+    }
+}
+
 // MARK: - Live Activity Attributes (MUST be named LiveActivitiesAppAttributes)
 struct LiveActivitiesAppAttributes: ActivityAttributes, Identifiable {
     public typealias LiveDeliveryData = ContentState
@@ -117,7 +124,7 @@ struct SmallCaloriesView: View {
                 Image(systemName: "flame.fill")
                     .foregroundColor(.orange)
                     .font(.system(size: 12))
-                Text("Diet AI")
+                Text("app_name".localized)
                     .font(.system(size: 12, weight: .semibold))
                     .foregroundColor(.secondary)
                 Spacer()
@@ -139,7 +146,7 @@ struct SmallCaloriesView: View {
                     Text("\(entry.data.caloriesLeft)")
                         .font(.system(size: 24, weight: .bold))
                         .foregroundColor(.primary)
-                    Text("left")
+                    Text("left".localized)
                         .font(.system(size: 10))
                         .foregroundColor(.secondary)
                 }
@@ -181,7 +188,7 @@ struct MediumCaloriesView: View {
                     Text("\(entry.data.caloriesLeft)")
                         .font(.system(size: 28, weight: .bold))
                         .foregroundColor(.primary)
-                    Text("kcal left")
+                    Text("calories_left".localized)
                         .font(.system(size: 10))
                         .foregroundColor(.secondary)
                 }
@@ -194,14 +201,14 @@ struct MediumCaloriesView: View {
                     Image(systemName: "flame.fill")
                         .foregroundColor(.orange)
                         .font(.system(size: 14))
-                    Text("Diet AI")
+                    Text("app_name".localized)
                         .font(.system(size: 14, weight: .semibold))
                         .foregroundColor(.secondary)
                 }
 
-                MacroRow(label: "Protein", value: entry.data.protein, color: .blue)
-                MacroRow(label: "Carbs", value: entry.data.carbs, color: .orange)
-                MacroRow(label: "Fat", value: entry.data.fat, color: .purple)
+                MacroRow(label: "protein".localized, value: entry.data.protein, color: .blue)
+                MacroRow(label: "carbs".localized, value: entry.data.carbs, color: .orange)
+                MacroRow(label: "fat".localized, value: entry.data.fat, color: .purple)
             }
 
             Spacer()
@@ -245,7 +252,7 @@ struct StreakWidgetView: View {
                 Image(systemName: "flame.fill")
                     .foregroundColor(.orange)
                     .font(.system(size: 12))
-                Text("Streak")
+                Text("day_streak".localized)
                     .font(.system(size: 12, weight: .semibold))
                     .foregroundColor(.secondary)
                 Spacer()
@@ -257,7 +264,7 @@ struct StreakWidgetView: View {
                 .font(.system(size: 48, weight: .bold))
                 .foregroundColor(.orange)
             
-            Text("days")
+            Text("days".localized)
                 .font(.system(size: 14))
                 .foregroundColor(.secondary)
             
@@ -278,8 +285,8 @@ struct DietAIWidget: Widget {
         StaticConfiguration(kind: kind, provider: DietAIProvider()) { entry in
             CaloriesWidgetView(entry: entry)
         }
-        .configurationDisplayName("Calories")
-        .description("Track your daily calorie intake")
+        .configurationDisplayName("calories".localized)
+        .description("widget_calories_description".localized)
         .supportedFamilies([.systemSmall, .systemMedium])
     }
 }
@@ -292,8 +299,8 @@ struct StreakWidget: Widget {
         StaticConfiguration(kind: kind, provider: DietAIProvider()) { entry in
             StreakWidgetView(entry: entry)
         }
-        .configurationDisplayName("Streak")
-        .description("Track your logging streak")
+        .configurationDisplayName("day_streak".localized)
+        .description("widget_streak_description".localized)
         .supportedFamilies([.systemSmall])
     }
 }
@@ -330,7 +337,7 @@ struct DietAILiveActivity: Widget {
                 }
                 
                 DynamicIslandExpandedRegion(.center) {
-                    Text("Diet AI")
+                    Text("app_name".localized)
                         .font(.system(size: 14, weight: .semibold))
                         .foregroundColor(.white)
                 }
@@ -341,9 +348,9 @@ struct DietAILiveActivity: Widget {
                     let fatLeft = sharedDefault.integer(forKey: context.attributes.prefixedKey("fatLeft"))
                     
                     HStack(spacing: 16) {
-                        LiveActivityMacroItem(label: "Protein", value: proteinLeft, color: .blue)
-                        LiveActivityMacroItem(label: "Carbs", value: carbsLeft, color: .orange)
-                        LiveActivityMacroItem(label: "Fat", value: fatLeft, color: .purple)
+                        LiveActivityMacroItem(label: "protein".localized, value: proteinLeft, color: .blue)
+                        LiveActivityMacroItem(label: "carbs".localized, value: carbsLeft, color: .orange)
+                        LiveActivityMacroItem(label: "fat".localized, value: fatLeft, color: .purple)
                     }
                     .padding(.top, 8)
                 }
@@ -414,7 +421,7 @@ struct LockScreenLiveActivityView: View {
                     Image(systemName: "flame.fill")
                         .foregroundColor(.orange)
                         .font(.system(size: 14))
-                    Text("Diet AI")
+                    Text("app_name".localized)
                         .font(.system(size: 12, weight: .semibold))
                         .foregroundColor(.secondary)
                 }
@@ -423,7 +430,7 @@ struct LockScreenLiveActivityView: View {
                     .font(.system(size: 32, weight: .bold))
                     .foregroundColor(.primary)
                 
-                Text("Calories left")
+                Text("calories_left".localized)
                     .font(.system(size: 11))
                     .foregroundColor(.secondary)
             }
@@ -432,9 +439,9 @@ struct LockScreenLiveActivityView: View {
             
             // Right - Macros
             VStack(alignment: .trailing, spacing: 6) {
-                LiveActivityMacroRow(label: "Protein", value: proteinLeft, color: .blue)
-                LiveActivityMacroRow(label: "Carbs", value: carbsLeft, color: .orange)
-                LiveActivityMacroRow(label: "Fat", value: fatLeft, color: .purple)
+                LiveActivityMacroRow(label: "protein".localized, value: proteinLeft, color: .blue)
+                LiveActivityMacroRow(label: "carbs".localized, value: carbsLeft, color: .orange)
+                LiveActivityMacroRow(label: "fat".localized, value: fatLeft, color: .purple)
             }
             
             // Progress Ring
