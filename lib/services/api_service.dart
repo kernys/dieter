@@ -162,7 +162,9 @@ class ApiService {
         'imageUrl': imageUrl,
         'ingredients': ingredients,
         'servings': servings,
-        if (loggedAt != null) 'loggedAt': loggedAt.toUtc().toIso8601String(),
+        // Use noon (12:00) of the local date to avoid timezone issues
+        // This ensures the date stays the same after UTC conversion for most timezones
+        if (loggedAt != null) 'loggedAt': DateTime(loggedAt.year, loggedAt.month, loggedAt.day, 12, 0, 0).toUtc().toIso8601String(),
       }),
     );
 
@@ -249,7 +251,8 @@ class ApiService {
         'imageUrl': imageUrl,
         if (locale != null) 'locale': locale,
         'autoRegister': autoRegister,
-        if (loggedAt != null) 'loggedAt': loggedAt.toUtc().toIso8601String(),
+        // Use noon (12:00) of the local date to avoid timezone issues
+        if (loggedAt != null) 'loggedAt': DateTime(loggedAt.year, loggedAt.month, loggedAt.day, 12, 0, 0).toUtc().toIso8601String(),
       }),
     );
 
@@ -411,7 +414,8 @@ class ApiService {
         'caloriesBurned': caloriesBurned,
         if (intensity != null) 'intensity': intensity,
         if (description != null) 'description': description,
-        if (loggedAt != null) 'loggedAt': loggedAt.toUtc().toIso8601String(),
+        // Use noon (12:00) of the local date to avoid timezone issues
+        if (loggedAt != null) 'loggedAt': DateTime(loggedAt.year, loggedAt.month, loggedAt.day, 12, 0, 0).toUtc().toIso8601String(),
       }),
     );
 

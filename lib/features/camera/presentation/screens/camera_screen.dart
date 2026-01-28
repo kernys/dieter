@@ -389,10 +389,8 @@ class _CameraScreenState extends ConsumerState<CameraScreen> {
     String selectedZoom;
     if (_currentZoom < 0.75) {
       selectedZoom = '.5x';
-    } else if (_currentZoom < 1.5) {
-      selectedZoom = '1x';
     } else {
-      selectedZoom = '2x';
+      selectedZoom = '1x';
     }
 
     return Container(
@@ -428,21 +426,6 @@ class _CameraScreenState extends ConsumerState<CameraScreen> {
             child: _buildZoomButton(
               label: '1x',
               isSelected: selectedZoom == '1x',
-            ),
-          ),
-          const SizedBox(width: 8),
-          // 2x button
-          GestureDetector(
-            onTap: () {
-              if (maxZoom >= 2.0) {
-                setState(() => _currentZoom = 2.0);
-                cameraNotifier.setZoomLevel(2.0);
-              }
-            },
-            child: _buildZoomButton(
-              label: '2x',
-              isSelected: selectedZoom == '2x',
-              enabled: maxZoom >= 2.0,
             ),
           ),
         ],
