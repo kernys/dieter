@@ -1251,6 +1251,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get dietCoach => 'Diet Coach';
 
   @override
+  String get askDietCoach => 'Ask anything about diet...';
+
+  @override
   String get typeMessage => 'Type a message...';
 
   @override

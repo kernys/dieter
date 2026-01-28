@@ -1241,6 +1241,9 @@ class AppLocalizationsKo extends AppLocalizations {
   String get dietCoach => '다이어트 코치';
 
   @override
+  String get askDietCoach => '다이어트 무엇이든 물어보세요...';
+
+  @override
   String get typeMessage => '메시지를 입력하세요...';
 
   @override

@@ -2474,6 +2474,12 @@ abstract class AppLocalizations {
   /// **'Diet Coach'**
   String get dietCoach;
 
+  /// No description provided for @askDietCoach.
+  ///
+  /// In en, this message translates to:
+  /// **'Ask anything about diet...'**
+  String get askDietCoach;
+
   /// No description provided for @typeMessage.
   ///
   /// In en, this message translates to:

@@ -6,7 +6,7 @@ import 'package:url_launcher/url_launcher.dart';
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/constants/app_constants.dart';
 import '../../../../l10n/generated/app_localizations.dart';
-import '../../../../services/health_service.dart';
+// import '../../../../services/health_service.dart'; // TODO: Temporarily disabled
 import '../../../../services/live_activity_service.dart';
 import '../../../auth/presentation/providers/auth_provider.dart';
 import '../../../home/presentation/providers/home_provider.dart';
@@ -229,23 +229,24 @@ class ProfileScreen extends ConsumerWidget {
                         context.push('/weight-history');
                       },
                     ),
-                    _HealthTile(
-                      label: Platform.isIOS ? l10n.appleHealth : l10n.healthConnect,
-                      onTap: () async {
-                        final healthService = ref.read(healthServiceProvider);
-                        final success = await healthService.requestAuthorization();
-                        if (context.mounted) {
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(
-                              content: Text(
-                                success ? l10n.healthConnected : l10n.healthConnectionFailed,
-                              ),
-                              backgroundColor: success ? Colors.green : null,
-                            ),
-                          );
-                        }
-                      },
-                    ),
+                    // TODO: Apple Health / Health Connect - temporarily disabled
+                    // _HealthTile(
+                    //   label: Platform.isIOS ? l10n.appleHealth : l10n.healthConnect,
+                    //   onTap: () async {
+                    //     final healthService = ref.read(healthServiceProvider);
+                    //     final success = await healthService.requestAuthorization();
+                    //     if (context.mounted) {
+                    //       ScaffoldMessenger.of(context).showSnackBar(
+                    //         SnackBar(
+                    //           content: Text(
+                    //             success ? l10n.healthConnected : l10n.healthConnectionFailed,
+                    //           ),
+                    //           backgroundColor: success ? Colors.green : null,
+                    //         ),
+                    //       );
+                    //     }
+                    //   },
+                    // ),
                   ],
                 ),
               ),
@@ -266,11 +267,12 @@ class ProfileScreen extends ConsumerWidget {
                       ),
                     ),
                     const SizedBox(height: 12),
-                    _SettingsTile(
-                      icon: Icons.emoji_events_outlined,
-                      label: l10n.badges,
-                      onTap: () => context.push('/badges'),
-                    ),
+                    // TODO: Badges - temporarily hidden
+                    // _SettingsTile(
+                    //   icon: Icons.emoji_events_outlined,
+                    //   label: l10n.badges,
+                    //   onTap: () => context.push('/badges'),
+                    // ),
                     _SettingsTile(
                       icon: Icons.notifications_outlined,
                       label: l10n.notifications,
@@ -974,70 +976,71 @@ class _AppInfoTile extends StatelessWidget {
   }
 }
 
-class _HealthTile extends StatelessWidget {
-  final String label;
-  final VoidCallback onTap;
-
-  const _HealthTile({
-    required this.label,
-    required this.onTap,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: onTap,
-      child: Container(
-        margin: const EdgeInsets.only(bottom: 8),
-        padding: const EdgeInsets.all(16),
-        decoration: BoxDecoration(
-          color: context.cardColor,
-          borderRadius: BorderRadius.circular(12),
-          border: Border.all(color: context.borderColor),
-        ),
-        child: Row(
-          children: [
-            Container(
-              width: 32,
-              height: 32,
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(8),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.black.withValues(alpha: 0.1),
-                    blurRadius: 4,
-                    offset: const Offset(0, 2),
-                  ),
-                ],
-              ),
-              child: const Center(
-                child: Icon(
-                  Icons.favorite,
-                  color: Color(0xFFFF2D55),
-                  size: 20,
-                ),
-              ),
-            ),
-            const SizedBox(width: 12),
-            Expanded(
-              child: Text(
-                label,
-                style: TextStyle(
-                  fontSize: 14,
-                  fontWeight: FontWeight.w500,
-                  color: context.textPrimaryColor,
-                ),
-              ),
-            ),
-            Icon(
-              Icons.chevron_right,
-              color: context.textTertiaryColor,
-              size: 20,
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-}
+// TODO: _HealthTile - Temporarily disabled
+// class _HealthTile extends StatelessWidget {
+//   final String label;
+//   final VoidCallback onTap;
+// 
+//   const _HealthTile({
+//     required this.label,
+//     required this.onTap,
+//   });
+// 
+//   @override
+//   Widget build(BuildContext context) {
+//     return GestureDetector(
+//       onTap: onTap,
+//       child: Container(
+//         margin: const EdgeInsets.only(bottom: 8),
+//         padding: const EdgeInsets.all(16),
+//         decoration: BoxDecoration(
+//           color: context.cardColor,
+//           borderRadius: BorderRadius.circular(12),
+//           border: Border.all(color: context.borderColor),
+//         ),
+//         child: Row(
+//           children: [
+//             Container(
+//               width: 32,
+//               height: 32,
+//               decoration: BoxDecoration(
+//                 color: Colors.white,
+//                 borderRadius: BorderRadius.circular(8),
+//                 boxShadow: [
+//                   BoxShadow(
+//                     color: Colors.black.withValues(alpha: 0.1),
+//                     blurRadius: 4,
+//                     offset: const Offset(0, 2),
+//                   ),
+//                 ],
+//               ),
+//               child: const Center(
+//                 child: Icon(
+//                   Icons.favorite,
+//                   color: Color(0xFFFF2D55),
+//                   size: 20,
+//                 ),
+//               ),
+//             ),
+//             const SizedBox(width: 12),
+//             Expanded(
+//               child: Text(
+//                 label,
+//                 style: TextStyle(
+//                   fontSize: 14,
+//                   fontWeight: FontWeight.w500,
+//                   color: context.textPrimaryColor,
+//                 ),
+//               ),
+//             ),
+//             Icon(
+//               Icons.chevron_right,
+//               color: context.textTertiaryColor,
+//               size: 20,
+//             ),
+//           ],
+//         ),
+//       ),
+//     );
+//   }
+// }

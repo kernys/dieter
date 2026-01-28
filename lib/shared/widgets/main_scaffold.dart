@@ -208,7 +208,7 @@ class _MainScaffoldState extends ConsumerState<MainScaffold>
                   child: _NavItem(
                     icon: Icons.group_outlined,
                     activeIcon: Icons.group,
-                    label: 'Groups',
+                    label: l10n.groups,
                     isSelected: selectedIndex == 2,
                     onTap: () => _onItemTapped(context, 2),
                   ),
@@ -236,16 +236,6 @@ class _MainScaffoldState extends ConsumerState<MainScaffold>
       padding: const EdgeInsets.symmetric(horizontal: 24),
       child: Column(
         children: [
-          // Coach button - full width
-          _FabMenuItem(
-            icon: Icons.psychology,
-            label: l10n.dietCoach,
-            onTap: () {
-              _closeFabMenu();
-              context.push('/coach');
-            },
-          ),
-          const SizedBox(height: 12),
           Row(
             children: [
               Expanded(

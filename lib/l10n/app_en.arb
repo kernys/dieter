@@ -453,6 +453,7 @@
   "healthConnectionFailed": "Failed to connect to Health",
 
   "dietCoach": "Diet Coach",
+  "askDietCoach": "Ask anything about diet...",
   "typeMessage": "Type a message...",
   "coachSuggestion1": "What should I eat today?",
   "coachSuggestion2": "Tips for losing weight",
