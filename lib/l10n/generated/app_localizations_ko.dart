@@ -446,6 +446,9 @@ class AppLocalizationsKo extends AppLocalizations {
   String get dailyGoals => '일일 목표';
 
   @override
+  String get dailyGoalsDescription => '일일 영양 목표를 설정하여 진행 상황을 추적하세요.';
+
+  @override
   String get settings => '설정';
 
   @override

@@ -1293,6 +1293,7 @@ class CoachMessage {
 }
 
 class CoachContext {
+  final String? userName;
   final double? currentWeight;
   final double? goalWeight;
   final String? weightUnit; // 'kg' or 'lbs'
@@ -1301,6 +1302,7 @@ class CoachContext {
   final int? streakDays;
 
   CoachContext({
+    this.userName,
     this.currentWeight,
     this.goalWeight,
     this.weightUnit,
@@ -1310,6 +1312,7 @@ class CoachContext {
   });
 
   Map<String, dynamic> toJson() => {
+    if (userName != null) 'userName': userName,
     if (currentWeight != null) 'currentWeight': currentWeight,
     if (goalWeight != null) 'goalWeight': goalWeight,
     if (weightUnit != null) 'weightUnit': weightUnit,

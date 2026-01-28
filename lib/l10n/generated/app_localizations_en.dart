@@ -450,6 +450,10 @@ class AppLocalizationsEn extends AppLocalizations {
   String get dailyGoals => 'Daily Goals';
 
   @override
+  String get dailyGoalsDescription =>
+      'Set your daily nutrition targets to help track your progress.';
+
+  @override
   String get settings => 'Settings';
 
   @override

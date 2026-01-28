@@ -14,6 +14,7 @@ const chatSchema = z.object({
   messages: z.array(messageSchema).min(1),
   locale: z.string().optional().default('en'),
   context: z.object({
+    userName: z.string().optional(),
     currentWeight: z.number().optional(),
     goalWeight: z.number().optional(),
     weightUnit: z.string().optional(), // 'kg' or 'lbs'
@@ -66,6 +67,7 @@ Use emojis occasionally to make the conversation friendly.
 ${languageInstruction}
 
 ${context ? `User Context:
+- User Name: ${context.userName || 'Not set'}
 - Current Weight: ${context.currentWeight ? `${context.currentWeight} ${context.weightUnit || 'kg'}` : 'Not set'}
 - Goal Weight: ${context.goalWeight ? `${context.goalWeight} ${context.weightUnit || 'kg'}` : 'Not set'}
 - Daily Calorie Goal: ${context.dailyCalorieGoal || 'Not set'}

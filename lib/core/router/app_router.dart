@@ -14,6 +14,7 @@ import '../../features/progress/presentation/screens/progress_screen.dart';
 import '../../features/progress/presentation/screens/weight_history_screen.dart';
 import '../../features/profile/presentation/screens/profile_screen.dart';
 import '../../features/profile/presentation/screens/personal_details_screen.dart';
+import '../../features/profile/presentation/screens/daily_goals_screen.dart';
 import '../../features/profile/presentation/screens/privacy_screen.dart';
 import '../../features/profile/presentation/screens/notification_settings_screen.dart';
 import '../../features/food/presentation/screens/log_food_screen.dart';
@@ -142,6 +143,12 @@ final routerProvider = Provider<GoRouter>((ref) {
       GoRoute(
         path: '/personal-details',
         builder: (context, state) => const PersonalDetailsScreen(),
+      ),
+
+      // Daily Goals Route
+      GoRoute(
+        path: '/daily-goals',
+        builder: (context, state) => const DailyGoalsScreen(),
       ),
 
       // Weight History Route

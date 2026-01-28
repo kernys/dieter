@@ -166,6 +166,7 @@
 
   "edit": "Edit",
   "dailyGoals": "Daily Goals",
+  "dailyGoalsDescription": "Set your daily nutrition targets to help track your progress.",
   "settings": "Settings",
   "notifications": "Notifications",
   "language": "Language",

@@ -157,6 +157,7 @@
 
   "edit": "편집",
   "dailyGoals": "일일 목표",
+  "dailyGoalsDescription": "일일 영양 목표를 설정하여 진행 상황을 추적하세요.",
   "settings": "설정",
   "notifications": "알림",
   "language": "언어",

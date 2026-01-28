@@ -938,6 +938,12 @@ abstract class AppLocalizations {
   /// **'Daily Goals'**
   String get dailyGoals;
 
+  /// No description provided for @dailyGoalsDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Set your daily nutrition targets to help track your progress.'**
+  String get dailyGoalsDescription;
+
   /// No description provided for @settings.
   ///
   /// In en, this message translates to:

@@ -195,6 +195,7 @@ class _CoachChatScreenState extends ConsumerState<CoachChatScreen> {
       }
       
       final coachContext = CoachContext(
+        userName: user?.name,
         currentWeight: currentWeight != null ? double.parse(currentWeight.toStringAsFixed(1)) : null,
         goalWeight: goalWeight != null ? double.parse(goalWeight.toStringAsFixed(1)) : null,
         weightUnit: weightUnit,

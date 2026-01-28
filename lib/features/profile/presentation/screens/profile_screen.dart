@@ -20,7 +20,6 @@ class ProfileScreen extends ConsumerWidget {
     final l10n = AppLocalizations.of(context)!;
     final authState = ref.watch(authStateProvider);
     final user = authState.user;
-    final userGoalsAsync = ref.watch(userGoalsProvider);
     final settings = ref.watch(settingsProvider);
 
     return Scaffold(
@@ -111,95 +110,6 @@ class ProfileScreen extends ConsumerWidget {
               ),
               const SizedBox(height: 24),
 
-              // Daily Goals Section
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 16),
-                child: userGoalsAsync.when(
-                  data: (goals) => Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        l10n.dailyGoals,
-                        style: TextStyle(
-                          fontSize: 18,
-                          fontWeight: FontWeight.w600,
-                          color: context.textPrimaryColor,
-                        ),
-                      ),
-                      const SizedBox(height: 12),
-                      _GoalTile(
-                        icon: Icons.local_fire_department,
-                        label: l10n.calories,
-                        value: '${goals.calorieGoal} ${l10n.cal}',
-                        color: AppColors.calories,
-                        onTap: () => _showEditGoalDialog(context, ref, l10n, 'calories', goals.calorieGoal),
-                      ),
-                      _GoalTile(
-                        icon: Icons.egg_outlined,
-                        label: l10n.protein,
-                        value: '${goals.proteinGoal}g',
-                        color: AppColors.protein,
-                        onTap: () => _showEditGoalDialog(context, ref, l10n, 'protein', goals.proteinGoal),
-                      ),
-                      _GoalTile(
-                        icon: Icons.grass,
-                        label: l10n.carbohydrates,
-                        value: '${goals.carbsGoal}g',
-                        color: AppColors.carbs,
-                        onTap: () => _showEditGoalDialog(context, ref, l10n, 'carbs', goals.carbsGoal),
-                      ),
-                      _GoalTile(
-                        icon: Icons.water_drop_outlined,
-                        label: l10n.fat,
-                        value: '${goals.fatGoal}g',
-                        color: AppColors.fat,
-                        onTap: () => _showEditGoalDialog(context, ref, l10n, 'fat', goals.fatGoal),
-                      ),
-                    ],
-                  ),
-                  loading: () => const Center(child: CircularProgressIndicator()),
-                  error: (_, __) => Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        l10n.dailyGoals,
-                        style: TextStyle(
-                          fontSize: 18,
-                          fontWeight: FontWeight.w600,
-                          color: context.textPrimaryColor,
-                        ),
-                      ),
-                      const SizedBox(height: 12),
-                      _GoalTile(
-                        icon: Icons.local_fire_department,
-                        label: l10n.calories,
-                        value: '${AppConstants.defaultCalorieGoal} ${l10n.cal}',
-                        color: AppColors.calories,
-                      ),
-                      _GoalTile(
-                        icon: Icons.egg_outlined,
-                        label: l10n.protein,
-                        value: '${AppConstants.defaultProteinGoal}g',
-                        color: AppColors.protein,
-                      ),
-                      _GoalTile(
-                        icon: Icons.grass,
-                        label: l10n.carbohydrates,
-                        value: '${AppConstants.defaultCarbsGoal}g',
-                        color: AppColors.carbs,
-                      ),
-                      _GoalTile(
-                        icon: Icons.water_drop_outlined,
-                        label: l10n.fat,
-                        value: '${AppConstants.defaultFatGoal}g',
-                        color: AppColors.fat,
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-              const SizedBox(height: 24),
-
               // Goals & Tracking Section
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 16),
@@ -215,6 +125,13 @@ class ProfileScreen extends ConsumerWidget {
                       ),
                     ),
                     const SizedBox(height: 12),
+                    _SettingsTile(
+                      icon: Icons.track_changes,
+                      label: l10n.dailyGoals,
+                      onTap: () {
+                        context.push('/daily-goals');
+                      },
+                    ),
                     _SettingsTile(
                       icon: Icons.person_outline,
                       label: l10n.personalDetails,
@@ -469,92 +386,6 @@ class ProfileScreen extends ConsumerWidget {
     );
   }
 
-  void _showEditGoalDialog(BuildContext context, WidgetRef ref, AppLocalizations l10n, String goalType, int currentValue) {
-    final controller = TextEditingController(text: currentValue.toString());
-
-    String title;
-    switch (goalType) {
-      case 'calories':
-        title = l10n.calories;
-        break;
-      case 'protein':
-        title = l10n.protein;
-        break;
-      case 'carbs':
-        title = l10n.carbohydrates;
-        break;
-      case 'fat':
-        title = l10n.fat;
-        break;
-      default:
-        title = goalType;
-    }
-
-    showDialog(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: Text(title),
-        content: TextField(
-          controller: controller,
-          keyboardType: TextInputType.number,
-          decoration: InputDecoration(
-            labelText: goalType == 'calories' ? l10n.cal : 'g',
-          ),
-        ),
-        actionsAlignment: MainAxisAlignment.spaceBetween,
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: Text(l10n.cancel),
-          ),
-          ElevatedButton(
-            onPressed: () async {
-              final value = int.tryParse(controller.text);
-              if (value != null && value > 0) {
-                try {
-                  String fieldName;
-                  switch (goalType) {
-                    case 'calories':
-                      fieldName = 'dailyCalorieGoal';
-                      break;
-                    case 'protein':
-                      fieldName = 'dailyProteinGoal';
-                      break;
-                    case 'carbs':
-                      fieldName = 'dailyCarbsGoal';
-                      break;
-                    case 'fat':
-                      fieldName = 'dailyFatGoal';
-                      break;
-                    default:
-                      fieldName = goalType;
-                  }
-
-                  await ref.read(authStateProvider.notifier).updateUser({
-                    fieldName: value,
-                  });
-
-                  ref.invalidate(userGoalsProvider);
-
-                  if (context.mounted) {
-                    Navigator.pop(context);
-                  }
-                } catch (e) {
-                  if (context.mounted) {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(content: Text(l10n.failedToSave(e.toString()))),
-                    );
-                  }
-                }
-              }
-            },
-            child: Text(l10n.save),
-          ),
-        ],
-      ),
-    );
-  }
-
   void _showLanguageDialog(BuildContext context, WidgetRef ref, AppLocalizations l10n, AppSettings settings) {
     showDialog(
       context: context,
@@ -641,76 +472,6 @@ class ProfileScreen extends ConsumerWidget {
     );
   }
 
-}
-
-class _GoalTile extends StatelessWidget {
-  final IconData icon;
-  final String label;
-  final String value;
-  final Color color;
-  final VoidCallback? onTap;
-
-  const _GoalTile({
-    required this.icon,
-    required this.label,
-    required this.value,
-    required this.color,
-    this.onTap,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: onTap,
-      child: Container(
-        margin: const EdgeInsets.only(bottom: 8),
-        padding: const EdgeInsets.all(16),
-        decoration: BoxDecoration(
-          color: context.cardColor,
-          borderRadius: BorderRadius.circular(12),
-          border: Border.all(color: context.borderColor),
-        ),
-        child: Row(
-          children: [
-            Container(
-              width: 40,
-              height: 40,
-              decoration: BoxDecoration(
-                color: color.withValues(alpha: 0.1),
-                borderRadius: BorderRadius.circular(10),
-              ),
-              child: Icon(icon, color: color, size: 20),
-            ),
-            const SizedBox(width: 12),
-            Expanded(
-              child: Text(
-                label,
-                style: TextStyle(
-                  fontSize: 14,
-                  fontWeight: FontWeight.w500,
-                  color: context.textPrimaryColor,
-                ),
-              ),
-            ),
-            Text(
-              value,
-              style: TextStyle(
-                fontSize: 14,
-                fontWeight: FontWeight.w600,
-                color: color,
-              ),
-            ),
-            const SizedBox(width: 8),
-            Icon(
-              Icons.chevron_right,
-              color: context.textTertiaryColor,
-              size: 20,
-            ),
-          ],
-        ),
-      ),
-    );
-  }
 }
 
 class _SettingsTile extends StatelessWidget {
